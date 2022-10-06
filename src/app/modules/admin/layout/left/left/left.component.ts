@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 
 @Component({
   selector: 'app-left',
   templateUrl: './left.component.html',
-  styleUrls: ['./left.component.css']
+  styleUrls: ['./left.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class LeftComponent implements OnInit {
 

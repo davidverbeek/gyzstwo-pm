@@ -24,14 +24,16 @@
             "tsConfig": "tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              "src/dist/img"
             ],
             "styles": [
               "src/bower_components/bootstrap/dist/css/bootstrap.min.css",
               "src/bower_components/font-awesome/css/font-awesome.min.css",
               "src/bower_components/Ionicons/css/ionicons.min.css",
               "src/dist/css/AdminLTE.min.css",
-              "src/dist/css/skins/_all-skins.css"
+              "src/dist/css/skins/_all-skins.css",
+              "src/styles.css"
             ],
             "scripts": [
               "src/bower_components/jquery/dist/jquery.min.js",
