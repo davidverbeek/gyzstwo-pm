@@ -1,4 +1,4 @@
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AdminComponent } from './admin/admin.component';
 import { RouterModule, Routes } from '@angular/router';
@@ -40,9 +40,6 @@ const gyzsroutes: Routes = [
     HttpClientModule,
     SetpricesModule,
     RouterModule.forChild(gyzsroutes)
-  ],
-  schemas: [
-    CUSTOM_ELEMENTS_SCHEMA
   ]
 })
 export class AdminModule { }
