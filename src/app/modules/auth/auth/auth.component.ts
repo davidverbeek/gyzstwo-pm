@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
+import { NgForm } from '@angular/forms';
 
 
 @Component({
@@ -10,8 +11,8 @@ import { Router } from '@angular/router';
 })
 export class AuthComponent implements OnInit {
   title = 'gyzstwo-pm';
- 
-  constructor(private router: Router) { }
+  
+  constructor(private router: Router) {}
 
   ngOnInit(){
     const body = document.getElementsByTagName('body')[0];
@@ -19,7 +20,8 @@ export class AuthComponent implements OnInit {
   }
 
 
-  onLogin() {
+  onLogin(form:NgForm) {
+    //const authFormValue = form.value;
     this.router.navigate(["/admin/dashboard"]);
   }
 
