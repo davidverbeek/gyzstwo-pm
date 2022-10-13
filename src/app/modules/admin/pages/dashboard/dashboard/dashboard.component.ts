@@ -10,7 +10,9 @@ export class DashboardComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit(): void {
+  ngOnInit(){
+    const body = document.getElementsByTagName('body')[0];
+    body.classList.remove('login-page');
   }
 
 }
