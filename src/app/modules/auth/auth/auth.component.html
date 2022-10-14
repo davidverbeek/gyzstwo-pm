@@ -4,7 +4,7 @@
     </div>
     <!-- /.login-logo -->
     <div class="login-box-body">
-      <p class="login-box-msg">Sign in to start your session</p>
+      <p class="login-box-msg text-red" *ngIf="invalidUser=='yes'">Invalid User. Please try again.</p>
   
       <form (ngSubmit)="onLogin(f)" #f="ngForm">
         <div class="form-group has-feedback {{!username.valid && username.touched ? 'has-error':''}}">
