@@ -1,0 +1,230 @@
+#sim-tree {
+  max-height: 100%;
+  background: #111440b3;
+  border-radius: 7px 0px 0px 7px;
+  transition: all 0.3s;
+  list-style: none;
+  font-family: poppins-light;
+  padding: 10px 5px 10px;
+  width: 100%;
+  overflow: overlay;
+  z-index: 9;
+}
+
+.sim-tree {
+  padding: 0px;
+  transition: all 4s;
+}
+
+/* Changes by Jyoti */
+.list-group {
+  list-style: none;
+  padding: 0px 0px 20px 15px;
+  height: calc(100% - 88px);
+  transition: all 0.3s;
+}
+/* Changes by Jyoti */
+
+.sidebar-wrapper #sim-tree {
+  width: 50px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 7px;
+  padding: 10px 5px 10px 3px;
+}
+
+.sidebar-wrapper .list-group {
+  padding: 60px 0px 0px 7px;
+  width: fit-content !important;
+  transition: 0.3s all;
+  display: none;
+}
+
+.sidebar-wrapper .sim-tree li a span {
+  position: relative;
+  transition: all 0.4s;
+}
+
+.sidebar-toggle .sim-tree li a span {
+  position: relative;
+  opacity: 1;
+  left: 0px;
+  transition: all 0.3s;
+  transition-delay: 0.2s;
+  padding-right: 10px;
+}
+
+.sim-tree ul {
+  height: 100%;
+}
+
+.sim-tree ul,
+.sim-tree li {
+  margin: 0px;
+  padding: 0px;
+}
+
+.sim-tree li {
+  font-size: 10px;
+  padding: 3px 3px 3px 0px;
+  white-space: nowrap;
+  position: relative;
+  list-style: none;
+  display: table-caption;
+}
+
+.sim-tree li ul {
+  display: none;
+  margin-left: 4px;
+}
+
+.sim-tree ul.show,
+.sim-tree li.show {
+  display: block;
+}
+
+.sim-tree ul.none,
+.sim-tree li.none {
+  display: none;
+}
+
+.sim-tree li.disabled>a {
+  color: #ffffcc;
+  cursor: not-allowed;
+}
+
+.sim-tree li.disabled>a .sim-tree-checkbox {
+  border-color: #eee;
+}
+
+.sim-tree a {
+  font-size: 12px;
+  text-decoration: none;
+  vertical-align: top;
+  transition: all 0.3s;
+  display: flex;
+  flex: none;
+  padding-left: 16px;
+  align-items: center;
+}
+
+.sim-tree a:hover {
+  color: #d2ceff;
+}
+
+.sim-tree .sim-tree-spread {
+  width: 20px;
+  padding-left: 10px;
+  box-sizing: border-box;
+  position: absolute;
+  top: 5px;
+}
+
+.sim-tree .sim-tree-spread,
+.sim-tree a {
+  cursor: pointer;
+  color: #ffffff;
+}
+
+.sim-tree .sim-tree-spread.hidden {
+  visibility: hidden;
+}
+
+.sim-tree .sim-loading {
+  background: url(data:image/gif;base64,R0lGODlhEAAQAMQQAObm5uLi4unp6dHR0cnJydfX1+jo6O/v7/Dw8NPT0/39/crKyvr6+uDg4MfHx////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQFAAAQACwAAAAAEAAQAAAFXeAjPkiTjGgaLI6Tvs9BtPAIMPH8KgK5DDhZSlFYlFrAGIrYMrUcyRGzdapZr6jE02FAyZ6JxrOrEAVnjgaCRS6IkjLjo9F2PaDBwLJAu+NfAix2LQsAMCVVYQgoIQAh+QQFAAAQACwJAAAABwAHAAAFFGDSIE/5OM7SmKhjsK55vjIt32UIACH5BAUAABAALAoAAwAGAAoAAAUaICQqgggpxYKcheM0qOskZm0/eA7luMibvRAAIfkEBQAAEAAsCQAJAAcABwAABRXgcxBOmTwi6TRouiAoIwbtI9d4/oQAIfkEBQAAEAAsAwAKAAoABgAABRsgJI7MKD6POJQnKjpD60IODKFzvQD3nDQISAgAIfkEBQAAEAAsAAAJAAcABwAABRPgI45kSSrFWTgj6rCisLwk0iQhACH5BAUAABAALAAAAwAHAAoAAAUcIPRAJPmco4mm61m+cJk4tGNATX0ryGK/jVspBAAh+QQFAAAQACwAAAAABwAHAAAFFOAjjmRpPgBDIsugio3juGIiz2oIADs=) center center no-repeat;
+}
+
+.sim-tree .sim-loading.sim-icon-d:before,
+.sim-tree .sim-loading.sim-icon-r:before {
+  display: none;
+}
+
+.sim-tree .sim-icon-d:before,
+.sim-tree .sim-icon-r:before {
+  content: "";
+  display: inline-block;
+  position: relative;
+  width: 12px;
+  height: 12px;
+  vertical-align: top;
+  background-image: url(svg/play_btn.svg);
+  background-repeat: no-repeat;
+  border: 1px solid transparent;
+  transform-origin: 25% 50%;
+  transition: transform 0.2s;
+}
+
+.sim-tree .sim-icon-d:before {
+  transform: rotate(90deg);
+  transition: transform 0.2s;
+}
+
+.sim-tree .sim-tree-checkbox {
+  border: 1.5px solid #ccc;
+  height: 16px;
+  width: 16px;
+  border-radius: 3.5px;
+  box-sizing: border-box;
+  text-align: center;
+  line-height: 16px;
+  color: #fff;
+  vertical-align: middle;
+  margin-right: 10px;
+  transition: background 0.3s, border 0.3s;
+  flex: none;
+  left: 8px;
+  position: relative;
+}
+
+.sim-tree .sim-tree-checkbox.sim-tree-semi,
+.sim-tree .sim-tree-checkbox.checked {
+  border-color: #ffffff;
+  background-color: #ffffff;
+}
+
+.sim-tree .sim-tree-checkbox.sim-tree-semi {
+  position: relative;
+}
+
+.sim-tree .sim-tree-checkbox.sim-tree-semi:after {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 8px;
+  height: 2px;
+  background: #323584;
+  top: 5px;
+  left: 2px;
+}
+
+.sim-tree .sim-tree-checkbox.checked {
+  background-image: url(svg/check-solid.svg);
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+#sim-tree::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+#sim-tree:hover::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+#sim-tree::-webkit-scrollbar-thumb {
+  background-color: #ffffff;
+  border-radius: 10px;
+  border: 2px solid #14184a;
+}
+
+#sim-tree::-webkit-scrollbar-thumb:hover {
+  border-radius: 10px;
+}
+
+.sidebar-wrapper #sim-tree::-webkit-scrollbar-thumb {
+  background-color: #ffffff;
+  border-radius: 10px;
+  border: 2px solid #535576;
+}

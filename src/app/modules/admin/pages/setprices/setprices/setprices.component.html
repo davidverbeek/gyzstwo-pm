@@ -1,5 +1,30 @@
 <div style="padding: 15px;">
-  <ag-grid-angular style="width: 100%; height: 800px;" class="ag-theme-alpine" [columnDefs]="columnDefs"
+  <!-- <ag-grid-angular style="width: 100%; height: 800px;" class="ag-theme-alpine" [columnDefs]="columnDefs"
     [defaultColDef]="defaultColDef" [rowData]="rowData$ | async" [rowSelection]="'multiple'" [animateRows]="true"
-    (gridReady)="onGridReady($event)" (cellClicked)="onCellClicked($event)"></ag-grid-angular>
+    (gridReady)="onGridReady($event)" (cellClicked)="onCellClicked($event)"></ag-grid-angular> -->
+  
+    <ag-grid-angular
+    style="width: 100%; height:800px;"
+    class="ag-theme-alpine"
+    [columnDefs]="columnDefs"
+    [defaultColDef]="defaultColDef"
+    [rowModelType]="rowModelType"
+    [rowStyle]="rowStyle"
+    [getRowStyle]="getRowStyle"
+    (gridReady)="onGridReady($event)"
+    [pagination]="true"
+    [paginationPageSize]="paginationPageSize"
+    [serverSideStoreType]="serverSideStoreType"
+    [cacheBlockSize]="cacheBlockSize"
+    [animateRows]="true"
+    [sideBar]="true"
+    (cellValueChanged)="onCellValueChanged($event)"
+    [enableFillHandle]="true"
+    [enableRangeSelection]="true"
+    [fillHandleDirection]="fillHandleDirection"
+    [undoRedoCellEditing]="true"
+    [undoRedoCellEditingLimit]="20"
+    (cellEditingStopped)="onCellEditingStopped($event)"
+    (dragStopped)="onDragStopped($event)"
+  ></ag-grid-angular>
 </div>
