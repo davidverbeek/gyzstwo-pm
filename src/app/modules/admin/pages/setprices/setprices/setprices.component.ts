@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, ViewChild, OnInit } from '@angular/core';
 import { AgGridAngular } from 'ag-grid-angular';
-import { ColDef, GridReadyEvent,IServerSideDatasource,ServerSideStoreType,RowClassParams, CellValueChangedEvent, CellEditingStoppedEvent, DragStoppedEvent, CellKeyPressEvent} from 'ag-grid-community';
+import { ColDef, GridReadyEvent,IServerSideDatasource,ServerSideStoreType,RowClassParams, CellValueChangedEvent, CellEditingStoppedEvent, DragStoppedEvent, FullWidthCellKeyDownEvent, GetRowIdFunc, GetRowIdParams} from 'ag-grid-community';
 import { Observable, UnsubscriptionError } from 'rxjs';
 import 'ag-grid-enterprise';
 import { AppConstants } from "src/app/app-constants";
@@ -20,7 +20,6 @@ export class SetpricesComponent implements OnInit {
   cats: String = "";
   categoryChanged: String = "0";
   updatedProducts: any = [];
-
 
   public rowModelType: 'clientSide' | 'infinite' | 'viewport' | 'serverSide' = 'serverSide';
   public serverSideStoreType: ServerSideStoreType = 'partial';
@@ -85,6 +84,8 @@ export class SetpricesComponent implements OnInit {
   // Data that gets displayed in the grid
   public rowData$!: Observable<any[]>;
 
+
+
   // For accessing the Grid's API
   @ViewChild(AgGridAngular) agGrid!: AgGridAngular;
 
@@ -101,7 +102,9 @@ export class SetpricesComponent implements OnInit {
 
   loadAGGrid() {
     var datasource = createServerSideDatasource(this.gridParams,this.cats);
+    
     this.api.setServerSideDatasource(datasource);
+    
     this.columnApi.setColumnVisible('product_id', false);
     this.columnApi.setColumnVisible('supplier_sku', false);
     this.columnApi.setColumnVisible('eancode', false);
@@ -118,7 +121,7 @@ export class SetpricesComponent implements OnInit {
     productData["profit_percentage_selling_price"] = event.data.profit_percentage_selling_price;
     productData["discount_on_gross_price"] = event.data.discount_on_gross_price;
     productData["percentage_increase"] = event.data.percentage_increase;
-    this.updatedProducts[event.data.product_id] = productData; 
+    this.updatedProducts[event.data.product_id] = productData;
   }
  
   onCellEditingStopped(event: CellEditingStoppedEvent) {
@@ -129,8 +132,19 @@ export class SetpricesComponent implements OnInit {
     console.log(this.updatedProducts);
     this.updatedProducts = [];
   }
-  
-  
+  onCellKeyDown(e: FullWidthCellKeyDownEvent) {
+    var keyPressed = (e.event as KeyboardEvent).key;
+    if(keyPressed == "z") {
+      console.log(this.updatedProducts);
+      this.updatedProducts = [];
+    } 
+  }
+  onBtnClicked() {
+    const selectedRows = this.api.getSelectedNodes();
+    const transaction = {
+      update: [{selectedRows[0].data, selling_price: "100" }],
+    };
+  }
 
 }
 
@@ -154,14 +168,14 @@ function createServerSideDatasource(server: any,cats: any): IServerSideDatasourc
           if(response.lastRow == null) {
             response.lastRow = 0;
           } 
-          params.successCallback(response.rows, response.lastRow);
+          //params.successCallback(response.rows, response.lastRow);
           
-          //params.success({ rowData: response.rows })
+          params.success({ rowData: response.rows, rowCount: response.lastRow })
          
         })
         .catch(error => {
-          params.failCallback();
-          //params.fail();
+         // params.failCallback();
+          params.fail();
         })
     }
   };

@@ -11,6 +11,8 @@ import { FooterComponent } from './layout/footer/footer/footer.component';
 import { ControlSidebarComponent } from './layout/control-sidebar/control-sidebar/control-sidebar.component';
 import { HttpClientModule } from '@angular/common/http';
 import { SetpricesModule } from './pages/setprices/setprices.module';
+import { AgGridModule } from 'ag-grid-angular';
+
 
 
 
@@ -39,6 +41,7 @@ const gyzsroutes: Routes = [
     CommonModule,
     HttpClientModule,
     SetpricesModule,
+    AgGridModule,
     RouterModule.forChild(gyzsroutes)
   ]
 })
