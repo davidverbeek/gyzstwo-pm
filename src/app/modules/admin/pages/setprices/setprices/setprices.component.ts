@@ -78,11 +78,16 @@ export class SetpricesComponent implements OnInit {
     filter: true,
     flex: 1,
     minWidth: 100,
-    resizable: true
+    resizable: true,
+    enableCellChangeFlash: true
+  };
+
+  public getRowId: GetRowIdFunc = (params: GetRowIdParams) => {
+    return params.data.product_id;
   };
 
   // Data that gets displayed in the grid
-  public rowData$!: Observable<any[]>;
+  public rowData: any;
 
 
 
@@ -105,7 +110,7 @@ export class SetpricesComponent implements OnInit {
     
     this.api.setServerSideDatasource(datasource);
     
-    this.columnApi.setColumnVisible('product_id', false);
+    //this.columnApi.setColumnVisible('product_id', false);
     this.columnApi.setColumnVisible('supplier_sku', false);
     this.columnApi.setColumnVisible('eancode', false);
     this.columnApi.setColumnVisible('idealeverpakking', false);
@@ -114,6 +119,7 @@ export class SetpricesComponent implements OnInit {
     this.fillHandleDirection = 'y';
   }
   onCellValueChanged(event: CellValueChangedEvent) {
+    console.log(event.colDef.field);
     var productData = {};
     productData["buying_price"] = event.data.buying_price;
     productData["selling_price"] = event.data.selling_price;
@@ -125,6 +131,7 @@ export class SetpricesComponent implements OnInit {
   }
  
   onCellEditingStopped(event: CellEditingStoppedEvent) {
+    //saveUpdatedProducts
     console.log(this.updatedProducts);
     this.updatedProducts = [];
   }
@@ -135,15 +142,19 @@ export class SetpricesComponent implements OnInit {
   onCellKeyDown(e: FullWidthCellKeyDownEvent) {
     var keyPressed = (e.event as KeyboardEvent).key;
     if(keyPressed == "z") {
-      console.log(this.updatedProducts);
+      //console.log(this.updatedProducts);
       this.updatedProducts = [];
     } 
   }
   onBtnClicked() {
-    const selectedRows = this.api.getSelectedNodes();
-    const transaction = {
-      update: [{selectedRows[0].data, selling_price: "100" }],
-    };
+    var rowNode = this.api.getRowNode('13');
+    //console.log(rowNode);
+    //rowNode.setDataValue('selling_price', "100");
+    //console.log(rowNode);
+    const newData = rowNode.data;
+    newData.selling_price = "250";
+   
+    rowNode.updateData(newData);
   }
 
 }
