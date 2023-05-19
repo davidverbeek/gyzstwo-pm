@@ -336,18 +336,20 @@ export class SetpricesComponent implements OnInit {
   }
 
   saveUpdatedProducts(processedData) {
-    var filterProcessData = processedData.filter(function () { return true; });
-    this.http.post(AppConstants.webservicebaseUrl + "/save-products", filterProcessData).subscribe(responseData => {
-      if(responseData["msg"] == "done") {
-        if(this.isChkAllChecked == 0) {
-          this.saveRow(this.updatedProducts)
-        } else if(this.isChkAllChecked == 1) {
-          this.chkAllCount = "(" + (this.chkAllProducts["msg"]).length + " Products Updated Successfully)";
-          this.updatedProducts = [];
-          this.loadAGGrid();
+    if(processedData.length > 0) {
+      var filterProcessData = processedData.filter(function () { return true; });
+      this.http.post(AppConstants.webservicebaseUrl + "/save-products", filterProcessData).subscribe(responseData => {
+        if(responseData["msg"] == "done") {
+          if(this.isChkAllChecked == 0) {
+            this.saveRow(this.updatedProducts)
+          } else if(this.isChkAllChecked == 1) {
+            this.chkAllCount = "(" + (this.chkAllProducts["msg"]).length + " Products Updated Successfully)";
+            this.updatedProducts = [];
+            this.loadAGGrid();
+          }
         }
-      }
-    });
+      });
+    }
   }
 
   getAllProducts(event) {

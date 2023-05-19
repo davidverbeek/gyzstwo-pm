@@ -14,8 +14,6 @@ import { SetpricesModule } from './pages/setprices/setprices.module';
 import { AgGridModule } from 'ag-grid-angular';
 
 
-
-
 const gyzsroutes: Routes = [
   {
     path: "",
