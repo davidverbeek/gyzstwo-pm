@@ -1,10 +1,9 @@
-<input type="button" id="btnselected" value="getselected" (click)="onBtnClicked()" />
+
 <div style="padding: 15px;">
-  <!-- <ag-grid-angular style="width: 100%; height: 800px;" class="ag-theme-alpine" [columnDefs]="columnDefs"
-    [defaultColDef]="defaultColDef" [rowData]="rowData$ | async" [rowSelection]="'multiple'" [animateRows]="true"
-    (gridReady)="onGridReady($event)" (cellClicked)="onCellClicked($event)"></ag-grid-angular> -->
-  
-    <ag-grid-angular
+  <div class="checkbox">
+    <label><input type="checkbox" value="chkall" (change)="getAllProducts($event)">Check All {{ chkAllCount }}</label>
+  </div>  
+  <ag-grid-angular
     style="width: 100%; height:800px;"
     class="ag-theme-alpine"
     [rowData]="rowData"
