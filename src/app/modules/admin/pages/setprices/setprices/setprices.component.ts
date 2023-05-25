@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, ViewChild, OnInit } from '@angular/core';
 import { AgGridAngular } from 'ag-grid-angular';
-import { ColDef, GridReadyEvent, IServerSideDatasource, ServerSideStoreType, RowClassParams, CellValueChangedEvent, CellEditingStoppedEvent, DragStoppedEvent, FullWidthCellKeyDownEvent, GetRowIdFunc, GetRowIdParams, SideBarDef } from 'ag-grid-community';
+import { ColDef, GridReadyEvent, IServerSideDatasource, ServerSideStoreType, RowClassParams, CellValueChangedEvent, CellEditingStoppedEvent, DragStoppedEvent, FullWidthCellKeyDownEvent, GetRowIdFunc, GetRowIdParams, SideBarDef, PaginationChangedEvent } from 'ag-grid-community';
 import 'ag-grid-enterprise';
 import { AppConstants } from "src/app/app-constants";
 import { PmCategoryService } from 'src/app/pm.category.service';
@@ -33,8 +33,8 @@ export class SetpricesComponent implements OnInit {
 
   //public rowModelType: 'serverSide';
 
-  public paginationPageSize = 200;
-  public cacheBlockSize = 200;
+  public paginationPageSize = 500;
+  public cacheBlockSize = 500;
   rowStyle = { background: '' };
   getRowStyle = (params: RowClassParams) => this.rowStyle;
 
@@ -264,6 +264,20 @@ export class SetpricesComponent implements OnInit {
     this.createProductData(prepareProductData);
   }
 
+  onPaginationChanged(event: PaginationChangedEvent) {
+    if(event.animate) {
+      if(this.isChkAllChecked == 1) {
+        this.api.forEachNode((rowNode) => {
+          rowNode.setSelected(true)
+        });
+      } else {
+        this.api.forEachNode((rowNode) => {
+          rowNode.setSelected(false)
+        });
+      }
+    }
+  }
+
   createProductData(preparedProductData: any) {
     var productData = {};
     productData["field"] = preparedProductData["field"];
@@ -361,18 +375,21 @@ export class SetpricesComponent implements OnInit {
         this.chkAllCount = "(" + responseData["msg"].length + ")";
         this.isChkAllChecked = 1;
 
-        /* responseData["msg"].forEach(
-          (value, key) => {
-            //console.log(key);
-            //console.log(value["product_id"]);
-          }
-        ); */
+        this.api.forEachNode((rowNode) => {
+          rowNode.setSelected(true)
+        });
+        
 
       });
     } else {
       this.chkAllCount = "";
       this.chkAllProducts = "";
       this.isChkAllChecked = 0;
+
+      this.api.forEachNode((rowNode) => {
+        rowNode.setSelected(false)
+      });
+
     }
   }
 
