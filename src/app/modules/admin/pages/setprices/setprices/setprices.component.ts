@@ -70,7 +70,7 @@ export class SetpricesComponent implements OnInit {
             this.api.forEachNode((rowNode) => {
               if (idsToUpdate.indexOf(rowNode.data.product_id) >= 0) {
                 var updated = JSON.parse(JSON.stringify(rowNode.data));
-                this.formProductData(updated,priceType);
+                this.formProductData(updated, priceType);
               }
             });
           } else if (this.isChkAllChecked == 1) {
@@ -80,7 +80,7 @@ export class SetpricesComponent implements OnInit {
                 (value, key) => {
                   //console.log(key);
                   //console.log(value.product_id);
-                  this.formProductData(value,priceType);
+                  this.formProductData(value, priceType);
                 }
               )
             }
@@ -100,7 +100,7 @@ export class SetpricesComponent implements OnInit {
     this.subbtnclicked.unsubscribe();
   }
 
-  formProductData(prodData,priceType) {
+  formProductData(prodData, priceType) {
     let new_selling_price = prodData.selling_price;
     let new_profit_percentage = prodData.profit_percentage;
     let new_profit_percentage_selling_price = prodData.profit_percentage_selling_price;
@@ -148,8 +148,29 @@ export class SetpricesComponent implements OnInit {
     { field: 'net_unit_price', headerName: 'Nettopr Lev', sortable: true, filter: 'number' },
     { field: 'idealeverpakking', headerName: 'Ideal.verp', sortable: true, filter: 'number' },
     { field: 'afwijkenidealeverpakking', headerName: 'Afw.Ideal.verp', sortable: true, filter: 'number' },
-    { field: 'buying_price', headerName: 'PM Inkpr', sortable: true, filter: 'number' },
-    { field: 'selling_price', headerName: 'PM Vkpr', sortable: true, filter: 'number', editable: true, cellStyle: { 'background-color': '#ffffcc' } },
+    { field: 'buying_price', headerName: 'PM Inkpr', sortable: true, filter: 'number',
+      cellRenderer: params => {
+        var bp_icon = "";
+        if (params.data.buying_price > params.data.net_unit_price) {
+          bp_icon = '<i class="fa fa-long-arrow-up" aria-hidden="true" style="color:green; cursor:pointer;" title="' + params.data.net_unit_price + '=>' + params.data.buying_price + '"></i>';
+        } else if (params.data.buying_price < params.data.net_unit_price) {
+          bp_icon = '<i class="fa fa-long-arrow-down" aria-hidden="true" style="color:red; cursor:pointer;" title="' + params.data.net_unit_price + '=>' + params.data.buying_price + '"></i>';
+        }
+        return '' + bp_icon + ' ' + params.value + '';
+      }
+    },
+    {
+      field: 'selling_price', headerName: 'PM Vkpr', sortable: true, filter: 'number', editable: true, cellStyle: { 'background-color': '#ffffcc' },
+      cellRenderer: params => {
+        var sp_icon = "";
+        if (params.data.selling_price > params.data.webshop_selling_price) {
+          sp_icon = '<i class="fa fa-long-arrow-up" aria-hidden="true" style="color:green; cursor:pointer;" title="' + params.data.webshop_selling_price + '=>' + params.data.selling_price + '"></i>';
+        } else if (params.data.selling_price < params.data.webshop_selling_price) {
+          sp_icon = '<i class="fa fa-long-arrow-down" aria-hidden="true" style="color:red; cursor:pointer;" title="' + params.data.webshop_selling_price + '=>' + params.data.selling_price + '"></i>';
+        }
+        return '' + sp_icon + ' ' + params.value + '';
+      }
+    },
     { field: 'profit_percentage', headerName: 'Marge Inkpr %', sortable: true, filter: 'number', editable: true, cellStyle: { 'background-color': '#ffffcc' } },
     { field: 'profit_percentage_selling_price', headerName: 'Marge Verkpr %', sortable: true, filter: 'number', editable: true, cellStyle: { 'background-color': '#ffffcc' } },
     { field: 'discount_on_gross_price', headerName: 'Korting Brupr %', sortable: true, filter: 'number', editable: true, cellStyle: { 'background-color': '#ffffcc' } },
@@ -265,8 +286,8 @@ export class SetpricesComponent implements OnInit {
   }
 
   onPaginationChanged(event: PaginationChangedEvent) {
-    if(event.animate) {
-      if(this.isChkAllChecked == 1) {
+    if (event.animate) {
+      if (this.isChkAllChecked == 1) {
         this.api.forEachNode((rowNode) => {
           rowNode.setSelected(true)
         });
@@ -335,11 +356,9 @@ export class SetpricesComponent implements OnInit {
 
 
   saveRow(updatedProducts) {
-    console.log(updatedProducts);
     updatedProducts.forEach(
       (value, key) => {
         var rowNode = this.api.getRowNode(key.toString());
-
         rowNode.setDataValue('selling_price', value["selling_price"]);
         rowNode.setDataValue('profit_percentage', value["profit_percentage"]);
         rowNode.setDataValue('profit_percentage_selling_price', value["profit_percentage_selling_price"]);
@@ -350,13 +369,13 @@ export class SetpricesComponent implements OnInit {
   }
 
   saveUpdatedProducts(processedData) {
-    if(processedData.length > 0) {
+    if (processedData.length > 0) {
       var filterProcessData = processedData.filter(function () { return true; });
       this.http.post(AppConstants.webservicebaseUrl + "/save-products", filterProcessData).subscribe(responseData => {
-        if(responseData["msg"] == "done") {
-          if(this.isChkAllChecked == 0) {
+        if (responseData["msg"] == "done") {
+          if (this.isChkAllChecked == 0) {
             this.saveRow(this.updatedProducts)
-          } else if(this.isChkAllChecked == 1) {
+          } else if (this.isChkAllChecked == 1) {
             this.chkAllCount = "(" + (this.chkAllProducts["msg"]).length + " Products Updated Successfully)";
             this.updatedProducts = [];
             this.loadAGGrid();
@@ -378,7 +397,7 @@ export class SetpricesComponent implements OnInit {
         this.api.forEachNode((rowNode) => {
           rowNode.setSelected(true)
         });
-        
+
 
       });
     } else {
