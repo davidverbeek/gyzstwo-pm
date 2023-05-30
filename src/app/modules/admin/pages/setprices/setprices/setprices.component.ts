@@ -4,8 +4,8 @@ import { AgGridAngular } from 'ag-grid-angular';
 import { ColDef, GridReadyEvent, IServerSideDatasource, ServerSideStoreType, RowClassParams, CellValueChangedEvent, CellEditingStoppedEvent, DragStoppedEvent, FullWidthCellKeyDownEvent, GetRowIdFunc, GetRowIdParams, SideBarDef, PaginationChangedEvent } from 'ag-grid-community';
 import 'ag-grid-enterprise';
 import { AppConstants } from "src/app/app-constants";
-import { PmCategoryService } from 'src/app/pm.category.service';
-import { PmSidebarService } from 'src/app/pm-sidebar.service';
+import { PmCategoryService } from '../../../../../services/pm.category.service';
+import { PmSidebarService } from '../../../../../services/pm-sidebar.service';
 import { SideSetPricesComponent } from 'src/app/modules/admin/pages/setprices/setprices/side-set-prices/side-set-prices.component';
 
 @Component({

@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { AppConstants } from "../../../../../app-constants";
 
 @Component({
   selector: 'app-header',
@@ -10,7 +11,11 @@ export class HeaderComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit(): void {
+  ngOnInit(): void {}
+
+  onUserSignOut() {
+    localStorage.removeItem("token");
+    window.location.href=""+AppConstants.agbaseUrl+"";
   }
 
 }

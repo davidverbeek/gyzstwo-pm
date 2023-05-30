@@ -1,7 +1,7 @@
 import { Component, ViewEncapsulation} from '@angular/core';
 import { IToolPanelAngularComp } from 'ag-grid-angular';
 import { IToolPanelParams } from 'ag-grid-community';
-import { PmSidebarService } from 'src/app/pm-sidebar.service';
+import { PmSidebarService } from '../../../../../../services/pm-sidebar.service';
 
 @Component({
   selector: 'app-side-set-prices',

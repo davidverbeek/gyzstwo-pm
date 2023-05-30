@@ -7,6 +7,8 @@ import { AppConstants } from 'src/app/app-constants';
 })
 export class AuthService {
 
+  loggedInDetails: any;
+
   constructor(private http: HttpClient) { }
 
   login(logindata = {}) {
@@ -15,4 +17,20 @@ export class AuthService {
       logindata
     );
   }
+
+  verifyToken(token) {
+    return this.http.post(
+      AppConstants.webservicebaseUrl + "/verifytoken",
+      {token:token}
+    );
+  }
+
+  setLogggedInDetails(loggedindetails) {
+    this.loggedInDetails = loggedindetails;
+  }
+
+  getLoggedInDetails() {
+    return this.loggedInDetails;
+  }
+
 }

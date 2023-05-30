@@ -2,7 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild, ViewEncapsulation } from '@an
 declare var simTree: any;
 import { AppConstants } from "src/app/app-constants";
 import { HttpClient } from '@angular/common/http';
-import { PmCategoryService } from 'src/app/pm.category.service';
+import { PmCategoryService } from '../../../../../services/pm.category.service';
 import * as $ from 'jquery'
 
 @Component({

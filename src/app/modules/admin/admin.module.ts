@@ -12,6 +12,8 @@ import { ControlSidebarComponent } from './layout/control-sidebar/control-sideba
 import { HttpClientModule } from '@angular/common/http';
 import { SetpricesModule } from './pages/setprices/setprices.module';
 import { AgGridModule } from 'ag-grid-angular';
+import { PageAccessGuard } from 'src/app/guards/page-access.guard';
+import { AuthGuard } from 'src/app/guards/auth.guard';
 
 
 const gyzsroutes: Routes = [
@@ -19,9 +21,9 @@ const gyzsroutes: Routes = [
     path: "",
     component: AdminComponent,
     children: [
-      { path: "dashboard", component: DashboardComponent },
-      { path: "setprices", component: SetpricesComponent },
-      { path: "settings", component: SettingsComponent },
+      { path: "dashboard", canActivate: [AuthGuard,PageAccessGuard], component: DashboardComponent },
+      { path: "setprices", canActivate: [AuthGuard,PageAccessGuard], component: SetpricesComponent },
+      { path: "settings", canActivate: [AuthGuard,PageAccessGuard], component: SettingsComponent },
       { path: '', redirectTo: '/admin/dashboard', pathMatch: 'full' },
     ],
   },
