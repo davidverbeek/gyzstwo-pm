@@ -7,6 +7,7 @@ import { AppConstants } from "src/app/app-constants";
 import { PmCategoryService } from '../../../../../services/pm.category.service';
 import { PmSidebarService } from '../../../../../services/pm-sidebar.service';
 import { SideSetPricesComponent } from 'src/app/modules/admin/pages/setprices/setprices/side-set-prices/side-set-prices.component';
+import { LoadDebtorsService } from 'src/app/services/load-debtors.service';
 
 @Component({
   selector: 'app-setprices',
@@ -37,8 +38,85 @@ export class SetpricesComponent implements OnInit {
   public cacheBlockSize = 500;
   rowStyle = { background: '' };
   getRowStyle = (params: RowClassParams) => this.rowStyle;
+  
+  // Each Column Definition results in one Column.
+  public columnDefs: ColDef[] = [
+    { field: 'product_id', headerName: 'ID', sortable: true, filter: 'number', hide:true },
+    {
+      field: 'supplier_type', headerName: 'Leverancier', sortable: true, filter: 'agSetColumnFilter', filterParams: {
+        values: ['Gyzs', 'JRS', 'Transferro']
+      }
+    },
+    { field: 'name', headerName: 'Naam', sortable: true, filter: 'text' },
+    { field: 'sku', headerName: 'SKU', sortable: true, filter: 'text' },
+    { field: 'supplier_sku', headerName: 'SKU (Sup)', sortable: true, filter: 'text', hide:true },
+    { field: 'eancode', headerName: 'Ean', sortable: true, filter: 'text', hide:true },
+    { field: 'merk', headerName: 'Merk', sortable: true, filter: 'text' },
+    { field: 'gross_unit_price', headerName: 'Brutopr', sortable: true, filter: 'number', hide:true },
+    { field: 'supplier_discount_gross_price', headerName: 'Korting brutopr', sortable: true, filter: 'number', hide:true },
+    { field: 'net_unit_price', headerName: 'Nettopr Lev', sortable: true, filter: 'number', hide:true },
+    { field: 'idealeverpakking', headerName: 'Ideal.verp', sortable: true, filter: 'number', hide:true },
+    { field: 'afwijkenidealeverpakking', headerName: 'Afw.Ideal.verp', sortable: true, filter: 'number', hide:true },
+    {
+      field: 'buying_price', headerName: 'PM Inkpr', sortable: true, filter: 'number',
+      cellRenderer: params => {
+        var bp_icon = "";
+        if (params.data.buying_price > params.data.net_unit_price) {
+          bp_icon = '<i class="fa fa-long-arrow-up" aria-hidden="true" style="color:green; cursor:pointer;" title="' + params.data.net_unit_price + '=>' + params.data.buying_price + '"></i>';
+        } else if (params.data.buying_price < params.data.net_unit_price) {
+          bp_icon = '<i class="fa fa-long-arrow-down" aria-hidden="true" style="color:red; cursor:pointer;" title="' + params.data.net_unit_price + '=>' + params.data.buying_price + '"></i>';
+        }
+        return '' + bp_icon + ' ' + params.value + '';
+      }
+    },
+    {
+      field: 'selling_price', headerName: 'PM Vkpr', sortable: true, filter: 'number', editable: true, cellStyle: { 'background-color': '#ffffcc' },
+      cellRenderer: params => {
+        var sp_icon = "";
+        if (params.data.selling_price > params.data.webshop_selling_price) {
+          sp_icon = '<i class="fa fa-long-arrow-up" aria-hidden="true" style="color:green; cursor:pointer;" title="' + params.data.webshop_selling_price + '=>' + params.data.selling_price + '"></i>';
+        } else if (params.data.selling_price < params.data.webshop_selling_price) {
+          sp_icon = '<i class="fa fa-long-arrow-down" aria-hidden="true" style="color:red; cursor:pointer;" title="' + params.data.webshop_selling_price + '=>' + params.data.selling_price + '"></i>';
+        }
+        return '' + sp_icon + ' ' + params.value + '';
+      }
+    },
+    { field: 'profit_percentage', headerName: 'Marge Inkpr %', sortable: true, filter: 'number', editable: true, cellStyle: { 'background-color': '#ffffcc' } },
+    { field: 'profit_percentage_selling_price', headerName: 'Marge Verkpr %', sortable: true, filter: 'number', editable: true, cellStyle: { 'background-color': '#ffffcc' } },
+    { field: 'discount_on_gross_price', headerName: 'Korting Brupr %', sortable: true, filter: 'number', editable: true, cellStyle: { 'background-color': '#ffffcc' } },
+    { field: 'percentage_increase', headerName: 'Stijging %', sortable: true, filter: 'number' },
+    { field: 'magento_status', headerName: 'Status', sortable: true, filter: 'number', hide:true },
+    { field: 'webshop_selling_price', headerName: 'WS Vkpr', sortable: true, filter: 'number', hide:true }
 
-  constructor(private http: HttpClient, private categoryService: PmCategoryService, private sidebarService: PmSidebarService) { }
+  ];
+
+
+  constructor(private http: HttpClient, private categoryService: PmCategoryService, private sidebarService: PmSidebarService, private loaddebtorsService: LoadDebtorsService) {
+     
+    if (localStorage.getItem("debtorCols") != null) {
+      
+      
+      let debColString = localStorage.getItem("debtorCols");
+      
+      var deb_columns = [];
+      deb_columns = JSON.parse(debColString || '{}');
+      for (const [key, value] of Object.entries(deb_columns)) {
+        var debcellbg_color = "";
+        if(value["type"] == "debsp") {
+          debcellbg_color = "#90ee90";
+        } else if(value["type"] == "debppbp") {
+          debcellbg_color = "#7ac3ff";
+        } else if(value["type"] == "debppsp") {
+          debcellbg_color = "#fffd6e";
+        } else if(value["type"] == "debdgp") {
+          debcellbg_color = "#fc6b6b";
+        }
+
+        let definition: ColDef = { headerName: value["group_alias"], field: value["customer_group_name"], sortable: true, filter: 'number', editable: true, hide: true, cellStyle: { 'background-color': ''+debcellbg_color+'' } };
+        this.columnDefs.push(definition);
+      }
+    } 
+  }
 
   ngOnInit() {
     this.subcat = this.categoryService.categorySelected.subscribe((allselectedcats) => {
@@ -130,55 +208,7 @@ export class SetpricesComponent implements OnInit {
     this.createProductData(prepareProductData);
   }
 
-  // Each Column Definition results in one Column.
-  public columnDefs: ColDef[] = [
-    { field: 'product_id', headerName: 'ID', sortable: true, filter: 'number' },
-    {
-      field: 'supplier_type', headerName: 'Leverancier', sortable: true, filter: 'agSetColumnFilter', filterParams: {
-        values: ['Gyzs', 'JRS', 'Transferro']
-      }
-    },
-    { field: 'name', headerName: 'Naam', sortable: true, filter: 'text' },
-    { field: 'sku', headerName: 'SKU', sortable: true, filter: 'text' },
-    { field: 'supplier_sku', headerName: 'SKU (Sup)', sortable: true, filter: 'text' },
-    { field: 'eancode', headerName: 'Ean', sortable: true, filter: 'text' },
-    { field: 'merk', headerName: 'Merk', sortable: true, filter: 'text' },
-    { field: 'gross_unit_price', headerName: 'Brutopr', sortable: true, filter: 'number' },
-    { field: 'supplier_discount_gross_price', headerName: 'Korting brutopr', sortable: true, filter: 'number' },
-    { field: 'net_unit_price', headerName: 'Nettopr Lev', sortable: true, filter: 'number' },
-    { field: 'idealeverpakking', headerName: 'Ideal.verp', sortable: true, filter: 'number' },
-    { field: 'afwijkenidealeverpakking', headerName: 'Afw.Ideal.verp', sortable: true, filter: 'number' },
-    { field: 'buying_price', headerName: 'PM Inkpr', sortable: true, filter: 'number',
-      cellRenderer: params => {
-        var bp_icon = "";
-        if (params.data.buying_price > params.data.net_unit_price) {
-          bp_icon = '<i class="fa fa-long-arrow-up" aria-hidden="true" style="color:green; cursor:pointer;" title="' + params.data.net_unit_price + '=>' + params.data.buying_price + '"></i>';
-        } else if (params.data.buying_price < params.data.net_unit_price) {
-          bp_icon = '<i class="fa fa-long-arrow-down" aria-hidden="true" style="color:red; cursor:pointer;" title="' + params.data.net_unit_price + '=>' + params.data.buying_price + '"></i>';
-        }
-        return '' + bp_icon + ' ' + params.value + '';
-      }
-    },
-    {
-      field: 'selling_price', headerName: 'PM Vkpr', sortable: true, filter: 'number', editable: true, cellStyle: { 'background-color': '#ffffcc' },
-      cellRenderer: params => {
-        var sp_icon = "";
-        if (params.data.selling_price > params.data.webshop_selling_price) {
-          sp_icon = '<i class="fa fa-long-arrow-up" aria-hidden="true" style="color:green; cursor:pointer;" title="' + params.data.webshop_selling_price + '=>' + params.data.selling_price + '"></i>';
-        } else if (params.data.selling_price < params.data.webshop_selling_price) {
-          sp_icon = '<i class="fa fa-long-arrow-down" aria-hidden="true" style="color:red; cursor:pointer;" title="' + params.data.webshop_selling_price + '=>' + params.data.selling_price + '"></i>';
-        }
-        return '' + sp_icon + ' ' + params.value + '';
-      }
-    },
-    { field: 'profit_percentage', headerName: 'Marge Inkpr %', sortable: true, filter: 'number', editable: true, cellStyle: { 'background-color': '#ffffcc' } },
-    { field: 'profit_percentage_selling_price', headerName: 'Marge Verkpr %', sortable: true, filter: 'number', editable: true, cellStyle: { 'background-color': '#ffffcc' } },
-    { field: 'discount_on_gross_price', headerName: 'Korting Brupr %', sortable: true, filter: 'number', editable: true, cellStyle: { 'background-color': '#ffffcc' } },
-    { field: 'percentage_increase', headerName: 'Stijging %', sortable: true, filter: 'number' },
-    { field: 'magento_status', headerName: 'Status', sortable: true, filter: 'number' },
-    { field: 'webshop_selling_price', headerName: 'WS Vkpr', sortable: true, filter: 'number' }
 
-  ];
 
   public sideBar: SideBarDef | string | string[] | boolean | null = {
     toolPanels: [
@@ -247,31 +277,16 @@ export class SetpricesComponent implements OnInit {
       }
       return { background: '' };
     };
-
   }
-
 
   loadAGGrid() {
     var datasource = createServerSideDatasource(this.gridParams, this.cats);
-
     this.api.setServerSideDatasource(datasource);
-
-    this.columnApi.setColumnVisible('product_id', false);
-    this.columnApi.setColumnVisible('supplier_sku', false);
-    this.columnApi.setColumnVisible('eancode', false);
-    this.columnApi.setColumnVisible('idealeverpakking', false);
-    this.columnApi.setColumnVisible('afwijkenidealeverpakking', false);
-    this.columnApi.setColumnVisible('magento_status', false);
-    this.columnApi.setColumnVisible('gross_unit_price', false);
-    this.columnApi.setColumnVisible('supplier_discount_gross_price', false);
-    this.columnApi.setColumnVisible('webshop_selling_price', false);
-    this.columnApi.setColumnVisible('net_unit_price', false);
-    this.columnApi.setColumnVisible('is_updated', false);
-
     this.fillHandleDirection = 'y';
   }
   onCellValueChanged(event: CellValueChangedEvent) {
     var prepareProductData = [];
+    var checkforDebtor:any = [];
     prepareProductData["field"] = event.colDef.field;
     prepareProductData["product_id"] = event.data.product_id;
     prepareProductData["buying_price"] = event.data.buying_price;
@@ -282,6 +297,15 @@ export class SetpricesComponent implements OnInit {
     prepareProductData["percentage_increase"] = event.data.percentage_increase;
     prepareProductData["gross_unit_price"] = event.data.gross_unit_price;
     prepareProductData["webshop_selling_price"] = event.data.webshop_selling_price;
+
+    checkforDebtor = (event.colDef.field)?.split("_");
+    if(checkforDebtor[0] == "group") {
+      prepareProductData["debtor"] = checkforDebtor[1];
+      prepareProductData["group_"+checkforDebtor[1]+"_debter_selling_price"] = event.data["group_"+checkforDebtor[1]+"_debter_selling_price"];
+      prepareProductData["group_"+checkforDebtor[1]+"_margin_on_buying_price"] = event.data["group_"+checkforDebtor[1]+"_margin_on_buying_price"];
+      prepareProductData["group_"+checkforDebtor[1]+"_margin_on_selling_price"] = event.data["group_"+checkforDebtor[1]+"_margin_on_selling_price"];
+      prepareProductData["group_"+checkforDebtor[1]+"_discount_on_grossprice_b_on_deb_selling_price"] = event.data["group_"+checkforDebtor[1]+"_discount_on_grossprice_b_on_deb_selling_price"]; 
+    }
     this.createProductData(prepareProductData);
   }
 
@@ -312,6 +336,13 @@ export class SetpricesComponent implements OnInit {
     productData["gross_unit_price"] = preparedProductData["gross_unit_price"];
     productData["webshop_selling_price"] = preparedProductData["webshop_selling_price"];
 
+    if(typeof preparedProductData["debtor"] != "undefined") {
+      productData["debtor"] = preparedProductData["debtor"];
+      productData["group_"+preparedProductData["debtor"]+"_debter_selling_price"] = preparedProductData["group_"+preparedProductData["debtor"]+"_debter_selling_price"];
+      productData["group_"+preparedProductData["debtor"]+"_margin_on_buying_price"] = preparedProductData["group_"+preparedProductData["debtor"]+"_margin_on_buying_price"];
+      productData["group_"+preparedProductData["debtor"]+"_margin_on_selling_price"] = preparedProductData["group_"+preparedProductData["debtor"]+"_margin_on_selling_price"];
+      productData["group_"+preparedProductData["debtor"]+"_discount_on_grossprice_b_on_deb_selling_price"] = preparedProductData["group_"+preparedProductData["debtor"]+"_discount_on_grossprice_b_on_deb_selling_price"]; 
+    }
     var processedData;
     processedData = processUpdatedProduct(productData);
     this.updatedProducts[preparedProductData["product_id"]] = processedData;
@@ -359,18 +390,27 @@ export class SetpricesComponent implements OnInit {
     updatedProducts.forEach(
       (value, key) => {
         var rowNode = this.api.getRowNode(key.toString());
-        rowNode.setDataValue('selling_price', value["selling_price"]);
-        rowNode.setDataValue('profit_percentage', value["profit_percentage"]);
-        rowNode.setDataValue('profit_percentage_selling_price', value["profit_percentage_selling_price"]);
-        rowNode.setDataValue('discount_on_gross_price', value["discount_on_gross_price"]);
+        if(typeof value["debtor"] != "undefined") {
+          rowNode.setDataValue("group_"+value["debtor"]+"_debter_selling_price", value["group_"+value["debtor"]+"_debter_selling_price"]);
+          rowNode.setDataValue("group_"+value["debtor"]+"_margin_on_buying_price", value["group_"+value["debtor"]+"_margin_on_buying_price"]);
+          rowNode.setDataValue("group_"+value["debtor"]+"_margin_on_selling_price", value["group_"+value["debtor"]+"_margin_on_selling_price"]);
+          rowNode.setDataValue("group_"+value["debtor"]+"_discount_on_grossprice_b_on_deb_selling_price", value["group_"+value["debtor"]+"_discount_on_grossprice_b_on_deb_selling_price"]);
+        } else {
+          rowNode.setDataValue('selling_price', value["selling_price"]);
+          rowNode.setDataValue('profit_percentage', value["profit_percentage"]);
+          rowNode.setDataValue('profit_percentage_selling_price', value["profit_percentage_selling_price"]);
+          rowNode.setDataValue('discount_on_gross_price', value["discount_on_gross_price"]);
+        }
       }
     );
     this.updatedProducts = [];
   }
 
   saveUpdatedProducts(processedData) {
+    
     if (processedData.length > 0) {
       var filterProcessData = processedData.filter(function () { return true; });
+      console.log(filterProcessData);
       this.http.post(AppConstants.webservicebaseUrl + "/save-products", filterProcessData).subscribe(responseData => {
         if (responseData["msg"] == "done") {
           if (this.isChkAllChecked == 0) {
@@ -488,6 +528,45 @@ function processUpdatedProduct(productData) {
       productData["profit_percentage_selling_price"] = (((sp - bp) / sp) * 100).toFixed(4);
       productData["discount_on_gross_price"] = dgp.toFixed(4);
       productData["percentage_increase"] = (((sp - wsp) / wsp) * 100).toFixed(4);
+      break;
+    default:
+      if(typeof productData["debtor"] != "undefined") {
+        var debsp = parseFloat(productData["group_"+productData["debtor"]+"_debter_selling_price"]);
+        var debcoltypes = productData["field"].replace("group_"+productData["debtor"]+"_","");
+          if(debcoltypes == "debter_selling_price") {
+            productData["group_"+productData["debtor"]+"_debter_selling_price"] = debsp.toFixed(4);
+            productData["group_"+productData["debtor"]+"_margin_on_buying_price"] = (((debsp - bp) / bp) * 100).toFixed(4);
+            productData["group_"+productData["debtor"]+"_margin_on_selling_price"] = (((debsp - bp) / debsp) * 100).toFixed(4);
+            productData["group_"+productData["debtor"]+"_discount_on_grossprice_b_on_deb_selling_price"] = ((1 - (debsp / gup)) * 100).toFixed(4);
+          } else if(debcoltypes == "margin_on_buying_price") {
+            var debpp = parseFloat(productData["group_"+productData["debtor"]+"_margin_on_buying_price"]);
+            debsp = ((1 + (debpp / 100)) * bp);
+            
+            productData["group_"+productData["debtor"]+"_debter_selling_price"] = debsp.toFixed(4);
+            productData["group_"+productData["debtor"]+"_margin_on_buying_price"] = debpp.toFixed(4);
+            productData["group_"+productData["debtor"]+"_margin_on_selling_price"] = (((debsp - bp) / debsp) * 100).toFixed(4);
+            productData["group_"+productData["debtor"]+"_discount_on_grossprice_b_on_deb_selling_price"] = ((1 - (debsp / gup)) * 100).toFixed(4);
+          } else if(debcoltypes == "margin_on_selling_price") {
+            var debppsp = parseFloat(productData["group_"+productData["debtor"]+"_margin_on_selling_price"]);
+            debsp = (bp / (1 - (debppsp / 100)));
+            
+            productData["group_"+productData["debtor"]+"_debter_selling_price"] = debsp.toFixed(4);
+            productData["group_"+productData["debtor"]+"_margin_on_buying_price"] = (((debsp - bp) / bp) * 100).toFixed(4);
+            productData["group_"+productData["debtor"]+"_margin_on_selling_price"] = debppsp.toFixed(4);
+            productData["group_"+productData["debtor"]+"_discount_on_grossprice_b_on_deb_selling_price"] = ((1 - (debsp / gup)) * 100).toFixed(4);
+          } else if(debcoltypes == "discount_on_grossprice_b_on_deb_selling_price") {
+            var debdgp = parseFloat(productData["group_"+productData["debtor"]+"_discount_on_grossprice_b_on_deb_selling_price"]);
+            debsp = ((1 - (debdgp / 100)) * gup);
+            
+            productData["group_"+productData["debtor"]+"_debter_selling_price"] = debsp.toFixed(4);
+            productData["group_"+productData["debtor"]+"_margin_on_buying_price"] = (((debsp - bp) / bp) * 100).toFixed(4);
+            productData["group_"+productData["debtor"]+"_margin_on_selling_price"] = (((debsp - bp) / debsp) * 100).toFixed(4);
+            productData["group_"+productData["debtor"]+"_discount_on_grossprice_b_on_deb_selling_price"] = debdgp.toFixed(4);
+          }   
+        
+        //console.log("hey"+productData["debtor"]);
+        //console.log(debcoltypes);
+      }
       break;
   }
   return productData;

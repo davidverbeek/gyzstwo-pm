@@ -15,6 +15,8 @@ export class HeaderComponent implements OnInit {
 
   onUserSignOut() {
     localStorage.removeItem("token");
+    localStorage.removeItem("debtorCols");
+    localStorage.removeItem("currentSql");
     window.location.href=""+AppConstants.agbaseUrl+"";
   }
 

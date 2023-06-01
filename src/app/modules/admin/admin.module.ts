@@ -15,7 +15,6 @@ import { AgGridModule } from 'ag-grid-angular';
 import { PageAccessGuard } from 'src/app/guards/page-access.guard';
 import { AuthGuard } from 'src/app/guards/auth.guard';
 
-
 const gyzsroutes: Routes = [
   {
     path: "",
