@@ -31,6 +31,7 @@ export class SetpricesComponent implements OnInit {
   public rowModelType: 'serverSide' = 'serverSide';
   public serverSideStoreType: ServerSideStoreType = 'partial';
   public fillHandleDirection: 'x' | 'y' | 'xy' = 'x';
+  all_debtors: any = [];
 
   //public rowModelType: 'serverSide';
 
@@ -38,10 +39,10 @@ export class SetpricesComponent implements OnInit {
   public cacheBlockSize = 500;
   rowStyle = { background: '' };
   getRowStyle = (params: RowClassParams) => this.rowStyle;
-  
+
   // Each Column Definition results in one Column.
   public columnDefs: ColDef[] = [
-    { field: 'product_id', headerName: 'ID', sortable: true, filter: 'number', hide:true },
+    { field: 'product_id', headerName: 'ID', sortable: true, filter: 'number', hide: true },
     {
       field: 'supplier_type', headerName: 'Leverancier', sortable: true, filter: 'agSetColumnFilter', filterParams: {
         values: ['Gyzs', 'JRS', 'Transferro']
@@ -49,14 +50,14 @@ export class SetpricesComponent implements OnInit {
     },
     { field: 'name', headerName: 'Naam', sortable: true, filter: 'text' },
     { field: 'sku', headerName: 'SKU', sortable: true, filter: 'text' },
-    { field: 'supplier_sku', headerName: 'SKU (Sup)', sortable: true, filter: 'text', hide:true },
-    { field: 'eancode', headerName: 'Ean', sortable: true, filter: 'text', hide:true },
+    { field: 'supplier_sku', headerName: 'SKU (Sup)', sortable: true, filter: 'text', hide: true },
+    { field: 'eancode', headerName: 'Ean', sortable: true, filter: 'text', hide: true },
     { field: 'merk', headerName: 'Merk', sortable: true, filter: 'text' },
-    { field: 'gross_unit_price', headerName: 'Brutopr', sortable: true, filter: 'number', hide:true },
-    { field: 'supplier_discount_gross_price', headerName: 'Korting brutopr', sortable: true, filter: 'number', hide:true },
-    { field: 'net_unit_price', headerName: 'Nettopr Lev', sortable: true, filter: 'number', hide:true },
-    { field: 'idealeverpakking', headerName: 'Ideal.verp', sortable: true, filter: 'number', hide:true },
-    { field: 'afwijkenidealeverpakking', headerName: 'Afw.Ideal.verp', sortable: true, filter: 'number', hide:true },
+    { field: 'gross_unit_price', headerName: 'Brutopr', sortable: true, filter: 'number', hide: true },
+    { field: 'supplier_discount_gross_price', headerName: 'Korting brutopr', sortable: true, filter: 'number', hide: true },
+    { field: 'net_unit_price', headerName: 'Nettopr Lev', sortable: true, filter: 'number', hide: true },
+    { field: 'idealeverpakking', headerName: 'Ideal.verp', sortable: true, filter: 'number', hide: true },
+    { field: 'afwijkenidealeverpakking', headerName: 'Afw.Ideal.verp', sortable: true, filter: 'number', hide: true },
     {
       field: 'buying_price', headerName: 'PM Inkpr', sortable: true, filter: 'number',
       cellRenderer: params => {
@@ -85,37 +86,42 @@ export class SetpricesComponent implements OnInit {
     { field: 'profit_percentage_selling_price', headerName: 'Marge Verkpr %', sortable: true, filter: 'number', editable: true, cellStyle: { 'background-color': '#ffffcc' } },
     { field: 'discount_on_gross_price', headerName: 'Korting Brupr %', sortable: true, filter: 'number', editable: true, cellStyle: { 'background-color': '#ffffcc' } },
     { field: 'percentage_increase', headerName: 'Stijging %', sortable: true, filter: 'number' },
-    { field: 'magento_status', headerName: 'Status', sortable: true, filter: 'number', hide:true },
-    { field: 'webshop_selling_price', headerName: 'WS Vkpr', sortable: true, filter: 'number', hide:true }
+    { field: 'magento_status', headerName: 'Status', sortable: true, filter: 'number', hide: true },
+    { field: 'webshop_selling_price', headerName: 'WS Vkpr', sortable: true, filter: 'number', hide: true }
 
   ];
 
 
   constructor(private http: HttpClient, private categoryService: PmCategoryService, private sidebarService: PmSidebarService, private loaddebtorsService: LoadDebtorsService) {
-     
+
     if (localStorage.getItem("debtorCols") != null) {
-      
-      
+
+
       let debColString = localStorage.getItem("debtorCols");
-      
+
       var deb_columns = [];
       deb_columns = JSON.parse(debColString || '{}');
       for (const [key, value] of Object.entries(deb_columns)) {
         var debcellbg_color = "";
-        if(value["type"] == "debsp") {
+        if (value["type"] == "debsp") {
           debcellbg_color = "#90ee90";
-        } else if(value["type"] == "debppbp") {
+        } else if (value["type"] == "debppbp") {
           debcellbg_color = "#7ac3ff";
-        } else if(value["type"] == "debppsp") {
+        } else if (value["type"] == "debppsp") {
           debcellbg_color = "#fffd6e";
-        } else if(value["type"] == "debdgp") {
+        } else if (value["type"] == "debdgp") {
           debcellbg_color = "#fc6b6b";
         }
 
-        let definition: ColDef = { headerName: value["group_alias"], field: value["customer_group_name"], sortable: true, filter: 'number', editable: true, hide: true, cellStyle: { 'background-color': ''+debcellbg_color+'' } };
+        let definition: ColDef = { headerName: value["group_alias"], field: value["customer_group_name"], sortable: true, filter: 'number', editable: true, hide: true, cellStyle: { 'background-color': '' + debcellbg_color + '' } };
         this.columnDefs.push(definition);
       }
-    } 
+    }
+
+    if (localStorage.getItem("allDebts") != null) {
+      let alldebString = localStorage.getItem("allDebts");
+      this.all_debtors = JSON.parse(alldebString || '{}');
+    }
   }
 
   ngOnInit() {
@@ -126,6 +132,8 @@ export class SetpricesComponent implements OnInit {
     });
 
     this.subbtnclicked = this.sidebarService.btnClicked.subscribe((priceType) => {
+
+      console.log(priceType);
       var idsToUpdate = this.api.getSelectedNodes().map(function (node) {
         return node.data.product_id;
       });
@@ -183,6 +191,7 @@ export class SetpricesComponent implements OnInit {
     let new_profit_percentage = prodData.profit_percentage;
     let new_profit_percentage_selling_price = prodData.profit_percentage_selling_price;
     let new_discount_on_gross_price = prodData.discount_on_gross_price;
+    let debField = "";
 
     if (priceType["type"] == "selling_price") {
       new_selling_price = (1 + (priceType["val"] / 100)) * prodData.selling_price;
@@ -205,6 +214,29 @@ export class SetpricesComponent implements OnInit {
     prepareProductData["percentage_increase"] = prodData.percentage_increase;
     prepareProductData["gross_unit_price"] = prodData.gross_unit_price;
     prepareProductData["webshop_selling_price"] = prodData.webshop_selling_price;
+
+    
+    if (priceType["customer_group_selected"] != "") {
+      let selCgData = (priceType["customer_group_selected"]).split("|||");
+
+      if (priceType["type"] == "selling_price") {
+        debField = "group_" + selCgData[0] + "_debter_selling_price";
+        new_selling_price = (1 + (priceType["val"] / 100)) * prodData[debField];
+      } else if(priceType["type"] == "profit_percentage") {
+        debField = "group_" + selCgData[0] + "_margin_on_buying_price";
+      } else if(priceType["type"] == "profit_percentage_selling_price") {
+        debField = "group_" + selCgData[0] + "_margin_on_selling_price";
+      } else if(priceType["type"] == "discount_on_gross_price") {
+        debField = "group_" + selCgData[0] + "_discount_on_grossprice_b_on_deb_selling_price";
+      }
+      prepareProductData["field"] = debField;  
+      prepareProductData["debtor"] = selCgData[0];
+      prepareProductData["debtor_id"] = selCgData[1];
+      prepareProductData["group_" + selCgData[0] + "_debter_selling_price"] = new_selling_price;
+      prepareProductData["group_" + selCgData[0] + "_margin_on_buying_price"] = new_profit_percentage;
+      prepareProductData["group_" + selCgData[0] + "_margin_on_selling_price"] = new_profit_percentage_selling_price;
+      prepareProductData["group_" + selCgData[0] + "_discount_on_grossprice_b_on_deb_selling_price"] = new_discount_on_gross_price;
+    }
     this.createProductData(prepareProductData);
   }
 
@@ -286,7 +318,7 @@ export class SetpricesComponent implements OnInit {
   }
   onCellValueChanged(event: CellValueChangedEvent) {
     var prepareProductData = [];
-    var checkforDebtor:any = [];
+    var checkforDebtor: any = [];
     prepareProductData["field"] = event.colDef.field;
     prepareProductData["product_id"] = event.data.product_id;
     prepareProductData["buying_price"] = event.data.buying_price;
@@ -299,14 +331,17 @@ export class SetpricesComponent implements OnInit {
     prepareProductData["webshop_selling_price"] = event.data.webshop_selling_price;
 
     checkforDebtor = (event.colDef.field)?.split("_");
-    if(checkforDebtor[0] == "group") {
+    if (checkforDebtor[0] == "group") {
       prepareProductData["debtor"] = checkforDebtor[1];
-      prepareProductData["group_"+checkforDebtor[1]+"_debter_selling_price"] = event.data["group_"+checkforDebtor[1]+"_debter_selling_price"];
-      prepareProductData["group_"+checkforDebtor[1]+"_margin_on_buying_price"] = event.data["group_"+checkforDebtor[1]+"_margin_on_buying_price"];
-      prepareProductData["group_"+checkforDebtor[1]+"_margin_on_selling_price"] = event.data["group_"+checkforDebtor[1]+"_margin_on_selling_price"];
-      prepareProductData["group_"+checkforDebtor[1]+"_discount_on_grossprice_b_on_deb_selling_price"] = event.data["group_"+checkforDebtor[1]+"_discount_on_grossprice_b_on_deb_selling_price"]; 
+      let debData = (this.all_debtors[checkforDebtor[1]]).split("|||");
+      prepareProductData["debtor_id"] = debData[0];
+      prepareProductData["group_" + checkforDebtor[1] + "_debter_selling_price"] = event.data["group_" + checkforDebtor[1] + "_debter_selling_price"];
+      prepareProductData["group_" + checkforDebtor[1] + "_margin_on_buying_price"] = event.data["group_" + checkforDebtor[1] + "_margin_on_buying_price"];
+      prepareProductData["group_" + checkforDebtor[1] + "_margin_on_selling_price"] = event.data["group_" + checkforDebtor[1] + "_margin_on_selling_price"];
+      prepareProductData["group_" + checkforDebtor[1] + "_discount_on_grossprice_b_on_deb_selling_price"] = event.data["group_" + checkforDebtor[1] + "_discount_on_grossprice_b_on_deb_selling_price"];
     }
     this.createProductData(prepareProductData);
+    console.log(event.colDef.field);
   }
 
   onPaginationChanged(event: PaginationChangedEvent) {
@@ -336,16 +371,19 @@ export class SetpricesComponent implements OnInit {
     productData["gross_unit_price"] = preparedProductData["gross_unit_price"];
     productData["webshop_selling_price"] = preparedProductData["webshop_selling_price"];
 
-    if(typeof preparedProductData["debtor"] != "undefined") {
+    if (typeof preparedProductData["debtor"] != "undefined") {
       productData["debtor"] = preparedProductData["debtor"];
-      productData["group_"+preparedProductData["debtor"]+"_debter_selling_price"] = preparedProductData["group_"+preparedProductData["debtor"]+"_debter_selling_price"];
-      productData["group_"+preparedProductData["debtor"]+"_margin_on_buying_price"] = preparedProductData["group_"+preparedProductData["debtor"]+"_margin_on_buying_price"];
-      productData["group_"+preparedProductData["debtor"]+"_margin_on_selling_price"] = preparedProductData["group_"+preparedProductData["debtor"]+"_margin_on_selling_price"];
-      productData["group_"+preparedProductData["debtor"]+"_discount_on_grossprice_b_on_deb_selling_price"] = preparedProductData["group_"+preparedProductData["debtor"]+"_discount_on_grossprice_b_on_deb_selling_price"]; 
+      productData["debtor_id"] = preparedProductData["debtor_id"];
+      productData["group_" + preparedProductData["debtor"] + "_debter_selling_price"] = preparedProductData["group_" + preparedProductData["debtor"] + "_debter_selling_price"];
+      productData["group_" + preparedProductData["debtor"] + "_margin_on_buying_price"] = preparedProductData["group_" + preparedProductData["debtor"] + "_margin_on_buying_price"];
+      productData["group_" + preparedProductData["debtor"] + "_margin_on_selling_price"] = preparedProductData["group_" + preparedProductData["debtor"] + "_margin_on_selling_price"];
+      productData["group_" + preparedProductData["debtor"] + "_discount_on_grossprice_b_on_deb_selling_price"] = preparedProductData["group_" + preparedProductData["debtor"] + "_discount_on_grossprice_b_on_deb_selling_price"];
     }
     var processedData;
     processedData = processUpdatedProduct(productData);
     this.updatedProducts[preparedProductData["product_id"]] = processedData;
+
+
   }
 
   onCellEditingStopped(event: CellEditingStoppedEvent) {
@@ -390,31 +428,46 @@ export class SetpricesComponent implements OnInit {
     updatedProducts.forEach(
       (value, key) => {
         var rowNode = this.api.getRowNode(key.toString());
-        if(typeof value["debtor"] != "undefined") {
-          rowNode.setDataValue("group_"+value["debtor"]+"_debter_selling_price", value["group_"+value["debtor"]+"_debter_selling_price"]);
-          rowNode.setDataValue("group_"+value["debtor"]+"_margin_on_buying_price", value["group_"+value["debtor"]+"_margin_on_buying_price"]);
-          rowNode.setDataValue("group_"+value["debtor"]+"_margin_on_selling_price", value["group_"+value["debtor"]+"_margin_on_selling_price"]);
-          rowNode.setDataValue("group_"+value["debtor"]+"_discount_on_grossprice_b_on_deb_selling_price", value["group_"+value["debtor"]+"_discount_on_grossprice_b_on_deb_selling_price"]);
+        if (typeof value["debtor"] != "undefined") {
+          var updated = JSON.parse(JSON.stringify(rowNode.data));
+          updated["group_" + value["debtor"] + "_debter_selling_price"] = value["group_" + value["debtor"] + "_debter_selling_price"];
+          updated["group_" + value["debtor"] + "_margin_on_buying_price"] = value["group_" + value["debtor"] + "_margin_on_buying_price"];
+          updated["group_" + value["debtor"] + "_margin_on_selling_price"] = value["group_" + value["debtor"] + "_margin_on_selling_price"];
+          updated["group_" + value["debtor"] + "_discount_on_grossprice_b_on_deb_selling_price"] = value["group_" + value["debtor"] + "_discount_on_grossprice_b_on_deb_selling_price"];
+          rowNode.setData(updated);
+          /*  rowNode.setDataValue("group_" + value["debtor"] + "_debter_selling_price", value["group_" + value["debtor"] + "_debter_selling_price"]);
+           rowNode.setDataValue("group_" + value["debtor"] + "_margin_on_buying_price", value["group_" + value["debtor"] + "_margin_on_buying_price"]);
+           rowNode.setDataValue("group_" + value["debtor"] + "_margin_on_selling_price", value["group_" + value["debtor"] + "_margin_on_selling_price"]);
+           rowNode.setDataValue("group_" + value["debtor"] + "_discount_on_grossprice_b_on_deb_selling_price", value["group_" + value["debtor"] + "_discount_on_grossprice_b_on_deb_selling_price"]); */
         } else {
-          rowNode.setDataValue('selling_price', value["selling_price"]);
+          var updated = JSON.parse(JSON.stringify(rowNode.data));
+
+          updated["selling_price"] = value["selling_price"];
+          updated["profit_percentage"] = value["profit_percentage"];
+          updated["profit_percentage_selling_price"] = value["profit_percentage_selling_price"];
+          updated["discount_on_gross_price"] = value["discount_on_gross_price"];
+          rowNode.setData(updated);
+
+          /* rowNode.setDataValue('selling_price', value["selling_price"]);
           rowNode.setDataValue('profit_percentage', value["profit_percentage"]);
           rowNode.setDataValue('profit_percentage_selling_price', value["profit_percentage_selling_price"]);
-          rowNode.setDataValue('discount_on_gross_price', value["discount_on_gross_price"]);
+          rowNode.setDataValue('discount_on_gross_price', value["discount_on_gross_price"]); */
         }
       }
     );
-    this.updatedProducts = [];
+    //this.updatedProducts = [];
   }
 
   saveUpdatedProducts(processedData) {
-    
+
     if (processedData.length > 0) {
       var filterProcessData = processedData.filter(function () { return true; });
-      console.log(filterProcessData);
       this.http.post(AppConstants.webservicebaseUrl + "/save-products", filterProcessData).subscribe(responseData => {
         if (responseData["msg"] == "done") {
           if (this.isChkAllChecked == 0) {
-            this.saveRow(this.updatedProducts)
+            let finalPdata = this.updatedProducts;
+            this.updatedProducts = [];
+            this.saveRow(finalPdata);
           } else if (this.isChkAllChecked == 1) {
             this.chkAllCount = "(" + (this.chkAllProducts["msg"]).length + " Products Updated Successfully)";
             this.updatedProducts = [];
@@ -530,40 +583,40 @@ function processUpdatedProduct(productData) {
       productData["percentage_increase"] = (((sp - wsp) / wsp) * 100).toFixed(4);
       break;
     default:
-      if(typeof productData["debtor"] != "undefined") {
-        var debsp = parseFloat(productData["group_"+productData["debtor"]+"_debter_selling_price"]);
-        var debcoltypes = productData["field"].replace("group_"+productData["debtor"]+"_","");
-          if(debcoltypes == "debter_selling_price") {
-            productData["group_"+productData["debtor"]+"_debter_selling_price"] = debsp.toFixed(4);
-            productData["group_"+productData["debtor"]+"_margin_on_buying_price"] = (((debsp - bp) / bp) * 100).toFixed(4);
-            productData["group_"+productData["debtor"]+"_margin_on_selling_price"] = (((debsp - bp) / debsp) * 100).toFixed(4);
-            productData["group_"+productData["debtor"]+"_discount_on_grossprice_b_on_deb_selling_price"] = ((1 - (debsp / gup)) * 100).toFixed(4);
-          } else if(debcoltypes == "margin_on_buying_price") {
-            var debpp = parseFloat(productData["group_"+productData["debtor"]+"_margin_on_buying_price"]);
-            debsp = ((1 + (debpp / 100)) * bp);
-            
-            productData["group_"+productData["debtor"]+"_debter_selling_price"] = debsp.toFixed(4);
-            productData["group_"+productData["debtor"]+"_margin_on_buying_price"] = debpp.toFixed(4);
-            productData["group_"+productData["debtor"]+"_margin_on_selling_price"] = (((debsp - bp) / debsp) * 100).toFixed(4);
-            productData["group_"+productData["debtor"]+"_discount_on_grossprice_b_on_deb_selling_price"] = ((1 - (debsp / gup)) * 100).toFixed(4);
-          } else if(debcoltypes == "margin_on_selling_price") {
-            var debppsp = parseFloat(productData["group_"+productData["debtor"]+"_margin_on_selling_price"]);
-            debsp = (bp / (1 - (debppsp / 100)));
-            
-            productData["group_"+productData["debtor"]+"_debter_selling_price"] = debsp.toFixed(4);
-            productData["group_"+productData["debtor"]+"_margin_on_buying_price"] = (((debsp - bp) / bp) * 100).toFixed(4);
-            productData["group_"+productData["debtor"]+"_margin_on_selling_price"] = debppsp.toFixed(4);
-            productData["group_"+productData["debtor"]+"_discount_on_grossprice_b_on_deb_selling_price"] = ((1 - (debsp / gup)) * 100).toFixed(4);
-          } else if(debcoltypes == "discount_on_grossprice_b_on_deb_selling_price") {
-            var debdgp = parseFloat(productData["group_"+productData["debtor"]+"_discount_on_grossprice_b_on_deb_selling_price"]);
-            debsp = ((1 - (debdgp / 100)) * gup);
-            
-            productData["group_"+productData["debtor"]+"_debter_selling_price"] = debsp.toFixed(4);
-            productData["group_"+productData["debtor"]+"_margin_on_buying_price"] = (((debsp - bp) / bp) * 100).toFixed(4);
-            productData["group_"+productData["debtor"]+"_margin_on_selling_price"] = (((debsp - bp) / debsp) * 100).toFixed(4);
-            productData["group_"+productData["debtor"]+"_discount_on_grossprice_b_on_deb_selling_price"] = debdgp.toFixed(4);
-          }   
-        
+      if (typeof productData["debtor"] != "undefined") {
+        var debsp = parseFloat(productData["group_" + productData["debtor"] + "_debter_selling_price"]);
+        var debcoltypes = productData["field"].replace("group_" + productData["debtor"] + "_", "");
+        if (debcoltypes == "debter_selling_price") {
+          productData["group_" + productData["debtor"] + "_debter_selling_price"] = debsp.toFixed(4);
+          productData["group_" + productData["debtor"] + "_margin_on_buying_price"] = (((debsp - bp) / bp) * 100).toFixed(4);
+          productData["group_" + productData["debtor"] + "_margin_on_selling_price"] = (((debsp - bp) / debsp) * 100).toFixed(4);
+          productData["group_" + productData["debtor"] + "_discount_on_grossprice_b_on_deb_selling_price"] = ((1 - (debsp / gup)) * 100).toFixed(4);
+        } else if (debcoltypes == "margin_on_buying_price") {
+          var debpp = parseFloat(productData["group_" + productData["debtor"] + "_margin_on_buying_price"]);
+          debsp = ((1 + (debpp / 100)) * bp);
+
+          productData["group_" + productData["debtor"] + "_debter_selling_price"] = debsp.toFixed(4);
+          productData["group_" + productData["debtor"] + "_margin_on_buying_price"] = debpp.toFixed(4);
+          productData["group_" + productData["debtor"] + "_margin_on_selling_price"] = (((debsp - bp) / debsp) * 100).toFixed(4);
+          productData["group_" + productData["debtor"] + "_discount_on_grossprice_b_on_deb_selling_price"] = ((1 - (debsp / gup)) * 100).toFixed(4);
+        } else if (debcoltypes == "margin_on_selling_price") {
+          var debppsp = parseFloat(productData["group_" + productData["debtor"] + "_margin_on_selling_price"]);
+          debsp = (bp / (1 - (debppsp / 100)));
+
+          productData["group_" + productData["debtor"] + "_debter_selling_price"] = debsp.toFixed(4);
+          productData["group_" + productData["debtor"] + "_margin_on_buying_price"] = (((debsp - bp) / bp) * 100).toFixed(4);
+          productData["group_" + productData["debtor"] + "_margin_on_selling_price"] = debppsp.toFixed(4);
+          productData["group_" + productData["debtor"] + "_discount_on_grossprice_b_on_deb_selling_price"] = ((1 - (debsp / gup)) * 100).toFixed(4);
+        } else if (debcoltypes == "discount_on_grossprice_b_on_deb_selling_price") {
+          var debdgp = parseFloat(productData["group_" + productData["debtor"] + "_discount_on_grossprice_b_on_deb_selling_price"]);
+          debsp = ((1 - (debdgp / 100)) * gup);
+
+          productData["group_" + productData["debtor"] + "_debter_selling_price"] = debsp.toFixed(4);
+          productData["group_" + productData["debtor"] + "_margin_on_buying_price"] = (((debsp - bp) / bp) * 100).toFixed(4);
+          productData["group_" + productData["debtor"] + "_margin_on_selling_price"] = (((debsp - bp) / debsp) * 100).toFixed(4);
+          productData["group_" + productData["debtor"] + "_discount_on_grossprice_b_on_deb_selling_price"] = debdgp.toFixed(4);
+        }
+
         //console.log("hey"+productData["debtor"]);
         //console.log(debcoltypes);
       }

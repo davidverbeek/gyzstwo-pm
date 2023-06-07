@@ -8,10 +8,10 @@
         </div>
         <div class="panel-body">
             <div class="form-group">
-                <select class="form-control">
+                <select class="form-control" #cg (change)="onCgSelected(cg.value)">
                     <option value="">Select customer group</option>
-                    <option value="ZZP">ZZP</option>
-                    <option value="Aannemer M">Aannemer M</option>
+                    <option value="4027100|||19">ZZP</option>
+                    <option value="4027101|||34">Aannemer M</option>
                 </select>
             </div>
             <div class="form-group">

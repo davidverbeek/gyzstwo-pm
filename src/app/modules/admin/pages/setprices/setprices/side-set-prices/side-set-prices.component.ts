@@ -45,7 +45,11 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
 
   btnSetPrice() {
     this.priceType["val"] = this.txtValue;
+    this.priceType["customer_group_selected"] = this.selCG;
     this.sidebarService.btnClicked.next(this.priceType);
+  }
+  onCgSelected(selValue) {
+    this.selCG = selValue;
   }
 
 }
