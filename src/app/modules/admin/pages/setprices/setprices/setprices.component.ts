@@ -8,6 +8,7 @@ import { PmCategoryService } from '../../../../../services/pm.category.service';
 import { PmSidebarService } from '../../../../../services/pm-sidebar.service';
 import { SideSetPricesComponent } from 'src/app/modules/admin/pages/setprices/setprices/side-set-prices/side-set-prices.component';
 import { LoadDebtorsService } from 'src/app/services/load-debtors.service';
+import { PricehistoryComponent } from 'src/app/modules/admin/pages/setprices/pricehistory/pricehistory.component';
 
 @Component({
   selector: 'app-setprices',
@@ -27,6 +28,7 @@ export class SetpricesComponent implements OnInit {
   chkAllCount: string;
   chkAllProducts: any;
   isChkAllChecked: number = 0;
+ 
 
   public rowModelType: 'serverSide' = 'serverSide';
   public serverSideStoreType: ServerSideStoreType = 'partial';
@@ -49,7 +51,7 @@ export class SetpricesComponent implements OnInit {
       }
     },
     { field: 'name', headerName: 'Naam', sortable: true, filter: 'text' },
-    { field: 'sku', headerName: 'SKU', sortable: true, filter: 'text' },
+    { field: 'sku', headerName: 'SKU', sortable: true, filter: 'text', cellRenderer: PricehistoryComponent},
     { field: 'supplier_sku', headerName: 'SKU (Sup)', sortable: true, filter: 'text', hide: true },
     { field: 'eancode', headerName: 'Ean', sortable: true, filter: 'text', hide: true },
     { field: 'merk', headerName: 'Merk', sortable: true, filter: 'text' },
@@ -215,21 +217,21 @@ export class SetpricesComponent implements OnInit {
     prepareProductData["gross_unit_price"] = prodData.gross_unit_price;
     prepareProductData["webshop_selling_price"] = prodData.webshop_selling_price;
 
-    
+
     if (priceType["customer_group_selected"] != "") {
       let selCgData = (priceType["customer_group_selected"]).split("|||");
 
       if (priceType["type"] == "selling_price") {
         debField = "group_" + selCgData[0] + "_debter_selling_price";
         new_selling_price = (1 + (priceType["val"] / 100)) * prodData[debField];
-      } else if(priceType["type"] == "profit_percentage") {
+      } else if (priceType["type"] == "profit_percentage") {
         debField = "group_" + selCgData[0] + "_margin_on_buying_price";
-      } else if(priceType["type"] == "profit_percentage_selling_price") {
+      } else if (priceType["type"] == "profit_percentage_selling_price") {
         debField = "group_" + selCgData[0] + "_margin_on_selling_price";
-      } else if(priceType["type"] == "discount_on_gross_price") {
+      } else if (priceType["type"] == "discount_on_gross_price") {
         debField = "group_" + selCgData[0] + "_discount_on_grossprice_b_on_deb_selling_price";
       }
-      prepareProductData["field"] = debField;  
+      prepareProductData["field"] = debField;
       prepareProductData["debtor"] = selCgData[0];
       prepareProductData["debtor_id"] = selCgData[1];
       prepareProductData["group_" + selCgData[0] + "_debter_selling_price"] = new_selling_price;
@@ -250,6 +252,12 @@ export class SetpricesComponent implements OnInit {
         labelKey: 'columns',
         iconKey: 'columns',
         toolPanel: 'agColumnsToolPanel',
+        toolPanelParams: {
+          suppressRowGroups: true,
+          suppressValues: true,
+          suppressPivots: true,
+          suppressPivotMode: true
+        }
       },
       {
         id: 'filters',
@@ -276,8 +284,7 @@ export class SetpricesComponent implements OnInit {
     filter: true,
     flex: 1,
     minWidth: 100,
-    resizable: true,
-    enableCellChangeFlash: true
+    resizable: true
   };
 
   public getRowId: GetRowIdFunc = (params: GetRowIdParams) => {
@@ -317,6 +324,7 @@ export class SetpricesComponent implements OnInit {
     this.fillHandleDirection = 'y';
   }
   onCellValueChanged(event: CellValueChangedEvent) {
+    console.log(event);
     var prepareProductData = [];
     var checkforDebtor: any = [];
     prepareProductData["field"] = event.colDef.field;
@@ -328,6 +336,16 @@ export class SetpricesComponent implements OnInit {
     prepareProductData["discount_on_gross_price"] = event.data.discount_on_gross_price;
     prepareProductData["percentage_increase"] = event.data.percentage_increase;
     prepareProductData["gross_unit_price"] = event.data.gross_unit_price;
+
+    /* For History */
+    prepareProductData["idealeverpakking"] = event.data.idealeverpakking;
+    prepareProductData["afwijkenidealeverpakking"] = event.data.afwijkenidealeverpakking;
+
+    prepareProductData["webshop_net_unit_price"] = event.data.webshop_net_unit_price;
+    prepareProductData["webshop_gross_unit_price"] = event.data.webshop_gross_unit_price;
+    prepareProductData["webshop_idealeverpakking"] = event.data.webshop_idealeverpakking;
+    prepareProductData["webshop_afwijkenidealeverpakking"] = event.data.webshop_afwijkenidealeverpakking;
+    prepareProductData["webshop_buying_price"] = event.data.webshop_buying_price;
     prepareProductData["webshop_selling_price"] = event.data.webshop_selling_price;
 
     checkforDebtor = (event.colDef.field)?.split("_");
@@ -341,7 +359,7 @@ export class SetpricesComponent implements OnInit {
       prepareProductData["group_" + checkforDebtor[1] + "_discount_on_grossprice_b_on_deb_selling_price"] = event.data["group_" + checkforDebtor[1] + "_discount_on_grossprice_b_on_deb_selling_price"];
     }
     this.createProductData(prepareProductData);
-    console.log(event.colDef.field);
+    //console.log(event.colDef.field);
   }
 
   onPaginationChanged(event: PaginationChangedEvent) {
@@ -369,6 +387,17 @@ export class SetpricesComponent implements OnInit {
     productData["discount_on_gross_price"] = preparedProductData["discount_on_gross_price"];
     productData["percentage_increase"] = preparedProductData["percentage_increase"];
     productData["gross_unit_price"] = preparedProductData["gross_unit_price"];
+
+
+    /* For History */
+    productData["idealeverpakking"] = preparedProductData["idealeverpakking"];
+    productData["afwijkenidealeverpakking"] = preparedProductData["afwijkenidealeverpakking"];
+
+    productData["webshop_net_unit_price"] = preparedProductData["webshop_net_unit_price"];
+    productData["webshop_gross_unit_price"] = preparedProductData["webshop_gross_unit_price"];
+    productData["webshop_idealeverpakking"] = preparedProductData["webshop_idealeverpakking"];
+    productData["webshop_afwijkenidealeverpakking"] = preparedProductData["webshop_afwijkenidealeverpakking"];
+    productData["webshop_buying_price"] = preparedProductData["webshop_buying_price"];
     productData["webshop_selling_price"] = preparedProductData["webshop_selling_price"];
 
     if (typeof preparedProductData["debtor"] != "undefined") {
@@ -382,8 +411,6 @@ export class SetpricesComponent implements OnInit {
     var processedData;
     processedData = processUpdatedProduct(productData);
     this.updatedProducts[preparedProductData["product_id"]] = processedData;
-
-
   }
 
   onCellEditingStopped(event: CellEditingStoppedEvent) {
@@ -422,6 +449,7 @@ export class SetpricesComponent implements OnInit {
 
     //rowNode.updateData(newData);
   }
+  //onRowClicked(event: any) {$("#imagemodal").modal("show");}
 
 
   saveRow(updatedProducts) {
@@ -624,5 +652,3 @@ function processUpdatedProduct(productData) {
   }
   return productData;
 }
-
-

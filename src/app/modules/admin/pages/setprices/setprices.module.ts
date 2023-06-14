@@ -5,13 +5,15 @@ import { AgGridModule } from 'ag-grid-angular';
 import { HttpClientModule } from '@angular/common/http';
 import {FormsModule} from '@angular/forms';
 import { SideSetPricesComponent } from './setprices/side-set-prices/side-set-prices.component';
+import { PricehistoryComponent } from './pricehistory/pricehistory.component';
 
 
 
 @NgModule({
   declarations: [
     SetpricesComponent,
-    SideSetPricesComponent
+    SideSetPricesComponent,
+    PricehistoryComponent
   ],
   imports: [
     CommonModule,

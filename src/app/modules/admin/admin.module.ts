@@ -14,6 +14,7 @@ import { SetpricesModule } from './pages/setprices/setprices.module';
 import { AgGridModule } from 'ag-grid-angular';
 import { PageAccessGuard } from 'src/app/guards/page-access.guard';
 import { AuthGuard } from 'src/app/guards/auth.guard';
+import { ModalsComponent } from './layout/modals/modals.component';
 
 const gyzsroutes: Routes = [
   {
@@ -34,7 +35,8 @@ const gyzsroutes: Routes = [
     HeaderComponent,
     LeftComponent,
     FooterComponent,
-    ControlSidebarComponent
+    ControlSidebarComponent,
+    ModalsComponent
   ],
   imports: [
     CommonModule,

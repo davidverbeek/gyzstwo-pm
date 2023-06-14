@@ -6,6 +6,8 @@ import { AppComponent } from './app.component';
 import { AgGridModule } from 'ag-grid-angular';
 import { HttpClientModule } from '@angular/common/http';
 import { AuthModule } from './modules/auth/auth.module';
+import * as $ from 'jquery';
+import * as bootstrap from "bootstrap"; 
 
 @NgModule({
   declarations: [

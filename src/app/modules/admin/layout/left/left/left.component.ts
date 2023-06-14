@@ -3,7 +3,6 @@ declare var simTree: any;
 import { AppConstants } from "src/app/app-constants";
 import { HttpClient } from '@angular/common/http';
 import { PmCategoryService } from '../../../../../services/pm.category.service';
-import * as $ from 'jquery'
 
 @Component({
   selector: 'app-left',
