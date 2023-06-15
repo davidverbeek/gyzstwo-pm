@@ -29,7 +29,7 @@ export class PageAccessGuard implements CanActivate {
           return false;
 
         }
-      },100);
+      },500);
       return true;
   }
   
