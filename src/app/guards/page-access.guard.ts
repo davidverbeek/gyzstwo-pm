@@ -35,7 +35,7 @@ export class PageAccessGuard implements CanActivate {
         //this.router.navigate(["/admin/dashboard"]);
         return false;
       }
-    }, 500);
+    }, 5000);
     return true;
   }
 
