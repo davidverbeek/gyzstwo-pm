@@ -20,6 +20,7 @@ export class PageAccessGuard implements CanActivate {
       
       setTimeout(() => {
         this.authUserDetails = this.authService.getLoggedInDetails();
+        console.log(this.authUserDetails);
         let currentUrl = (state.url).split("/");
         this.userPageAccess = this.authUserDetails["page_access"].split(",");
         if((this.userPageAccess).includes(currentUrl[2])) {
