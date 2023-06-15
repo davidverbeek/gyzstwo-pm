@@ -73,10 +73,24 @@
               "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
-              "namedChunks": true
+              "namedChunks": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.staging.ts"
+                }
+              ]
+            },
+            "localhost": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true 
             }
           },
-          "defaultConfiguration": "production"
+          "defaultConfiguration": "localhost"
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
@@ -86,9 +100,12 @@
             },
             "development": {
               "browserTarget": "gyzstwo-pm:build:development"
+            },
+            "localhost": {
+              "browserTarget": "gyzstwo-pm:build:localhost"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "localhost"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",

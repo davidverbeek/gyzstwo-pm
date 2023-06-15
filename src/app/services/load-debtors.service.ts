@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AppConstants } from "src/app/app-constants";
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +13,7 @@ export class LoadDebtorsService {
   constructor(private http: HttpClient) { }
 
   setDebtorColumns() {
-      this.http.get(AppConstants.webservicebaseUrl + "/all-debtors").subscribe(responseData => {
+      this.http.get(environment.webservicebaseUrl + "/all-debtors").subscribe(responseData => {
         if (responseData["msg"]) {
           responseData["msg"].forEach((value, key) => {
             this.debtorColumns.push({ customer_group_name: "group_" + value["customer_group_name"] + "_debter_selling_price", group_alias: "Verkpr (" + value["group_alias"] + ")", type: "debsp" },

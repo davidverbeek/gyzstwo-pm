@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { AppConstants } from "src/app/app-constants";
+import { environment } from 'src/environments/environment';
 import { LoadDebtorsService } from 'src/app/services/load-debtors.service';
 
 @Injectable({
@@ -20,7 +20,7 @@ export class AuthGuard implements CanActivate {
         return true;
       },
       error => {
-        window.location.href=""+AppConstants.agbaseUrl+"";
+        window.location.href=""+environment.agbaseUrl+"";
       }
     )
     return true;

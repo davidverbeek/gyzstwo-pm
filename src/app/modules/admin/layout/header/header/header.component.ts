@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { AppConstants } from "../../../../../app-constants";
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-header',
@@ -17,7 +17,7 @@ export class HeaderComponent implements OnInit {
     localStorage.removeItem("token");
     localStorage.removeItem("debtorCols");
     localStorage.removeItem("currentSql");
-    window.location.href=""+AppConstants.agbaseUrl+"";
+    window.location.href=""+environment.agbaseUrl+"";
   }
 
 }

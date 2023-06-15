@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { AppConstants } from 'src/app/app-constants';
-import { ColDef, GridReadyEvent, IServerSideDatasource, ServerSideStoreType, RowClassParams } from 'ag-grid-community';
+import { environment } from 'src/environments/environment';
+import { GridReadyEvent, IServerSideDatasource, ServerSideStoreType, RowClassParams } from 'ag-grid-community';
 import { CommonService } from 'src/app/services/common.service';
 
 @Component({
@@ -146,7 +146,7 @@ function createServerSideDatasource(server: any, historyPid: any): IServerSideDa
     getRows(params) {
 
       params.request["historyPid"] = historyPid;
-      fetch(AppConstants.webservicebaseUrl + "/pm-products-history", {
+      fetch(environment.webservicebaseUrl + "/pm-products-history", {
         method: 'post',
         body: JSON.stringify(params.request),
         headers: { "Content-Type": "application/json; charset=utf-8" }

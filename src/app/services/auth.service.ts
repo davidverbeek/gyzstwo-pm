@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AppConstants } from 'src/app/app-constants';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -13,14 +13,14 @@ export class AuthService {
 
   login(logindata = {}) {
     return this.http.post<any>(
-      AppConstants.webservicebaseUrl + "/auth",
+      environment.webservicebaseUrl + "/auth",
       logindata
     );
   }
 
   verifyToken(token) {
     return this.http.post(
-      AppConstants.webservicebaseUrl + "/verifytoken",
+      environment.webservicebaseUrl + "/verifytoken",
       {token:token}
     );
   }

@@ -3,7 +3,7 @@ import { Component, ViewChild, OnInit } from '@angular/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import { ColDef, GridReadyEvent, IServerSideDatasource, ServerSideStoreType, RowClassParams, CellValueChangedEvent, CellEditingStoppedEvent, DragStoppedEvent, FullWidthCellKeyDownEvent, GetRowIdFunc, GetRowIdParams, SideBarDef, PaginationChangedEvent } from 'ag-grid-community';
 import 'ag-grid-enterprise';
-import { AppConstants } from "src/app/app-constants";
+import { environment } from 'src/environments/environment';
 import { PmCategoryService } from '../../../../../services/pm.category.service';
 import { PmSidebarService } from '../../../../../services/pm-sidebar.service';
 import { SideSetPricesComponent } from 'src/app/modules/admin/pages/setprices/setprices/side-set-prices/side-set-prices.component';
@@ -490,7 +490,7 @@ export class SetpricesComponent implements OnInit {
 
     if (processedData.length > 0) {
       var filterProcessData = processedData.filter(function () { return true; });
-      this.http.post(AppConstants.webservicebaseUrl + "/save-products", filterProcessData).subscribe(responseData => {
+      this.http.post(environment.webservicebaseUrl + "/save-products", filterProcessData).subscribe(responseData => {
         if (responseData["msg"] == "done") {
           if (this.isChkAllChecked == 0) {
             let finalPdata = this.updatedProducts;
@@ -510,7 +510,7 @@ export class SetpricesComponent implements OnInit {
     if (event.target.checked) {
       var currentsql = localStorage.getItem("currentSql")?.trim();
       this.chkAllCount = "(Please Wait ...)";
-      this.http.post(AppConstants.webservicebaseUrl + "/all-products", currentsql).subscribe(responseData => {
+      this.http.post(environment.webservicebaseUrl + "/all-products", currentsql).subscribe(responseData => {
         this.chkAllProducts = responseData;
         this.chkAllCount = "(" + responseData["msg"].length + ")";
         this.isChkAllChecked = 1;
@@ -543,7 +543,7 @@ function createServerSideDatasource(server: any, cats: any): IServerSideDatasour
 
       params.request["cats"] = cats;
       //console.log(params.request);
-      fetch(AppConstants.webservicebaseUrl + "/pm-products", {
+      fetch(environment.webservicebaseUrl + "/pm-products", {
         method: 'post',
         body: JSON.stringify(params.request),
         headers: { "Content-Type": "application/json; charset=utf-8" }

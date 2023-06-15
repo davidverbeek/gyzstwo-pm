@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 declare var simTree: any;
-import { AppConstants } from "src/app/app-constants";
+import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { PmCategoryService } from '../../../../../services/pm.category.service';
 
@@ -55,7 +55,7 @@ export class LeftComponent implements OnInit {
 
   ngOnInit() {
     console.log("left");
-    this.http.get<any>(AppConstants.webservicebaseUrl + "/all-categories").subscribe(data => {
+    this.http.get<any>(environment.webservicebaseUrl + "/all-categories").subscribe(data => {
       this.list = data.categories;
       //console.log(data.categories);
       
