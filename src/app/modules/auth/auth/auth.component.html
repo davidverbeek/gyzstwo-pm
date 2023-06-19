@@ -1,30 +1,32 @@
 <div class="login-box">
-    <div class="login-logo">
-      <a href="index.html"><b>Admin</b> <span style="color: #ebbe49;"><b>Login</b></span></a>
-    </div>
-    <!-- /.login-logo -->
-    <div class="login-box-body">
-      <p class="login-box-msg text-red" *ngIf="invalidUser=='yes'">Invalid User. Please try again.</p>
-  
-      <form (ngSubmit)="onLogin(f)" #f="ngForm">
-        <div class="form-group has-feedback {{!username.valid && username.touched ? 'has-error':''}}">
-          <input type="text" class="form-control" placeholder="User Name" name="username" ngModel #username="ngModel" required>
-          <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
-          <span *ngIf="!username.valid && username.touched" class="help-block">Enter Username</span>
-        </div>
-        <div class="form-group has-feedback {{!password.valid && password.touched ? 'has-error':''}}">
-          <input type="password" class="form-control" placeholder="Password" name="password" ngModel #password="ngModel" required>
-          <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-          <span *ngIf="!password.valid && password.touched" class="help-block">Enter Password</span>
-        </div>
-        <div class="row">
-          <!-- /.col -->
-          <div class="col-xs-12">
-            <button type="submit" class="btn btn-primary btn-block btn-flat" [disabled]="!f.valid">Sign In</button>
-          </div>
-          <!-- /.col -->
-        </div>
-      </form>
-    </div>
-    <!-- /.login-box-body -->
+  <div class="login-logo">
+    <a href="index.html"><b>Admin</b> <span style="color: #ebbe49;"><b>Login</b></span></a>
   </div>
+  <!-- /.login-logo -->
+  <div class="login-box-body">
+    <p class="login-box-msg text-red" *ngIf="invalidUser=='yes'">Invalid User. Please try again.</p>
+
+    <form (ngSubmit)="onLogin(f)" #f="ngForm">
+      <div class="form-group has-feedback {{!username.valid && username.touched ? 'has-error':''}}">
+        <input type="text" class="form-control" placeholder="User Name" name="username" ngModel #username="ngModel"
+          required>
+        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+        <span *ngIf="!username.valid && username.touched" class="help-block">Enter Username</span>
+      </div>
+      <div class="form-group has-feedback {{!password.valid && password.touched ? 'has-error':''}}">
+        <input type="password" class="form-control" placeholder="Password" name="password" ngModel #password="ngModel"
+          required>
+        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+        <span *ngIf="!password.valid && password.touched" class="help-block">Enter Password</span>
+      </div>
+      <div class="row">
+        <!-- /.col -->
+        <div class="col-xs-12">
+          <button type="submit" class="btn btn-primary btn-block btn-flat" [disabled]="!f.valid">Sign In123</button>
+        </div>
+        <!-- /.col -->
+      </div>
+    </form>
+  </div>
+  <!-- /.login-box-body -->
+</div>

@@ -13,8 +13,8 @@ export class AuthGuard implements CanActivate {
   userPageAccess: string[] = [];
 
   constructor(private authService: AuthService, private loaddebtorsService: LoadDebtorsService, private router: Router) { }
-  
-  canActivate(next: ActivatedRouteSnapshot,state: RouterStateSnapshot) {
+
+  canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     this.authService.verifyToken(localStorage.getItem("token")).subscribe(
       responseData => {
         this.authService.setLogggedInDetails(responseData);
@@ -23,7 +23,7 @@ export class AuthGuard implements CanActivate {
         this.userPageAccess = this.authUserDetails["page_access"].split(",");
 
         if ((this.userPageAccess).includes(currentUrl[2])) {
-          if(localStorage.getItem("debtorCols") == null) {
+          if (localStorage.getItem("debtorCols") == null) {
             this.loaddebtorsService.setDebtorColumns();
           }
           return true;
@@ -33,7 +33,7 @@ export class AuthGuard implements CanActivate {
         }
       },
       error => {
-        window.location.href=""+environment.agbaseUrl+"";
+        window.location.href = "" + environment.agbaseUrl + "";
       }
     )
     return true;
