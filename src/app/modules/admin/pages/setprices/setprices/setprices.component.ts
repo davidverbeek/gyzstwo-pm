@@ -28,7 +28,7 @@ export class SetpricesComponent implements OnInit {
   chkAllCount: string;
   chkAllProducts: any;
   isChkAllChecked: number = 0;
- 
+
 
   public rowModelType: 'serverSide' = 'serverSide';
   public serverSideStoreType: ServerSideStoreType = 'partial';
@@ -48,10 +48,17 @@ export class SetpricesComponent implements OnInit {
     {
       field: 'supplier_type', headerName: 'Leverancier', sortable: true, filter: 'agSetColumnFilter', filterParams: {
         values: ['Gyzs', 'JRS', 'Transferro']
+      },
+      cellRenderer: params => {
+        if (params.data.mag_updated_product_cnt != 0) {
+          return '<i class="fa fa-bell-o" style="position: absolute; left: 5px; top: 19px;"></i><span class="label label-warning" style="position: absolute;top: 9px;left: 12px; text-align: center; font-size: 9px; padding: 2px 2px;">' + params.data.mag_updated_product_cnt + '</span>&nbsp;&nbsp;&nbsp;&nbsp;' + params.value + '';
+        } else {
+          return params.value;
+        }
       }
     },
     { field: 'name', headerName: 'Naam', sortable: true, filter: 'text' },
-    { field: 'sku', headerName: 'SKU', sortable: true, filter: 'text', cellRenderer: PricehistoryComponent},
+    { field: 'sku', headerName: 'SKU', sortable: true, filter: 'text', cellRenderer: PricehistoryComponent },
     { field: 'supplier_sku', headerName: 'SKU (Sup)', sortable: true, filter: 'text', hide: true },
     { field: 'eancode', headerName: 'Ean', sortable: true, filter: 'text', hide: true },
     { field: 'merk', headerName: 'Merk', sortable: true, filter: 'text' },
@@ -542,7 +549,10 @@ function createServerSideDatasource(server: any, cats: any): IServerSideDatasour
     getRows(params) {
 
       params.request["cats"] = cats;
-      //console.log(params.request);
+      if (params.request["sortModel"].length == 0) {
+        params.request["sortModel"] = [{ sort: 'desc', colId: 'mag_updated_product_cnt' }];
+      }
+
       fetch(environment.webservicebaseUrl + "/pm-products", {
         method: 'post',
         body: JSON.stringify(params.request),
