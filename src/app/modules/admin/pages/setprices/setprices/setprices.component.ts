@@ -50,11 +50,17 @@ export class SetpricesComponent implements OnInit {
         values: ['Gyzs', 'JRS', 'Transferro']
       },
       cellRenderer: params => {
+        var supplier_value = params.value;
+        var updated_product_count = "";
+        var is_activated = "";
         if (params.data.mag_updated_product_cnt != 0) {
-          return '<i class="fa fa-bell-o" style="position: absolute; left: 5px; top: 19px;"></i><span class="label label-warning" style="position: absolute;top: 9px;left: 12px; text-align: center; font-size: 9px; padding: 2px 2px;">' + params.data.mag_updated_product_cnt + '</span>&nbsp;&nbsp;&nbsp;&nbsp;' + params.value + '';
-        } else {
-          return params.value;
+          updated_product_count = '<i class="fa fa-bell-o" style="position: absolute; left: 5px; top: 19px;"></i><span class="label label-warning" style="position: absolute;top: 9px;left: 12px; text-align: center; font-size: 9px; padding: 2px 2px;">' + params.data.mag_updated_product_cnt + '</span>&nbsp;&nbsp;&nbsp;&nbsp;';
         }
+        if (params.data.is_activated == 1) {
+          is_activated = '<i class="fa fa-fw fa-check-square-o" style="color:green;"></i>';
+        }
+
+        return updated_product_count + is_activated + supplier_value;
       }
     },
     { field: 'name', headerName: 'Naam', sortable: true, filter: 'text' },
@@ -96,7 +102,10 @@ export class SetpricesComponent implements OnInit {
     { field: 'discount_on_gross_price', headerName: 'Korting Brupr %', sortable: true, filter: 'number', editable: true, cellStyle: { 'background-color': '#ffffcc' } },
     { field: 'percentage_increase', headerName: 'Stijging %', sortable: true, filter: 'number' },
     { field: 'magento_status', headerName: 'Status', sortable: true, filter: 'number', hide: true },
-    { field: 'webshop_selling_price', headerName: 'WS Vkpr', sortable: true, filter: 'number', hide: true }
+    { field: 'webshop_selling_price', headerName: 'WS Vkpr', sortable: true, filter: 'number', hide: true },
+    { field: 'is_updated', headerName: 'Is Updated', sortable: true, filter: 'number', hide: true },
+    { field: 'is_updated_skwirrel', headerName: 'Is Skwirrel Updated', sortable: true, filter: 'number', hide: true }
+
 
   ];
 
@@ -193,6 +202,54 @@ export class SetpricesComponent implements OnInit {
   ngOnDestroy() {
     this.subcat.unsubscribe();
     this.subbtnclicked.unsubscribe();
+  }
+
+  showUpdated(event) {
+    var filter_val = "";
+    if (event.target.checked) {
+      filter_val = "1";
+    }
+
+    let filterComponent = this.api.getFilterInstance('is_updated');
+    filterComponent.setModel({
+      type: "equals",
+      filter: filter_val
+    });
+    this.api.onFilterChanged();
+  }
+  resetFilters() {
+    this.api.setFilterModel(null);
+  }
+  ShowNegative(event) {
+    var filter_val = "";
+    if (event.target.checked) {
+      filter_val = "0";
+    }
+
+    let filterComponent = this.api.getFilterInstance('profit_percentage');
+    filterComponent.setModel({
+      type: "lessThan",
+      filter: filter_val
+    });
+    /*
+    let filterComponent1 = this.api.getFilterInstance('group_4027100_margin_on_buying_price');
+    filterComponent1.setModel({
+      type: "lessThan",
+      filter: 0
+    });
+    */
+
+    this.api.onFilterChanged();
+  }
+
+  activateUpdated() {
+    if (confirm("Are you sure you want to active the updated records?")) {
+      this.http.get(environment.webservicebaseUrl + "/activate-updated-products").subscribe(responseData => {
+        if (responseData["msg"] == "done") {
+          this.loadAGGrid();
+        }
+      });
+    }
   }
 
   formProductData(prodData, priceType) {
@@ -315,8 +372,8 @@ export class SetpricesComponent implements OnInit {
 
     this.getRowStyle = function (params) {
       if (typeof params.data != "undefined") {
-        if (params.data.is_updated == 1) {
-          return { background: '#e9f6ec' };
+        if (params.data.is_updated == 1 && params.data.is_updated_skwirrel == 1) {
+          return { background: '#bce0bc' };
         } else {
           return { background: '' };
         }
@@ -552,6 +609,9 @@ function createServerSideDatasource(server: any, cats: any): IServerSideDatasour
       if (params.request["sortModel"].length == 0) {
         params.request["sortModel"] = [{ sort: 'desc', colId: 'mag_updated_product_cnt' }];
       }
+
+
+      console.log(params.request);
 
       fetch(environment.webservicebaseUrl + "/pm-products", {
         method: 'post',
