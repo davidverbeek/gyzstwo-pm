@@ -1,23 +1,53 @@
 <div style="padding: 5px;">
-    <div class="panel panel-default" style="padding: 5px;;">
-        <div class="panel-heading">
-            <label class="radio-inline"><input type="radio" name="opsetprice" (click)="selectedOption('SP')">SP</label>
-            <label class="radio-inline"><input type="radio" name="opsetprice" (click)="selectedOption('PBP')">PBP</label>
-            <label class="radio-inline"><input type="radio" name="opsetprice" (click)="selectedOption('PSP')">PSP</label>
-            <label class="radio-inline"><input type="radio" name="opsetprice" (click)="selectedOption('DGP')">DGP</label>
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <h3 class="box-title"><i class="fa fa-fw fa-euro"></i> Set Prices</h3>
         </div>
-        <div class="panel-body">
-            <div class="form-group">
-                <select class="form-control" #cg (change)="onCgSelected(cg.value)">
-                    <option value="">Select customer group</option>
-                    <option value="4027100|||19">ZZP</option>
-                    <option value="4027101|||34">Aannemer M</option>
-                </select>
+
+        <div class="panel panel-default" style="padding: 5px;;">
+            <div class="panel-heading">
+                <label class="radio-inline"><input type="radio" name="opsetprice"
+                        (click)="selectedOption('SP')">SP</label>
+                <label class="radio-inline"><input type="radio" name="opsetprice"
+                        (click)="selectedOption('PBP')">PBP</label>
+                <label class="radio-inline"><input type="radio" name="opsetprice"
+                        (click)="selectedOption('PSP')">PSP</label>
+                <label class="radio-inline"><input type="radio" name="opsetprice"
+                        (click)="selectedOption('DGP')">DGP</label>
             </div>
-            <div class="form-group">
-                <input type="text" class="form-control" placeholder="{{ textPlacehoder }}" [(ngModel)]="this.txtValue">
+            <div class="panel-body">
+                <div class="form-group">
+                    <select class="form-control" #cg (change)="onCgSelected(cg.value)">
+                        <option value="">Select customer group</option>
+                        <option value="4027100|||19">ZZP</option>
+                        <option value="4027101|||34">Aannemer M</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="{{ textPlacehoder }}"
+                        [(ngModel)]="this.txtValue">
+                </div>
+            </div>
+            <div class="panel-footer"><button type="button" class="btn btn-primary" style="width: 100%;"
+                    (click)="btnSetPrice()">{{ textButton }}</button></div>
+        </div>
+    </div>
+
+    <div class="box box-success">
+        <div class="box-header with-border">
+            <h3 class="box-title"><i class="fa fa-fw fa-cloud-upload"></i> Import</h3>
+        </div>
+        <div class="panel panel-default" style="padding: 5px;">
+            <div class="panel-heading">
+                Import Prices
+            </div>
+            <div class="panel-body">
+                <div class="form-group has-error">
+                    <input type="file" name="importfile" id="importfile" style="width: 100%;"
+                        (change)="btnImportPrices($event)">
+                    <p class="help-block">Import Xlsx Only.</p>
+                </div>
             </div>
         </div>
-        <div class="panel-footer"><button type="button" class="btn btn-primary" style="width: 100%;" (click)="btnSetPrice()">{{ textButton }}</button></div>
     </div>
 </div>

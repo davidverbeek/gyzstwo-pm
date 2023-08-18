@@ -332,7 +332,7 @@ export class SetpricesComponent implements OnInit {
       },
       {
         id: 'sideSetPrices',
-        labelDefault: 'Set Prices',
+        labelDefault: 'Miscellaneous',
         labelKey: 'sideSetPrices',
         iconKey: 'app-side-set-prices',
         toolPanel: SideSetPricesComponent,
