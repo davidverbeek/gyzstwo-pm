@@ -1,6 +1,6 @@
 
 import { Component, ElementRef, Input, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-//declare checkGiven();
+
 declare function checkGiven(any, boolean): void;
 declare function checkIt(boolean): void;
 import { environment } from 'src/environments/environment';
@@ -24,13 +24,9 @@ export class DebterRulesComponent implements OnInit {
   product_ids_arr: any = {};
   category_ids: any = "";
   constructor(private http: HttpClient, private categoryService: PmCategoryService, private debterRulesService: LoadDebtorsService) {
-
   }
-  // @ViewChild(LeftComponent) jyoti;
   @ViewChild('existingCats') existingCats: ElementRef;
   @ViewChild('debterdd') debterdd: ElementRef;
-
-
 
   ngOnInit(): void {
     this.http.get<any>(environment.webservicebaseUrl + "/all-debtors").subscribe(responseData => {
@@ -42,38 +38,11 @@ export class DebterRulesComponent implements OnInit {
       }
     });
     $('#flexCheckDefault').prop('checked', false);
-
-
-
   }
 
-
-
-
-  getProductsOfCategories(cats) {
-    /*  var product_ids = {};
-     this.http.get(environment.webservicebaseUrl + "/catpro-products", cats).subscribe(responseData => {
-       this.product_ids_arr = responseData;
- 
-       responseData["products_of_cats"].forEach(function1);
- 
-       function function1(currentValue, index) {
-         // console.log("Index in array is: " + index + " ::  Value is: " + currentValue.product_id);
-         //product_ids.push(currentValue.product_id)
-       }
-       // if (responseData["products_of_cats"] == "done") { }
-     });
- 
-     //return product_ids;
- 
-     //console.log(this.product_ids_arr); */
-  }//end getProductsOfCategories()
-
-  //postData: { debter: string, categories: string }
   onSaveChanges() {
 
-    //var selected_group = $("#sel_debt_group").val();
-    var selected_group = this.debterdd.nativeElement.value; //alert(selected_group);
+    var selected_group = this.debterdd.nativeElement.value;
     if (selected_group == '') {
       alert("Please select Customer group.");
       $("#sel_debt_group").trigger("focus");
@@ -87,14 +56,9 @@ export class DebterRulesComponent implements OnInit {
         updated_cats.push($(this).parent('a').parent('li').attr('data-id'));
       }
     });
-    //console.log();
-    //i think no need  $("#hdn_existingcategories").val(updated_cats); alert('check');
-    //var selected_cat_new = $("#hdn_existingcategories").val();
 
-    //var customerGroup = selected_group;
     let check_old_is_removed: any = [];
     let old_cats_arr: any = [];
-    //var catIdNew = $("#hdn_existingcategories").val();;
     var catId_new_arr = updated_cats;
     if (old_cats != "") {
       old_cats_arr = old_cats.split(',');
@@ -104,20 +68,9 @@ export class DebterRulesComponent implements OnInit {
       check_old_is_removed = catId_new_arr;
     }
 
-    //let removed = delete catId_new_arr[0];
-    //console.log(catId_new_arr);
-    // var old_cats_arr = ['2211', '2199'];
-    // var old_cats_arr = [];
-    // let check_old_is_removed = old_cats_arr.filter(item => catId_new_arr.indexOf(item) < 0);
-
-
-    //var reset_product_ids = new Array();
-    console.log(old_cats_arr);
-    //console.log(catId_new_arr);
-    console.log(check_old_is_removed);
-    // console.log(check_old_is_removed); // ["e", "f", "g"]
+    //console.log(old_cats_arr);
+    //console.log(check_old_is_removed);
     if (old_cats != "" && check_old_is_removed.length > 0) {
-      alert('diff');
       var filterProcessData_1 = check_old_is_removed.filter(function () { return true; });
       this.categoryService.getProducts(filterProcessData_1);
       let reset_product_ids = localStorage.getItem("categoryProds");
@@ -134,7 +87,7 @@ export class DebterRulesComponent implements OnInit {
           break;
         }
       }
-      console.log(debter_group);
+      //console.log(debter_group);
       if (reset_product_ids != "") {
         this.debterRulesService.resetDebterPrices(debter_group, reset_product_ids);
       }
@@ -178,9 +131,7 @@ export class DebterRulesComponent implements OnInit {
       if (!$(this).hasClass('checked')) {
         if (new_status == 'none') {
           $(this).parent('a').parent('li').addClass('disabled');
-          // $('a#linkCategories').css('display', 'block');
         } else {
-          //console.log($(this).parent('a').parent('li'));
           $(this).parent('a').parent('li').removeClass('disabled');
         }
       }
@@ -199,68 +150,35 @@ export class DebterRulesComponent implements OnInit {
 
 
   onChangeDebter(event: Event) {
-    // console.log(event); alert(event.target.);
 
-    //get selected customer group
-    //let selected_group: any = $('#sel_debt_group').val();//zzp, Annamer M
-    var selected_group = this.debterdd.nativeElement.value; //alert(selected_group);
+    var selected_group = this.debterdd.nativeElement.value;
 
-    checkIt(false);//uncheckall checkbox
-    //remove disabled
-    $("#hdn_existingcategories").val('');//erase existing cats
-    //$("#hdn_selectedcategories").val('');//erase selcted cats
+    checkIt(false);
+
+    $("#hdn_existingcategories").val('');
     this.toggleCheckbox('');
     this.debterRulesService.getDebtorCategories(selected_group);
     let category_ids = localStorage.getItem("debterCats");
     console.log(category_ids + "206");
     this.category_ids = category_ids;
-    //console.log(category_ids); alert('188');
+
     if (category_ids) {
-      alert('191');
+
 
       let cat_id_arr = category_ids?.split(',');
-      //console.log(cat_id_arr); console.log('fff');
+
       $.each(cat_id_arr, function (key, value) {
 
         var $li = $("li[data-id='" + value + "']");
         checkGiven($li, true);
       });
       $("#hdn_existingcategories").val(this.category_ids);
-      //this.existingCats.nativeElement.value(category_ids);
+
     } else {
       //checkIt(false);//zzp
     }
     this.toggleCheckbox('none');//add disabled
-    $("#flexCheckDefault").prop('checked', false);//uncheck checkAll
-    // var cat_id_arr = category_ids.categor.split(',');
-    /*  this.http.post(environment.webservicebaseUrl + "/db-rules-cats", selected_group).subscribe(responseData => {
-       console.log(responseData["msg"] + "debter_ts_69");
-       if (responseData["msg"] == "done") {
- 
-       }
-     }); */
-
-
-
-    /*  request.done((response_data) => {
-       var resp_obj = response_data;
-       if (resp_obj["msg"]) {
-         // select these categories
-         var categories_str = resp_obj["msg"];
-         var cat_id_arr = categories_str.split(',');
- 
-         $.each(cat_id_arr, function (key, value) {
-           var $li = $("li[data-id='" + value + "']");
-           checkGiven($li, true);
- 
-         });
-         $("#hdn_existingcategories").val(resp_obj["msg"]);
-       } else {
-         checkIt(false);
-       }
-       this.toggleCheckbox('none');
-       $("#flexCheckDefault").prop('checked', false);
-     }); */
+    $("#flexCheckDefault").prop('checked', false);
 
   };
 
