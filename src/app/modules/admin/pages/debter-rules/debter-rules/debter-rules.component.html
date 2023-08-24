@@ -1,0 +1,52 @@
+<section class="content-header">
+    <h1>
+        Debter Rules
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Debter Rules</li>
+    </ol>
+</section>
+<div class="" id="data_filters1" style=" align-items-center">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Add and Update Customer Group</div>
+        <div class="panel-body">
+            <div class="row" style="margin-bottom:10px;">
+                <div class="col-sm-2">
+                    <label for="sel1">Customer Group:</label>
+                </div>
+                <div class="col-sm-5">
+                    <div style="margin-bottom:10px;">
+                        <select ng-model="selectedDebter" (change)="onChangeDebter($event)" id="sel_debt_group"
+                            name="sel_debt_group"
+                            class="custom-select custom-select-sm form-control form-control-sm ddfields" #debterdd>
+                            <option value="">Select customer group</option>
+                            <option *ngFor="let x of debters" value="{{x.customer_group_id}}">{{x.group_alias}}</option>
+                        </select>
+                    </div>
+                    <div>
+                        <span><a href="#" id="linkCategories" style="display:none;"
+                                (click)="onLinkCategories($event)">Add
+                                More Categories</a></span>
+                    </div>
+                </div>
+                <div class="col-sm-5"></div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-5 text-center">
+
+                    <button type="button" class="btn btn-primary
+                    btn-sm col-5" id="btnsave" (click)="onSaveChanges()">Save changes</button>
+                    <p>{{checkproperty}}</p>
+
+                </div>
+                <div class="col-sm-5">
+                    <input type="hidden" name="hdn_existingcategories" id="hdn_existingcategories" #existingCats />
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>

@@ -14,6 +14,8 @@ import { SetpricesModule } from './pages/setprices/setprices.module';
 import { AgGridModule } from 'ag-grid-angular';
 import { AuthGuard } from 'src/app/guards/auth.guard';
 import { ModalsComponent } from './layout/modals/modals.component';
+import { DebterRulesComponent } from './pages/debter-rules/debter-rules/debter-rules.component';
+
 
 const gyzsroutes: Routes = [
   {
@@ -24,6 +26,7 @@ const gyzsroutes: Routes = [
       { path: "setprices", canActivate: [AuthGuard], component: SetpricesComponent },
       { path: "settings", canActivate: [AuthGuard], component: SettingsComponent },
       { path: '', redirectTo: '/admin/dashboard', pathMatch: 'full' },
+      { path: "debter-rules", canActivate: [AuthGuard], component: DebterRulesComponent },
     ],
   },
 ];
@@ -35,7 +38,8 @@ const gyzsroutes: Routes = [
     LeftComponent,
     FooterComponent,
     ControlSidebarComponent,
-    ModalsComponent
+    ModalsComponent,
+    DebterRulesComponent
   ],
   imports: [
     CommonModule,

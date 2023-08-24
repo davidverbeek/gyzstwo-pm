@@ -1,4 +1,4 @@
-function checkIt(status, flag) {
+function checkIt(status) {
     $("i.sim-tree-checkbox").each(function () {
         var $check = $(this);
         var $li = $check.closest('li');
@@ -50,7 +50,7 @@ function doCheck(e, t, i) {
         !0 ===/*  this.options.linkParent && */ !i && setParentCheck(s);
 }
 
-function checkGiven($li, status, flag) {
+function checkGiven($li, status) {
     var data = $li.data();
     if (typeof status === 'undefined') {
         status = !data.checked;
