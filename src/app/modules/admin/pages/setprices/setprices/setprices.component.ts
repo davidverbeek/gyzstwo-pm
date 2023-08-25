@@ -28,6 +28,7 @@ export class SetpricesComponent implements OnInit {
   chkAllCount: string;
   chkAllProducts: any;
   isChkAllChecked: number = 0;
+  fileUploadDone: any;
 
 
   public rowModelType: 'serverSide' = 'serverSide';
@@ -149,6 +150,12 @@ export class SetpricesComponent implements OnInit {
       this.loadAGGrid();
     });
 
+    this.fileUploadDone = this.sidebarService.loadAgGrid.subscribe((isUploaded) => {
+      if (isUploaded == 1) {
+        this.loadAGGrid();
+      }
+    })
+
     this.subbtnclicked = this.sidebarService.btnClicked.subscribe((priceType) => {
 
       console.log(priceType);
@@ -202,6 +209,7 @@ export class SetpricesComponent implements OnInit {
   ngOnDestroy() {
     this.subcat.unsubscribe();
     this.subbtnclicked.unsubscribe();
+    this.fileUploadDone.unsubscribe();
   }
 
   showUpdated(event) {

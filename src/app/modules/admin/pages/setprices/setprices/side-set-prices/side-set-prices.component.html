@@ -45,7 +45,7 @@
                 <div class="form-group has-error">
                     <input type="file" name="importfile" id="importfile" style="width: 100%;"
                         (change)="btnImportPrices($event)">
-                    <p class="help-block">Import Xlsx Only.</p>
+                    <p class="help-block">{{ uploadValidationMessage }}</p>
                     <p *ngIf="uploadSpinner"><i class="fa fa-refresh fa-spin"></i> Processing Please
                         Wait...</p>
                     <p style="white-space: pre; width: 100%;">{{ uploadMessage }}</p>
@@ -63,8 +63,10 @@
                 Export Prices
             </div>
             <div class="panel-body">
-                <a class="btn btn-block btn-social btn-instagram" (click)="btnExportPrices()">
-                    <i class="fa fa-fw fa-euro"></i> Export Prices
+                <a class="btn btn-block btn-social btn-instagram"
+                    (click)="exportLinkedClicked ? btnExportPrices() : null">
+                    <i class="fa fa-fw fa-euro"></i> Export Prices <i *ngIf="exportSpinner"
+                        class="fa fa-circle-o-notch fa-spin" style="font-size:12px; margin-left:5px;"></i>
                 </a>
             </div>
         </div>

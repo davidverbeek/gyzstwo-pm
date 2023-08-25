@@ -20,6 +20,9 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
   private params!: IToolPanelParams;
   getAllDebtors: any = "";
   currentDateTime: any;
+  exportSpinner: any = false;
+  exportLinkedClicked: any = true;
+  uploadValidationMessage: any = "Import Xlsx Only";
 
   constructor(private sidebarService: PmSidebarService, private http: HttpClient, private datePipe: DatePipe) {
 
@@ -69,7 +72,9 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
     this.selCG = selValue;
   }
   btnExportPrices() {
-
+    alert("hi");
+    this.exportSpinner = true;
+    this.exportLinkedClicked = false;
     var currentsql = localStorage.getItem("currentSql")?.trim();
     this.http.post(environment.webservicebaseUrl + "/all-products", currentsql).subscribe(responseData => {
       var exportData: any = [];
@@ -131,12 +136,22 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Prices');
       writeFile(workbook, 'priceExport.xlsx');
+      this.exportSpinner = false;
+      this.exportLinkedClicked = true;
 
     });
   }
   btnImportPrices(event: any) {
-
     var file = event.target.files[0];
+    var fileType = file.type;
+
+    // Check if file type is Xlsx
+    if (fileType != "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+      this.uploadValidationMessage = "File is not Xlsx";
+      this.uploadMessage = "";
+      return false;
+    }
+
     var fileReader = new FileReader();
     fileReader.readAsBinaryString(file);
 
@@ -145,15 +160,56 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
       var sheetNames = workbook.SheetNames;
       this.xlsxPrices = XLSX.utils.sheet_to_json(workbook.Sheets[sheetNames[0]], { header: 1 });
       if (this.xlsxPrices.length > 0) {
-        this.uploadSpinner = true;
-        this.uploadMessage = "";
-        //console.log(this.xlsxPrices);
+        let getXlsxCols = this.xlsxPrices[0]; //Header Cols
+        var allValidHeaders = validXlsxHeader(this.getAllDebtors);
+
+        // Check if header is proper
+        if (getXlsxCols.length == 1) {
+          this.uploadValidationMessage = "Something is wrong with the columns";
+          this.uploadMessage = "";
+          return false;
+        }
+
+        for (let xlsxCol of getXlsxCols) {
+          if (!allValidHeaders.includes(xlsxCol)) {
+            this.uploadValidationMessage = "Column Name does not match";
+            this.uploadMessage = "";
+            return false;
+          }
+        }
 
         let maxXlsxColumns = this.xlsxPrices[0].length;
         let maxXlsxRows = this.xlsxPrices.length;
-        let getXlsxCols = this.xlsxPrices[0]; //Header Cols
-        //console.log(getXlsxCols);
 
+        for (var xlsxRow = 0; xlsxRow < maxXlsxRows; xlsxRow++) {
+          for (var xlsxCol = 0; xlsxCol < maxXlsxColumns; xlsxCol++) {
+            if (xlsxRow == 0) {
+              continue;
+            }
+            if (this.xlsxPrices[xlsxRow][xlsxCol] == 0) {
+              this.uploadValidationMessage = "Row:" + (xlsxRow + 1) + " Column:" + (xlsxCol + 1) + " Value: 0";
+              this.uploadMessage = "";
+              return false;
+            }
+            if (typeof this.xlsxPrices[xlsxRow][xlsxCol] == "undefined") {
+              this.uploadValidationMessage = "Row:" + (xlsxRow + 1) + " Column:" + (xlsxCol + 1) + " Value: Empty";
+              this.uploadMessage = "";
+              return false;
+            }
+          }
+        }
+
+
+
+        // If no validation Error
+        if (!confirm("Are you sure you want to add/update prices? Once the prices are updated they will not be reverted back")) {
+          return false;
+        }
+
+
+        this.uploadSpinner = true;
+        this.uploadMessage = "";
+        this.uploadValidationMessage = "";
         var queryHead = Array();
         var queryFoot = Array();
 
@@ -232,12 +288,6 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
                   idealeverpakking = 1;
                 }
 
-                /* if (allExistingPmData[sku]["afwijkenidealeverpakking"] == 0) {
-                  bp = bp / allExistingPmData[sku]["idealeverpakking"];
-                  sp = sp / allExistingPmData[sku]["idealeverpakking"];
-                  gup = gup / allExistingPmData[sku]["idealeverpakking"];
-                  wsp = wsp / allExistingPmData[sku]["idealeverpakking"];
-                } */
                 if (gup == 0) {
                   gup = 1;
                 }
@@ -376,12 +426,8 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
                 eachHistoryItem["buying_price_changed"] = bpChanged;
                 processHistoryData[xlsxRow] = eachHistoryItem;
               }
-
-
             }
           }
-
-          //console.log(processXlsxData.length);
 
           if (processXlsxData.length > 0) {
             var filterProcessData = processXlsxData.filter(function () { return true; });
@@ -400,17 +446,15 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
             uploadRequestData["2"] = queryFoot.toString();
             uploadRequestData["3"] = filterProcessHistoryData;
 
-            //console.log(uploadRequestData);
-
             this.http.post(environment.webservicebaseUrl + "/upload-products", uploadRequestData).subscribe(responseData => {
               this.uploadMessage = responseData["msg"].join("\n");
               this.uploadSpinner = false;
+              this.sidebarService.loadAgGrid.next(1);
             });
           }
         });
       }
     }
-
   }
 }
 
@@ -495,6 +539,21 @@ function isBuyingPriceExists(allDebts: any, xlsxPrices: any, maxXlsxRows: any, m
   response["maxXlsxColumns"] = maxXlsxColumns;
   response["allNewPrices"] = newClsxData;
   return response;
+}
+
+function validXlsxHeader(allDebts: any) {
+  var validHeader = Array();
+  validHeader.push("Artikelnummer (Artikel)");
+  validHeader.push("Inkoopprijs (Inkpr per piece)");
+  validHeader.push("Nieuwe Verkoopprijs (Niewe Vkpr per piece)");
+
+  for (const [key, value] of Object.entries(allDebts)) {
+    var idAlias = "";
+    idAlias = allDebts[key].split("|||");
+    validHeader.push(idAlias[1]);
+  }
+  return validHeader;
+
 }
 
 

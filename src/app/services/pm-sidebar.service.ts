@@ -9,5 +9,6 @@ export class PmSidebarService {
   constructor() { }
 
   btnClicked = new Subject<any>();
-  
+  loadAgGrid = new Subject<any>();
+
 }
