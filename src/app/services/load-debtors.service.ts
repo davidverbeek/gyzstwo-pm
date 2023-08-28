@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
+import { map } from 'rxjs/operators';
 
 export interface Response {
   'debter_cats': [0]
@@ -45,7 +46,7 @@ export class LoadDebtorsService {
     return localStorage.getItem("debtorCols");
   }
 
-  getDebtorCategories(debter_id: string) {
+  /* getDebtorCategories(debter_id: string) {
 
     this.http.post<Response>(environment.webservicebaseUrl + "/dbt-rules-cats", { debter_id: debter_id })
       .pipe(map(responseData => {
@@ -59,7 +60,7 @@ export class LoadDebtorsService {
       .subscribe(responseData => {
         localStorage.setItem("debterCats", responseData);
       });
-  }
+  } */
 
   resetDebterPrices(debter_group: string, product_ids: any) {
     const reset_debter_rules_request = {

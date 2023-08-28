@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs/operators'
+import { map } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class PmCategoryService {
-
+  categorySelected = new Subject<string>();
   productsAssigned: any = {};
 
   constructor(private http: HttpClient) { }
