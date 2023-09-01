@@ -14,6 +14,10 @@ import { SetpricesModule } from './pages/setprices/setprices.module';
 import { AgGridModule } from 'ag-grid-angular';
 import { AuthGuard } from 'src/app/guards/auth.guard';
 import { ModalsComponent } from './layout/modals/modals.component';
+import { BolcommissionComponent } from './pages/bolcommission/bolcommission/bolcommission.component';
+import { BolcommissionModule } from './pages/bolcommission/bolcommission.module'
+import { BolminimumComponent } from './pages/bolminimum/bolminimum/bolminimum.component';
+import { BolminimumModule } from './pages/bolminimum/bolminimum.module';
 
 const gyzsroutes: Routes = [
   {
@@ -22,6 +26,8 @@ const gyzsroutes: Routes = [
     children: [
       { path: "dashboard", canActivate: [AuthGuard], component: DashboardComponent },
       { path: "setprices", canActivate: [AuthGuard], component: SetpricesComponent },
+      { path: "bolcommission", canActivate: [AuthGuard], component: BolcommissionComponent },
+      { path: "bolminimum", canActivate: [AuthGuard], component: BolminimumComponent },
       { path: "settings", canActivate: [AuthGuard], component: SettingsComponent },
       { path: '', redirectTo: '/admin/dashboard', pathMatch: 'full' },
     ],
@@ -41,6 +47,8 @@ const gyzsroutes: Routes = [
     CommonModule,
     HttpClientModule,
     SetpricesModule,
+    BolcommissionModule,
+    BolminimumModule,
     AgGridModule,
     RouterModule.forChild(gyzsroutes)
   ]

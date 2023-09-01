@@ -1,0 +1,18 @@
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Bol Minimum Prices
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Bol Minimum Prices</li>
+    </ol>
+</section>
+
+<div style="padding: 15px;">
+    <ag-grid-angular style="width: 100%; height:800px;" class="ag-theme-alpine" [rowData]="rowData"
+        [columnDefs]="columnDefs" [defaultColDef]="defaultColDef" [rowModelType]="rowModelType" [rowStyle]="rowStyle"
+        [getRowStyle]="getRowStyle" (gridReady)="onGridReady($event)" [pagination]="true"
+        [paginationPageSize]="paginationPageSize" [serverSideStoreType]="serverSideStoreType"
+        [cacheBlockSize]="cacheBlockSize" [animateRows]="true"></ag-grid-angular>
+</div>

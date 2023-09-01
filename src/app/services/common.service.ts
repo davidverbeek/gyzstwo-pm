@@ -7,6 +7,7 @@ import { Subject } from 'rxjs';
 export class CommonService {
 
   productHistoryData = new Subject<object>();
+  bolCalculation = new Subject<object>();
 
   constructor() { }
 }

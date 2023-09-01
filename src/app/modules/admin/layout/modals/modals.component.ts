@@ -24,6 +24,10 @@ export class ModalsComponent implements OnInit {
   historyPid = "";
   subHistoryPid: any;
 
+  bolSku = "";
+  bolSub: any;
+  bolCalculation = "";
+
   // Data that gets displayed in the grid
   public rowData: any;
 
@@ -42,18 +46,20 @@ export class ModalsComponent implements OnInit {
         { field: 'old_gross_unit_price', headerName: 'Brutopr', sortable: true, filter: 'number' },
         { field: 'old_idealeverpakking', headerName: 'Ideal', sortable: true, filter: 'number' },
         { field: 'old_afwijkenidealeverpakking', headerName: 'Afw', sortable: true, filter: 'number' },
-        { field: 'old_buying_price', headerName: 'Inkpr', sortable: true, filter: 'number',
+        {
+          field: 'old_buying_price', headerName: 'Inkpr', sortable: true, filter: 'number',
           cellStyle: params => {
-            if(JSON.parse(params.data["fields_changed"]).includes("old_buying_price")) {
-              return {backgroundColor: '#c2c3e0'};
+            if (JSON.parse(params.data["fields_changed"]).includes("old_buying_price")) {
+              return { backgroundColor: '#c2c3e0' };
             }
             return null;
           }
         },
-        { field: 'old_selling_price', headerName: 'Vkpr', sortable: true, filter: 'number',
+        {
+          field: 'old_selling_price', headerName: 'Vkpr', sortable: true, filter: 'number',
           cellStyle: params => {
-            if(JSON.parse(params.data["fields_changed"]).includes("old_selling_price")) {
-              return {backgroundColor: '#c2c3e0'};
+            if (JSON.parse(params.data["fields_changed"]).includes("old_selling_price")) {
+              return { backgroundColor: '#c2c3e0' };
             }
             return null;
           }
@@ -67,20 +73,21 @@ export class ModalsComponent implements OnInit {
         { field: 'new_gross_unit_price', headerName: 'Brutopr', sortable: true, filter: 'number' },
         { field: 'new_idealeverpakking', headerName: 'Ideal', sortable: true, filter: 'number' },
         { field: 'new_afwijkenidealeverpakking', headerName: 'Afw', sortable: true, filter: 'number' },
-        { field: 'new_buying_price', headerName: 'Inkpr', sortable: true, filter: 'number',
+        {
+          field: 'new_buying_price', headerName: 'Inkpr', sortable: true, filter: 'number',
           cellStyle: params => {
-            if(JSON.parse(params.data["fields_changed"]).includes("new_buying_price")) {
-              return {backgroundColor: '#c2c3e0'};
+            if (JSON.parse(params.data["fields_changed"]).includes("new_buying_price")) {
+              return { backgroundColor: '#c2c3e0' };
             }
             return null;
           }
-      
+
         },
         {
           field: 'new_selling_price', headerName: 'Vkpr', sortable: true, filter: 'number',
           cellStyle: params => {
-            if(JSON.parse(params.data["fields_changed"]).includes("new_selling_price")) {
-              return {backgroundColor: '#c2c3e0'};
+            if (JSON.parse(params.data["fields_changed"]).includes("new_selling_price")) {
+              return { backgroundColor: '#c2c3e0' };
             }
             return null;
           }
@@ -101,6 +108,13 @@ export class ModalsComponent implements OnInit {
   };
 
   onGridReady(params: GridReadyEvent) {
+
+    this.bolSub = this.CommonService.bolCalculation.subscribe((bolData) => {
+      this.bolSku = bolData[0];
+      this.bolCalculation = bolData[1];
+    });
+
+
     this.subHistoryPid = this.CommonService.productHistoryData.subscribe((productData) => {
       this.historyPid = productData[0];
       this.historySku = productData[1];
@@ -133,6 +147,7 @@ export class ModalsComponent implements OnInit {
 
   ngOnDestroy() {
     this.subHistoryPid.unsubscribe();
+    this.bolSub.unsubscribe();
   }
 
   loadAGGrid() {
