@@ -1,14 +1,262 @@
- <!-- Content Header (Page header) -->
- <section class="content-header">
-    <h1>
-      Settings
-    </h1>
-    <ol class="breadcrumb">
-      <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-      <li class="active">Settings</li>
-    </ol>
-  </section>
-<div style="padding:15px;">
-    <p>settings works!</p>
-</div>
+<!-- Content Header (Page header) -->
+<section class="content-header">
+  <h1>
+    Settings
+  </h1>
+  <ol class="breadcrumb">
+    <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+    <li class="active">Settings</li>
+  </ol>
+</section>
 
+
+<!-- form start -->
+<form (ngSubmit)="onSubmit(fs)" #fs="ngForm">
+  <div style="padding: 15px;">
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">Transmission</h3>
+      </div>
+      <!-- /.box-header -->
+      <div class="box-body">
+        <div
+          class="form-group has-feedback {{!transmission_shipping_cost.valid && transmission_shipping_cost.touched ? 'has-error':''}}">
+          <label class="col-sm-2 col-form-label">Shipping Cost</label>
+          <div class="col-sm-10">
+            <input type="number" step="0.01" class="form-control form-control-user"
+              placeholder="Transmission Shipping Cost" name="transmission_shipping_cost"
+              [ngModel]="settingsData['transmission_shipping_cost']" #transmission_shipping_cost="ngModel" value=""
+              required>
+            <span class="help-block">Enter Shipping Cost. (Eg 10.5)
+            </span>
+          </div>
+        </div>
+
+        <div
+          class="form-group has-feedback {{!transmission_packing_cost.valid && transmission_packing_cost.touched ? 'has-error':''}}">
+          <label class="col-sm-2 col-form-label">Packing Cost</label>
+          <div class="col-sm-10">
+            <input type="number" step="0.01" class="form-control form-control-user"
+              placeholder="Transmission Packing Cost" name="transmission_packing_cost"
+              [ngModel]="settingsData['transmission_packing_cost']" #transmission_packing_cost="ngModel" value=""
+              required>
+            <span class="help-block">Enter Packing Cost. (Eg 1.55)
+            </span>
+          </div>
+        </div>
+
+        <div
+          class="form-group has-feedback {{!transmission_extra_return_shipment_cost.valid && transmission_extra_return_shipment_cost.touched ? 'has-error':''}}">
+          <label class="col-sm-2 col-form-label">Extra Return Shipment Cost</label>
+          <div class="col-sm-10">
+            <input type="number" step="0.01" class="form-control form-control-user"
+              placeholder="Transmission Extra Return Shipment Cost" name="transmission_extra_return_shipment_cost"
+              [ngModel]="settingsData['transmission_extra_return_shipment_cost']"
+              #transmission_extra_return_shipment_cost="ngModel" value="" required>
+            <span class="help-block">Extra Return Shipment Cost. (Eg 12.5)
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">Pakketpost</h3>
+      </div>
+      <!-- /.box-header -->
+      <div class="box-body">
+        <div
+          class="form-group has-feedback {{!pakketpost_shipping_cost.valid && pakketpost_shipping_cost.touched ? 'has-error':''}}">
+          <label class="col-sm-2 col-form-label">Shipping Cost</label>
+          <div class="col-sm-10">
+            <input type="number" step="0.01" class="form-control form-control-user"
+              placeholder="Pakketpost Shipping Cost" name="pakketpost_shipping_cost"
+              [ngModel]="settingsData['pakketpost_shipping_cost']" #pakketpost_shipping_cost="ngModel" value=""
+              required>
+            <span class="help-block">Enter Shipping Cost. (Eg 4.8)
+            </span>
+          </div>
+        </div>
+
+        <div
+          class="form-group has-feedback {{!pakketpost_packing_cost.valid && pakketpost_packing_cost.touched ? 'has-error':''}}">
+          <label class="col-sm-2 col-form-label">Packing Cost</label>
+          <div class="col-sm-10">
+            <input type="number" step="0.01" class="form-control form-control-user"
+              placeholder="Pakketpost Packing Cost" name="pakketpost_packing_cost"
+              [ngModel]="settingsData['pakketpost_packing_cost']" #pakketpost_packing_cost="ngModel" value="" required>
+            <span class="help-block">Enter Packing Cost. (Eg 0.9)
+            </span>
+          </div>
+        </div>
+
+        <div
+          class="form-group has-feedback {{!pakketpost_extra_return_shipment_cost.valid && pakketpost_extra_return_shipment_cost.touched ? 'has-error':''}}">
+          <label class="col-sm-2 col-form-label">Extra Return Shipment Cost</label>
+          <div class="col-sm-10">
+            <input type="number" step="0.01" class="form-control form-control-user"
+              placeholder="Pakketpost Extra Return Shipment Cost" name="pakketpost_extra_return_shipment_cost"
+              [ngModel]="settingsData['pakketpost_extra_return_shipment_cost']"
+              #pakketpost_extra_return_shipment_cost="ngModel" value="" required>
+            <span class="help-block">Extra Return Shipment Cost. (Eg 4.5)
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">Briefpost</h3>
+      </div>
+      <!-- /.box-header -->
+      <div class="box-body">
+        <div
+          class="form-group has-feedback {{!briefpost_shipping_cost.valid && briefpost_shipping_cost.touched ? 'has-error':''}}">
+          <label class="col-sm-2 col-form-label">Shipping Cost</label>
+          <div class="col-sm-10">
+            <input type="number" step="0.01" class="form-control form-control-user"
+              placeholder="Briefpost Shipping Cost" name="briefpost_shipping_cost"
+              [ngModel]="settingsData['briefpost_shipping_cost']" #briefpost_shipping_cost="ngModel" value="" required>
+            <span class="help-block">Enter Shipping Cost. (Eg 3)
+            </span>
+          </div>
+        </div>
+
+        <div
+          class="form-group has-feedback {{!briefpost_packing_cost.valid && briefpost_packing_cost.touched ? 'has-error':''}}">
+          <label class="col-sm-2 col-form-label">Packing Cost</label>
+          <div class="col-sm-10">
+            <input type="number" step="0.01" class="form-control form-control-user" placeholder="Briefpost Packing Cost"
+              name="briefpost_packing_cost" [ngModel]="settingsData['briefpost_packing_cost']"
+              #briefpost_packing_cost="ngModel" value="" required>
+            <span class="help-block">Enter Packing Cost. (Eg 0.6)
+            </span>
+          </div>
+        </div>
+
+        <div
+          class="form-group has-feedback {{!briefpost_extra_return_shipment_cost.valid && briefpost_extra_return_shipment_cost.touched ? 'has-error':''}}">
+          <label class="col-sm-2 col-form-label">Extra Return Shipment Cost</label>
+          <div class="col-sm-10">
+            <input type="number" step="0.01" class="form-control form-control-user"
+              placeholder="Briefpost Extra Return Shipment Cost" name="briefpost_extra_return_shipment_cost"
+              [ngModel]="settingsData['briefpost_extra_return_shipment_cost']"
+              #briefpost_extra_return_shipment_cost="ngModel" value="" required>
+            <span class="help-block">Extra Return Shipment Cost. (Eg 4.5)
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">Bol</h3>
+      </div>
+      <!-- /.box-header -->
+      <div class="box-body">
+        <div
+          class="form-group has-feedback {{!bol_commissions_auth_url.valid && bol_commissions_auth_url.touched ? 'has-error':''}}">
+          <label class="col-sm-2 col-form-label">Authentication Api Url</label>
+          <div class="col-sm-10">
+            <input class="form-control form-control-user" placeholder="Bol Commissions Authentication Url"
+              name="bol_commissions_auth_url" [ngModel]="settingsData['bol_commissions_auth_url']"
+              #bol_commissions_auth_url="ngModel" value="" required>
+            <span class="help-block">Enter Authentication Api Url
+            </span>
+          </div>
+        </div>
+
+        <div class="form-group has-feedback {{!bol_client_id.valid && bol_client_id.touched ? 'has-error':''}}">
+          <label class="col-sm-2 col-form-label">Client ID</label>
+          <div class="col-sm-10">
+            <input class="form-control form-control-user" placeholder="Bol Client ID" name="bol_client_id"
+              [ngModel]="settingsData['bol_client_id']" #bol_client_id="ngModel" value="" required>
+            <span class="help-block">Enter Client ID
+            </span>
+          </div>
+        </div>
+
+        <div class="form-group has-feedback {{!bol_secret.valid && bol_secret.touched ? 'has-error':''}}">
+          <label class="col-sm-2 col-form-label">Secret</label>
+          <div class="col-sm-10">
+            <input class="form-control form-control-user" placeholder="Bol Secret" name="bol_secret"
+              [ngModel]="settingsData['bol_secret']" #bol_secret="ngModel" value="" required>
+            <span class="help-block">Enter Secret
+            </span>
+          </div>
+        </div>
+
+        <div
+          class="form-group has-feedback {{!bol_commissions_api_url.valid && bol_commissions_api_url.touched ? 'has-error':''}}">
+          <label class="col-sm-2 col-form-label">Commissions Api Url</label>
+          <div class="col-sm-10">
+            <input class="form-control form-control-user" placeholder="Bol Commissions Api Url"
+              name="bol_commissions_api_url" [ngModel]="settingsData['bol_commissions_api_url']"
+              #bol_commissions_api_url="ngModel" value="" required>
+            <span class="help-block">Enter Commissions Api Url
+            </span>
+          </div>
+        </div>
+
+        <div
+          class="form-group has-feedback {{!bol_buying_percentage.valid && bol_buying_percentage.touched ? 'has-error':''}}">
+          <label class="col-sm-2 col-form-label">Bol Buying Percentage</label>
+          <div class="col-sm-10">
+            <input type="number" step="0.01" class="form-control form-control-user" placeholder="Bol Buying Percentage"
+              name="bol_buying_percentage" [ngModel]="settingsData['bol_buying_percentage']"
+              #bol_buying_percentage="ngModel" value="" required>
+            <span class="help-block">Enter bol_buying_percentage. (Eg 15)
+            </span>
+          </div>
+        </div>
+
+        <div
+          class="form-group has-feedback {{!bol_return_from_date.valid && bol_return_from_date.touched ? 'has-error':''}}">
+          <label class="col-sm-2 col-form-label">Return From Date</label>
+          <div class="col-sm-10">
+            <input class="form-control form-control-user" placeholder="Bol Return From Date" name="bol_return_from_date"
+              [ngModel]="settingsData['bol_return_from_date']" #bol_return_from_date="ngModel" value="" required>
+            <span class="help-block">(Date Format :- YYYY-MM-DD)
+            </span>
+          </div>
+        </div>
+
+        <div
+          class="form-group has-feedback {{!bol_return_to_date.valid && bol_return_to_date.touched ? 'has-error':''}}">
+          <label class="col-sm-2 col-form-label">Return To Date</label>
+          <div class="col-sm-10">
+            <input class="form-control form-control-user" placeholder="Bol Return To Date" name="bol_return_to_date"
+              [ngModel]="settingsData['bol_return_to_date']" #bol_return_to_date="ngModel" value="" required>
+            <span class="help-block">(Date Format :- YYYY-MM-DD)
+            </span>
+          </div>
+        </div>
+
+      </div>
+      <!-- /.box-body -->
+      <div class="box-footer">
+        <div style="float: left;">
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+
+        <div style="float: left; margin-left: 5px; margin-top: 5px;">
+          <p *ngIf="savedSettingsData == 1" class="text-green">Setting updated</p>
+        </div>
+
+        <div style="clear: both;"></div>
+
+      </div>
+
+    </div>
+
+
+
+
+
+  </div>
+
+</form>

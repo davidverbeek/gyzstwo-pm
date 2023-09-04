@@ -18,6 +18,8 @@ import { BolcommissionComponent } from './pages/bolcommission/bolcommission/bolc
 import { BolcommissionModule } from './pages/bolcommission/bolcommission.module'
 import { BolminimumComponent } from './pages/bolminimum/bolminimum/bolminimum.component';
 import { BolminimumModule } from './pages/bolminimum/bolminimum.module';
+import { FormsModule } from '@angular/forms';
+import { SettingsModule } from './pages/settings/settings.module';
 
 const gyzsroutes: Routes = [
   {
@@ -50,6 +52,8 @@ const gyzsroutes: Routes = [
     BolcommissionModule,
     BolminimumModule,
     AgGridModule,
+    SettingsModule,
+    FormsModule,
     RouterModule.forChild(gyzsroutes)
   ]
 })
