@@ -10,9 +10,32 @@
 </section>
 
 <div style="padding: 15px;">
+    <div class="checkbox" style="float: left;">
+        <label><input type="checkbox" value="chkall" (change)="getAllProducts($event)">Check All {{ chkAllCount
+            }}</label>
+    </div>
+    <div style="float: right;">
+        <div style="float: left; margin-right: 10px; margin-bottom: 5px;">
+            <select class="form-control" id="select_ec_deliverytime" name="select_ec_deliverytime"
+                (change)="updateEcDeliveryTime($event)">
+                <option value="">Update EC Delivery Time</option>
+                <option *ngFor="let dt of ecDeliveryTimes" value="{{dt.option_id}}"> {{dt.option_value}} </option>
+            </select>
+        </div>
+        <div style="float: left; margin-bottom: 5px;">
+            <select class="form-control" id="select_ec_deliverytime_be" name="select_ec_deliverytime_be">
+                <option value="">Update EC Delivery Time BE</option>
+                <option *ngFor="let dtbe of ecDeliveryTimesBE" value="{{dtbe.option_id}}"> {{dtbe.option_value}}
+                </option>
+            </select>
+        </div>
+        <div style="clear: both;"></div>
+    </div>
+    <div style="clear: both;"></div>
+
     <ag-grid-angular style="width: 100%; height:800px;" class="ag-theme-alpine" [rowData]="rowData"
         [columnDefs]="columnDefs" [defaultColDef]="defaultColDef" [rowModelType]="rowModelType" [rowStyle]="rowStyle"
         [getRowStyle]="getRowStyle" (gridReady)="onGridReady($event)" [pagination]="true"
         [paginationPageSize]="paginationPageSize" [serverSideStoreType]="serverSideStoreType"
-        [cacheBlockSize]="cacheBlockSize" [animateRows]="true"></ag-grid-angular>
+        [cacheBlockSize]="cacheBlockSize" rowSelection='multiple'></ag-grid-angular>
 </div>
