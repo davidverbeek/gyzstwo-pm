@@ -129,11 +129,13 @@ export class BolminimumComponent implements OnInit {
         if (responseData["msg"] == "done") {
           if (this.isChkAllChecked == 0) {
             this.updatedBolProducts = [];
+            this.loadAGGrid();
           } else if (this.isChkAllChecked == 1) {
             this.chkAllCount = "(" + (this.chkAllProducts["msg"]).length + " Delivery Time Updated Successfully)";
             this.updatedBolProducts = [];
+            this.loadAGGrid();
           }
-          this.loadAGGrid();
+
         }
       });
     }
@@ -171,6 +173,10 @@ export class BolminimumComponent implements OnInit {
 function createServerSideDatasource(server: any): IServerSideDatasource {
   return {
     getRows(params) {
+
+      if (params.request["sortModel"].length == 0) {
+        params.request["sortModel"] = [{ sort: 'desc', colId: 'updated_date_time' }];
+      }
 
       fetch(environment.webservicebaseUrl + "/pm-bol-minimum", {
         method: 'post',
