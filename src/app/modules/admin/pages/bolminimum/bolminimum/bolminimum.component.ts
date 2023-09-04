@@ -87,13 +87,23 @@ export class BolminimumComponent implements OnInit {
   }
 
   updateEcDeliveryTime(event) {
-    console.log(event.target.id);
+    var selectedDeliveryTime = event.target.id;
+    var selectedDeliveryTimeValue = event.target.value;
+    var makeRequestTo = "";
+    var selectedDeliveryTimeCol = "";
+
+    if (selectedDeliveryTime == "select_ec_deliverytime") {
+      makeRequestTo = "save-bol-delivery-time";
+      selectedDeliveryTimeCol = "ec_deliverytime";
+
+    } else if (selectedDeliveryTime == "select_ec_deliverytime_be") {
+      makeRequestTo = "save-bol-delivery-time-be";
+      selectedDeliveryTimeCol = "ec_deliverytime_be";
+    }
+
     var idsToUpdate = this.api.getSelectedNodes().map(function (node) {
       return node.data.product_id;
     });
-
-    var type = event.target.id;
-    var dt = event.target.value;
 
     if (idsToUpdate.length == 0) {
       alert("Please select record first!!");
@@ -104,7 +114,7 @@ export class BolminimumComponent implements OnInit {
             var updated = JSON.parse(JSON.stringify(rowNode.data));
             var prepareProductData = {};
             prepareProductData["product_id"] = updated.product_id;
-            prepareProductData["ec_deliverytime"] = dt;
+            prepareProductData[selectedDeliveryTimeCol] = selectedDeliveryTimeValue;
             this.updatedBolProducts[updated.product_id] = prepareProductData;
           }
         });
@@ -114,7 +124,7 @@ export class BolminimumComponent implements OnInit {
             (value, key) => {
               var prepareProductData = {};
               prepareProductData["product_id"] = value.product_id;
-              prepareProductData["ec_deliverytime"] = dt;
+              prepareProductData[selectedDeliveryTimeCol] = selectedDeliveryTimeValue;
               this.updatedBolProducts[value.product_id] = prepareProductData;
             }
           )
@@ -125,7 +135,7 @@ export class BolminimumComponent implements OnInit {
 
     var filterBolProcessData = this.updatedBolProducts.filter(function () { return true; });
     if (filterBolProcessData.length > 0) {
-      this.http.post(environment.webservicebaseUrl + "/save-bol-delivery-time", filterBolProcessData).subscribe(responseData => {
+      this.http.post(environment.webservicebaseUrl + "/" + makeRequestTo + "", filterBolProcessData).subscribe(responseData => {
         if (responseData["msg"] == "done") {
           if (this.isChkAllChecked == 0) {
             this.updatedBolProducts = [];

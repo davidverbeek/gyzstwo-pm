@@ -23,7 +23,8 @@
             </select>
         </div>
         <div style="float: left; margin-bottom: 5px;">
-            <select class="form-control" id="select_ec_deliverytime_be" name="select_ec_deliverytime_be">
+            <select class="form-control" id="select_ec_deliverytime_be" name="select_ec_deliverytime_be"
+                (change)="updateEcDeliveryTime($event)">
                 <option value="">Update EC Delivery Time BE</option>
                 <option *ngFor="let dtbe of ecDeliveryTimesBE" value="{{dtbe.option_id}}"> {{dtbe.option_value}}
                 </option>
