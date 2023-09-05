@@ -17,18 +17,17 @@ export class SettingsComponent implements OnInit {
   savedSettingsData: any = 0;
 
   ngOnInit(): void {
-    this.http.get(environment.webservicebaseUrl + "/get-settings").subscribe(allSettings => {
-      this.settingsData = JSON.parse(allSettings["settings"][0]["roas"]);
-    }
-    );
+    var getSettingsData: any = "";
+    getSettingsData = localStorage.getItem("settings");
+    this.settingsData = JSON.parse(getSettingsData);
   }
 
   onSubmit(form: NgForm) {
     if (form.valid) {
       this.http.post(environment.webservicebaseUrl + "/set-settings", form.value).subscribe(allSettings => {
         this.savedSettingsData = 1;
+        localStorage.setItem("settings", allSettings["settings"]);
       });
     }
   }
-
 }
