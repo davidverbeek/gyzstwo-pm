@@ -20,6 +20,12 @@ import { BolminimumComponent } from './pages/bolminimum/bolminimum/bolminimum.co
 import { BolminimumModule } from './pages/bolminimum/bolminimum.module';
 import { FormsModule } from '@angular/forms';
 import { SettingsModule } from './pages/settings/settings.module';
+import { RevenueModule } from './pages/revenue/revenue.module';
+import { RevenueComponent } from './pages/revenue/revenue/revenue.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatInputModule } from '@angular/material/input';
+
 
 const gyzsroutes: Routes = [
   {
@@ -30,6 +36,7 @@ const gyzsroutes: Routes = [
       { path: "setprices", canActivate: [AuthGuard], component: SetpricesComponent },
       { path: "bolcommission", canActivate: [AuthGuard], component: BolcommissionComponent },
       { path: "bolminimum", canActivate: [AuthGuard], component: BolminimumComponent },
+      { path: "revenue", canActivate: [AuthGuard], component: RevenueComponent },
       { path: "settings", canActivate: [AuthGuard], component: SettingsComponent },
       { path: '', redirectTo: '/admin/dashboard', pathMatch: 'full' },
     ],
@@ -54,6 +61,10 @@ const gyzsroutes: Routes = [
     AgGridModule,
     SettingsModule,
     FormsModule,
+    RevenueModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatInputModule,
     RouterModule.forChild(gyzsroutes)
   ]
 })

@@ -9,6 +9,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import * as $ from 'jquery';
 import * as bootstrap from "bootstrap";
 import { DatePipe } from '@angular/common';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { DatePipe } from '@angular/common';
     AppRoutingModule,
     AgGridModule,
     FormsModule,
-    AuthModule
+    AuthModule,
+    BrowserAnimationsModule
   ],
   providers: [DatePipe],
   bootstrap: [AppComponent]

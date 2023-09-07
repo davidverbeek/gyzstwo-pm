@@ -5,7 +5,8 @@
 export const environment = {
   production: false,
   webservicebaseUrl: "http://localhost:3200",
-  agbaseUrl: "http://localhost:4200/AG/"
+  agbaseUrl: "http://localhost:4200/AG/",
+  revenueUrl: "http://localhost"
 };
 
 /*
