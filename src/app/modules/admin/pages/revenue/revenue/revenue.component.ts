@@ -4,6 +4,8 @@ import { GridReadyEvent, IServerSideDatasource, ServerSideStoreType, RowClassPar
 import { MatDatepicker } from '@angular/material/datepicker';
 import { HttpClient } from '@angular/common/http';
 import { RevenuefooterComponent } from '../revenuefooter/revenuefooter.component';
+import * as XLSX from 'xlsx'
+import { writeFile } from 'xlsx';
 
 
 
@@ -32,6 +34,8 @@ export class RevenueComponent implements OnInit {
   @ViewChild('datepicker2') datepicker2: MatDatepicker<Date>;
   sumRows = Array();
   selectedDate: any;
+  spinner: any = false;
+  isDisabled: any = false;
 
   constructor(private http: HttpClient) { }
 
@@ -137,6 +141,47 @@ export class RevenueComponent implements OnInit {
       var rows = createData(sumRows);
       this.api.setPinnedBottomRowData(rows);
     });
+  }
+  exportRevenue() {
+    this.spinner = true;
+    this.isDisabled = true;
+    var currentsql = localStorage.getItem("currentSql")?.trim();
+    this.http.post(environment.webservicebaseUrl + "/all-revenue", currentsql).subscribe(responseRevenueData => {
+      var revenueExportData: any = [];
+      for (let i = 0; i < responseRevenueData["msg"].length; i++) {
+        var exportRevenueItem: any = {};
+        exportRevenueItem["Revenue Date Range"] = responseRevenueData["msg"][i]["reportdate"];
+        exportRevenueItem["Leverancier"] = responseRevenueData["msg"][i]["supplier_type"];
+        exportRevenueItem["Artikelnummer (Artikel)"] = responseRevenueData["msg"][i]["sku"];
+        exportRevenueItem["Naam"] = responseRevenueData["msg"][i]["name"];
+        exportRevenueItem["Merk"] = responseRevenueData["msg"][i]["merk"];
+        exportRevenueItem["Afzet"] = responseRevenueData["msg"][i]["sku_total_quantity_sold"];
+        exportRevenueItem["Omzet"] = responseRevenueData["msg"][i]["sku_total_price_excl_tax"];
+        exportRevenueItem["Vericale som"] = responseRevenueData["msg"][i]["sku_vericale_som"];
+        exportRevenueItem["Vericale som (%)"] = responseRevenueData["msg"][i]["vericale_som_percentage"];
+        exportRevenueItem["Inkoopprijs (Inkpr)"] = responseRevenueData["msg"][i]["sku_bp_excl_tax"];
+        exportRevenueItem["Verkoopprijs (Vkpr)"] = responseRevenueData["msg"][i]["sku_sp_excl_tax"];
+        exportRevenueItem["Absolute Margin"] = responseRevenueData["msg"][i]["sku_abs_margin"];
+        exportRevenueItem["Profit margin BP %"] = responseRevenueData["msg"][i]["sku_margin_bp"];
+        exportRevenueItem["Profit margin SP %"] = responseRevenueData["msg"][i]["sku_margin_sp"];
+        exportRevenueItem["Vericale som (BP)"] = responseRevenueData["msg"][i]["sku_vericale_som_bp"];
+        exportRevenueItem["Vericale som (BP %)"] = responseRevenueData["msg"][i]["sku_vericale_som_bp_percentage"];
+        exportRevenueItem["Refund Quantities"] = responseRevenueData["msg"][i]["sku_refund_qty"];
+        exportRevenueItem["Refund Amount"] = responseRevenueData["msg"][i]["sku_refund_revenue_amount"];
+        exportRevenueItem["Refund Amount (BP)"] = responseRevenueData["msg"][i]["sku_refund_bp_amount"];
+        exportRevenueItem["Abs Mar. Vericale som"] = responseRevenueData["msg"][i]["sku_vericale_som_abs"];
+        exportRevenueItem["Abs Mar. Vericale som %"] = responseRevenueData["msg"][i]["sku_vericale_som_abs_percentage"];
+        revenueExportData[i] = exportRevenueItem;
+      }
+      const worksheet = XLSX.utils.json_to_sheet(revenueExportData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Revenue');
+      writeFile(workbook, 'revenueExport.xlsx');
+      this.spinner = false;
+      this.isDisabled = false;
+
+    });
+
 
   }
 
@@ -164,6 +209,7 @@ function createServerSideDatasource(server: any): IServerSideDatasource {
           }
           //params.successCallback(response.rows, response.lastRow);
           var limitIndex = (response.currentSql).indexOf("limit");
+          localStorage.setItem("currentSql", (response.currentSql).substring(0, limitIndex));
           params.success({ rowData: response.rows, rowCount: response.lastRow })
 
         })

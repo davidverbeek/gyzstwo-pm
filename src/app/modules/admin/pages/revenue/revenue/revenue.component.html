@@ -10,7 +10,7 @@
 </section>
 
 <div style="padding: 15px;">
-    <div style="float: left;">
+    <div style="float: left; padding-top: 22px;">
         Date:- {{selectedDate}}
     </div>
 
@@ -26,7 +26,13 @@
             <mat-datepicker-toggle matSuffix [for]="datepicker2"></mat-datepicker-toggle>
             <mat-datepicker #datepicker2></mat-datepicker>
         </mat-form-field>
-        <button type="button" class="btn btn-primary" (click)="getRevenue()">Get Data</button>
+        <button type="button" class="btn btn-primary" (click)="getRevenue()" style="margin-right: 10px;"><span
+                class="glyphicon glyphicon-stats"></span> Get
+            Data</button>
+        <button type="button" class="btn btn-primary" style="margin-right: 10px;" (click)="exportRevenue()"
+            [disabled]="isDisabled"><i class="fa fa-fw fa-cloud-download"></i> Export Data <i *ngIf="spinner"
+                class="fa fa-circle-o-notch fa-spin" style="font-size:12px; margin-left:5px;"></i></button>
+        <button type="button" class="btn btn-primary"> <i class="fa fa-fw fa-refresh"></i> Sync Sort Order</button>
     </div>
     <div style="clear: both;"></div>
     <ag-grid-angular style="width: 100%; height:800px;" class="ag-theme-alpine" [rowData]="rowData"

@@ -20,8 +20,7 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
   private params!: IToolPanelParams;
   getAllDebtors: any = "";
   currentDateTime: any;
-  exportSpinner: any = false;
-  exportLinkedClicked: any = true;
+
   uploadValidationMessage: any = "Import Xlsx Only";
 
   constructor(private sidebarService: PmSidebarService, private http: HttpClient, private datePipe: DatePipe) {
@@ -42,6 +41,8 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
   xlsxPrices: any = "";
   uploadMessage: any = "";
   uploadSpinner: any = false;
+  spinner: any = false;
+  isDisabled: any = false;
 
   selectedOption(type: string) {
     if (type == "SP") {
@@ -72,9 +73,9 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
     this.selCG = selValue;
   }
   btnExportPrices() {
-    alert("hi");
-    this.exportSpinner = true;
-    this.exportLinkedClicked = false;
+
+    this.spinner = true;
+    this.isDisabled = true;
     var currentsql = localStorage.getItem("currentSql")?.trim();
     this.http.post(environment.webservicebaseUrl + "/all-products", currentsql).subscribe(responseData => {
       var exportData: any = [];
@@ -136,9 +137,8 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Prices');
       writeFile(workbook, 'priceExport.xlsx');
-      this.exportSpinner = false;
-      this.exportLinkedClicked = true;
-
+      this.spinner = false;
+      this.isDisabled = false;
     });
   }
   btnImportPrices(event: any) {
