@@ -90,7 +90,8 @@ export class RevenueComponent implements OnInit {
     { field: 'sku_refund_revenue_amount', headerName: 'Refund Amount', sortable: true, filter: 'number' },
     { field: 'sku_refund_bp_amount', headerName: 'Refund Amount (BP)', sortable: true, filter: 'number' },
     { field: 'sku_vericale_som_abs', headerName: 'Abs Mar. Vericale som', sortable: true, filter: 'number' },
-    { field: 'sku_vericale_som_abs_percentage', headerName: 'Abs Mar. Vericale som %', sortable: true, filter: 'number' }
+    { field: 'sku_vericale_som_abs_percentage', headerName: 'Abs Mar. Vericale som %', sortable: true, filter: 'number' },
+    { field: 'reportdate', headerName: 'Date', hide: true }
   ];
 
   // DefaultColDef sets props common to all Columns

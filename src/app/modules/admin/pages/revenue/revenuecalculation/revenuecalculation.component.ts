@@ -15,11 +15,14 @@ export class RevenuecalculationComponent implements ICellRendererAngularComp {
   revSku: any = "";
 
   agInit(params: any): void {
-    this.params = params;
-    this.revData[0] = "2023-01-01 00:00:00";
-    this.revData[1] = "2023-09-05 23:59:00";
-    this.revData[2] = params.data["sku"];
-    this.revSku = params.data["sku"];
+    if (typeof params.data["sku"] != "undefined") {
+      this.params = params;
+      this.revSku = params.data["sku"];
+      var getRevDate = (params.data["reportdate"]).split(" To ");
+      this.revData[0] = "" + getRevDate[0] + " 00:00:00";
+      this.revData[1] = "" + getRevDate[1] + " 23:59:00";
+      this.revData[2] = params.data["sku"];
+    }
   }
 
   refresh(): boolean {
