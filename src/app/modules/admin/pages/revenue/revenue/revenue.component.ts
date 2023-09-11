@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { RevenuefooterComponent } from '../revenuefooter/revenuefooter.component';
 import * as XLSX from 'xlsx'
 import { writeFile } from 'xlsx';
+import { RevenuecalculationComponent } from '../revenuecalculation/revenuecalculation.component';
 
 
 
@@ -37,6 +38,13 @@ export class RevenueComponent implements OnInit {
   spinner: any = false;
   isDisabled: any = false;
 
+  dataSpinner: any = false;
+  isDataDisabled: any = false;
+
+  syncSpinner: any = false;
+  isSyncDisabled: any = false;
+
+
   constructor(private http: HttpClient) { }
 
   ngOnInit(): void {
@@ -64,7 +72,7 @@ export class RevenueComponent implements OnInit {
   public columnDefs = [
     { field: 'id', headerName: 'Id', sortable: true, filter: 'number' },
     { field: 'supplier_type', headerName: 'Leverancier', sortable: true, filter: 'text' },
-    { field: 'sku', headerName: 'Sku', sortable: true, filter: 'text' },
+    { field: 'sku', headerName: 'Sku', sortable: true, filter: 'text', cellRenderer: RevenuecalculationComponent },
     { field: 'name', headerName: 'Name', sortable: true, filter: 'text' },
     { field: 'merk', headerName: 'Merken', sortable: true, filter: 'text' },
     { field: 'sku_total_quantity_sold', headerName: 'Afzet', sortable: true, filter: 'number' },
@@ -126,20 +134,27 @@ export class RevenueComponent implements OnInit {
     var date_range = Array();
     date_range[0] = this.revenueStartDate;
     date_range[1] = this.revenueEndDate;
+    this.dataSpinner = true;
+    this.isDataDisabled = true;
 
     this.http.post(environment.revenueUrl, date_range).subscribe(responseData => {
 
-      var sumRows = Array();
-
-      sumRows.push({ "sku_vericale_som": responseData["total_revenue"] });
-      sumRows.push({ "sku_vericale_som_bp": responseData["total_bp"] });
-      sumRows.push({ "sku_refund_revenue_amount": responseData["tot_refund_amount"] });
-      sumRows.push({ "sku_abs_margin": responseData["tot_abs_margin"] });
-      sumRows.push({ "sku_margin_sp": responseData["tot_pm_sp"] });
-      this.selectedDate = responseData["date_selected"];
-      this.loadAGGrid();
-      var rows = createData(sumRows);
-      this.api.setPinnedBottomRowData(rows);
+      if (responseData["err"] == "error") {
+        alert("Something Went wrong. Please try again with different date range")
+      } else {
+        var sumRows = Array();
+        sumRows.push({ "sku_vericale_som": responseData["total_revenue"] });
+        sumRows.push({ "sku_vericale_som_bp": responseData["total_bp"] });
+        sumRows.push({ "sku_refund_revenue_amount": responseData["tot_refund_amount"] });
+        sumRows.push({ "sku_abs_margin": responseData["tot_abs_margin"] });
+        sumRows.push({ "sku_margin_sp": responseData["tot_pm_sp"] });
+        this.selectedDate = responseData["date_selected"];
+        this.loadAGGrid();
+        var rows = createData(sumRows);
+        this.api.setPinnedBottomRowData(rows);
+      }
+      this.dataSpinner = false;
+      this.isDataDisabled = false;
     });
   }
   exportRevenue() {
@@ -179,14 +194,23 @@ export class RevenueComponent implements OnInit {
       writeFile(workbook, 'revenueExport.xlsx');
       this.spinner = false;
       this.isDisabled = false;
-
     });
-
-
   }
 
-
-
+  syncRevenueId() {
+    this.syncSpinner = true;
+    this.isSyncDisabled = true;
+    this.http.get(environment.revenueSyncUrl).subscribe(syncData => {
+      console.log(syncData);
+      if (syncData["msg"] != "success") {
+        alert("Something went wrong please try again. Error:-" + syncData["msg"] + "");
+      } else {
+        alert("Successfully updated the sort order");
+      }
+    });
+    this.syncSpinner = false;
+    this.isSyncDisabled = false;
+  }
 }
 
 

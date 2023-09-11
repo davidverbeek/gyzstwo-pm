@@ -6,11 +6,13 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { RevenuefooterComponent } from './revenuefooter/revenuefooter.component';
+import { RevenuecalculationComponent } from './revenuecalculation/revenuecalculation.component';
 
 @NgModule({
   declarations: [
     RevenueComponent,
-    RevenuefooterComponent
+    RevenuefooterComponent,
+    RevenuecalculationComponent
   ],
   imports: [
     CommonModule,

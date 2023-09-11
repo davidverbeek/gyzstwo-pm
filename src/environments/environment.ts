@@ -6,7 +6,8 @@ export const environment = {
   production: false,
   webservicebaseUrl: "http://localhost:3200",
   agbaseUrl: "http://localhost:4200/AG/",
-  revenueUrl: "http://localhost"
+  revenueUrl: "http://localsymfony.com/nodewsrevenue/get_revenue.php",
+  revenueSyncUrl: "http://localsymfony.com/nodewsrevenue/set_sortorder.php"
 };
 
 /*
