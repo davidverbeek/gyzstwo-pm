@@ -110,6 +110,7 @@ export class ModalsComponent implements OnInit {
 
     { field: 'created_at', headerName: 'Created Date', sortable: true, filter: 'date' },
     { field: 'order_id', headerName: 'Order ID', sortable: true, filter: 'number' },
+    { field: 'state', headerName: 'Order Status', sortable: true, filter: 'text' },
     { field: 'qty_ordered', headerName: 'Quantity Ordered', sortable: true, filter: 'number' },
     { field: 'qty_refunded', headerName: 'Quantity Refunded', sortable: true, filter: 'number' },
     { field: 'base_cost', headerName: 'Base Cost', sortable: true, filter: 'number' },
