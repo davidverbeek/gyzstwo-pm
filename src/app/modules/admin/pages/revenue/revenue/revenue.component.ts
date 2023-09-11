@@ -202,11 +202,11 @@ export class RevenueComponent implements OnInit {
     this.isSyncDisabled = true;
     this.http.get(environment.revenueSyncUrl).subscribe(syncData => {
       console.log(syncData);
-      if (syncData["msg"] != "success") {
-        alert("Something went wrong please try again. Error:-" + syncData["msg"] + "");
-      } else {
-        alert("Successfully updated the sort order");
-      }
+      /* if (syncData["msg"] != "success") {
+         alert("Something went wrong please try again. Error:-" + syncData["msg"] + "");
+       } else {
+         alert("Successfully updated the sort order");
+       } */
     });
     this.syncSpinner = false;
     this.isSyncDisabled = false;
