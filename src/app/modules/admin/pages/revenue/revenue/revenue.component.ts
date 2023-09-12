@@ -70,24 +70,98 @@ export class RevenueComponent implements OnInit {
   }
   // Each Column Definition results in one Column.
   public columnDefs = [
-    { field: 'id', headerName: 'Id', sortable: true, filter: 'number' },
+    {
+      field: 'id', headerName: 'Id', sortable: true, filter: 'number'
+    },
     { field: 'supplier_type', headerName: 'Leverancier', sortable: true, filter: 'text' },
-    { field: 'sku', headerName: 'Sku', sortable: true, filter: 'text', cellRenderer: RevenuecalculationComponent },
+    {
+      field: 'sku', headerName: 'Sku', sortable: true, filter: 'text', cellRenderer: RevenuecalculationComponent
+    },
     { field: 'name', headerName: 'Name', sortable: true, filter: 'text' },
     { field: 'merk', headerName: 'Merken', sortable: true, filter: 'text' },
     { field: 'sku_total_quantity_sold', headerName: 'Afzet', sortable: true, filter: 'number' },
     { field: 'sku_total_price_excl_tax', headerName: 'Omzet', sortable: true, filter: 'number' },
-    { field: 'sku_vericale_som', headerName: 'Vericale som', sortable: true, filter: 'number' },
+    {
+      field: 'sku_vericale_som', headerName: 'Vericale som', sortable: true, filter: 'number', cellRendererSelector: (params: any) => {
+        if (params.node.rowPinned) {
+          return {
+            component: RevenuefooterComponent,
+            params: {
+              style: { fontWeight: 'bold', fontStyle: 'italic', fontSize: '16px' },
+            },
+          };
+        } else {
+          // rows that are not pinned don't use any cell renderer
+          return undefined;
+        }
+      }
+    },
     { field: 'vericale_som_percentage', headerName: 'Vericale som (%)', sortable: true, filter: 'number' },
     { field: 'sku_bp_excl_tax', headerName: 'Buying Price', sortable: true, filter: 'number' },
     { field: 'sku_sp_excl_tax', headerName: 'Selling Price', sortable: true, filter: 'number' },
-    { field: 'sku_abs_margin', headerName: 'Absolute margin', sortable: true, filter: 'number' },
+    {
+      field: 'sku_abs_margin', headerName: 'Absolute margin', sortable: true, filter: 'number', cellRendererSelector: (params: any) => {
+        if (params.node.rowPinned) {
+          return {
+            component: RevenuefooterComponent,
+            params: {
+              style: { fontWeight: 'bold', fontStyle: 'italic', fontSize: '16px' },
+            },
+          };
+        } else {
+          // rows that are not pinned don't use any cell renderer
+          return undefined;
+        }
+      }
+    },
     { field: 'sku_margin_bp', headerName: 'Profit margin BP %', sortable: true, filter: 'number' },
-    { field: 'sku_margin_sp', headerName: 'Profit margin SP %', sortable: true, filter: 'number' },
-    { field: 'sku_vericale_som_bp', headerName: 'Vericale som (BP)', sortable: true, filter: 'number' },
+    {
+      field: 'sku_margin_sp', headerName: 'Profit margin SP %', sortable: true, filter: 'number', cellRendererSelector: (params: any) => {
+        if (params.node.rowPinned) {
+          return {
+            component: RevenuefooterComponent,
+            params: {
+              style: { fontWeight: 'bold', fontStyle: 'italic', fontSize: '16px' },
+            },
+          };
+        } else {
+          // rows that are not pinned don't use any cell renderer
+          return undefined;
+        }
+      }
+    },
+    {
+      field: 'sku_vericale_som_bp', headerName: 'Vericale som (BP)', sortable: true, filter: 'number', cellRendererSelector: (params: any) => {
+        if (params.node.rowPinned) {
+          return {
+            component: RevenuefooterComponent,
+            params: {
+              style: { fontWeight: 'bold', fontStyle: 'italic', fontSize: '16px' },
+            },
+          };
+        } else {
+          // rows that are not pinned don't use any cell renderer
+          return undefined;
+        }
+      }
+    },
     { field: 'sku_vericale_som_bp_percentage', headerName: 'Vericale som (BP %)', sortable: true, filter: 'number' },
-    { field: 'sku_refund_qty', headerName: 'Refund Quantities', sortable: true, filter: 'number' },
-    { field: 'sku_refund_revenue_amount', headerName: 'Refund Amount', sortable: true, filter: 'number' },
+    { field: 'sku_refund_qty', headerName: 'Refund Quantities', sortable: true, filter: 'number', },
+    {
+      field: 'sku_refund_revenue_amount', headerName: 'Refund Amount', sortable: true, filter: 'number', cellRendererSelector: (params: any) => {
+        if (params.node.rowPinned) {
+          return {
+            component: RevenuefooterComponent,
+            params: {
+              style: { fontWeight: 'bold', fontStyle: 'italic', fontSize: '16px' },
+            },
+          };
+        } else {
+          // rows that are not pinned don't use any cell renderer
+          return undefined;
+        }
+      }
+    },
     { field: 'sku_refund_bp_amount', headerName: 'Refund Amount (BP)', sortable: true, filter: 'number' },
     { field: 'sku_vericale_som_abs', headerName: 'Abs Mar. Vericale som', sortable: true, filter: 'number' },
     { field: 'sku_vericale_som_abs_percentage', headerName: 'Abs Mar. Vericale som %', sortable: true, filter: 'number' },
@@ -109,6 +183,14 @@ export class RevenueComponent implements OnInit {
     this.gridParams = params;
     this.columnApi = params.columnApi;
     this.loadAGGrid();
+
+    this.getRowStyle = function (params) {
+      if (params.node.rowPinned) {
+        return { background: '#c1d6e7' };
+      } else {
+        return { background: '' };
+      }
+    };
   }
 
   loadAGGrid() {

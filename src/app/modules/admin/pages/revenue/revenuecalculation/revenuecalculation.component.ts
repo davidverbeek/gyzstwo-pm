@@ -13,6 +13,7 @@ export class RevenuecalculationComponent implements ICellRendererAngularComp {
 
   revData: object = [];
   revSku: any = "";
+  isRowPinned: any;
 
   agInit(params: any): void {
     if (typeof params.data["sku"] != "undefined") {
@@ -23,6 +24,7 @@ export class RevenuecalculationComponent implements ICellRendererAngularComp {
       this.revData[1] = "" + getRevDate[1] + " 23:59:00";
       this.revData[2] = params.data["sku"];
     }
+    this.isRowPinned = params.node.rowPinned;
   }
 
   refresh(): boolean {

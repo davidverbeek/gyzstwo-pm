@@ -1,2 +1,2 @@
-<i class="fa fa-history" (click)="openRevCalculation()" style="color:green; cursor:pointer;"
+<i *ngIf="!isRowPinned" class="fa fa-history" (click)="openRevCalculation()" style="color:green; cursor:pointer;"
     title="View Calculation"></i> {{ revSku }}

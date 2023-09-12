@@ -9,7 +9,7 @@ import { ICellRendererAngularComp } from 'ag-grid-angular';
 export class RevenuefooterComponent implements ICellRendererAngularComp {
 
   public params: any;
-  public style!: string;
+  public style!: any;
 
   agInit(params: any): void {
     this.params = params;
