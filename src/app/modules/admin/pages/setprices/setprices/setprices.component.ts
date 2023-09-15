@@ -9,6 +9,10 @@ import { PmSidebarService } from '../../../../../services/pm-sidebar.service';
 import { SideSetPricesComponent } from 'src/app/modules/admin/pages/setprices/setprices/side-set-prices/side-set-prices.component';
 import { LoadDebtorsService } from 'src/app/services/load-debtors.service';
 import { PricehistoryComponent } from 'src/app/modules/admin/pages/setprices/pricehistory/pricehistory.component';
+declare function checkGiven(any, boolean): void;
+declare function checkIt(boolean): void;
+//import { PmDebterService } from '../../../../../services/load-debtors.service';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-setprices',
@@ -28,13 +32,15 @@ export class SetpricesComponent implements OnInit {
   chkAllCount: string;
   chkAllProducts: any;
   isChkAllChecked: number = 0;
- 
+
 
   public rowModelType: 'serverSide' = 'serverSide';
   public serverSideStoreType: ServerSideStoreType = 'partial';
   public fillHandleDirection: 'x' | 'y' | 'xy' = 'x';
   all_debtors: any = [];
-
+  deb_products: any = [];
+  debterProds: any = [];
+  debter_product_data = "";
   //public rowModelType: 'serverSide';
 
   public paginationPageSize = 500;
@@ -51,7 +57,7 @@ export class SetpricesComponent implements OnInit {
       }
     },
     { field: 'name', headerName: 'Naam', sortable: true, filter: 'text' },
-    { field: 'sku', headerName: 'SKU', sortable: true, filter: 'text', cellRenderer: PricehistoryComponent},
+    { field: 'sku', headerName: 'SKU', sortable: true, filter: 'text', cellRenderer: PricehistoryComponent },
     { field: 'supplier_sku', headerName: 'SKU (Sup)', sortable: true, filter: 'text', hide: true },
     { field: 'eancode', headerName: 'Ean', sortable: true, filter: 'text', hide: true },
     { field: 'merk', headerName: 'Merk', sortable: true, filter: 'text' },
@@ -98,24 +104,59 @@ export class SetpricesComponent implements OnInit {
 
     if (localStorage.getItem("debtorCols") != null) {
 
-
       let debColString = localStorage.getItem("debtorCols");
 
       var deb_columns = [];
       deb_columns = JSON.parse(debColString || '{}');
       for (const [key, value] of Object.entries(deb_columns)) {
         var debcellbg_color = "";
+        var checkbox_class = "";
         if (value["type"] == "debsp") {
           debcellbg_color = "#90ee90";
+          checkbox_class = "show_cols_dsp";
         } else if (value["type"] == "debppbp") {
           debcellbg_color = "#7ac3ff";
+          checkbox_class = "show_cols_dmbp";
         } else if (value["type"] == "debppsp") {
           debcellbg_color = "#fffd6e";
+          checkbox_class = "show_cols_dmsp";
         } else if (value["type"] == "debdgp") {
           debcellbg_color = "#fc6b6b";
+          checkbox_class = "show_cols_ddgp";
         }
 
-        let definition: ColDef = { headerName: value["group_alias"], field: value["customer_group_name"], sortable: true, filter: 'number', editable: true, hide: true, cellStyle: { 'background-color': '' + debcellbg_color + '' } };
+        //'.show_cols_dmbp, .show_cols_dmsp, .show_cols_ddgp, .show_cols_dsp'
+
+        let definition: ColDef = {
+          headerName: value["group_alias"], field: value["customer_group_name"], sortable: true, filter: 'number',
+          editable: (params) => {
+
+            var group_name_product = false;
+            var column_name: string = value["customer_group_name"];
+            var column_name_seperated = column_name.split('_');
+            this.debterProds.forEach((value, key) => {
+              if (column_name_seperated[1] in value) {
+                const x = value;
+                var debter_name_product_ids = value[column_name_seperated[1]];
+                if (debter_name_product_ids.indexOf(params.data.product_id) !== -1) {
+                  group_name_product = true;
+                }
+              }
+
+            });
+            return group_name_product;
+          }, hide: true,
+          cellStyle: params => {
+            var status_of_debter_product = this.checkIfDebterProduct(params.data.product_id, value["customer_group_name"]);
+            if (status_of_debter_product) {
+
+              //mark police cells as red
+              return { backgroundColor: debcellbg_color };
+            }
+
+            return { backgroundColor: "#808080" };//grey
+          }, toolPanelClass: 'show_deb_cols ' + checkbox_class
+        };
         this.columnDefs.push(definition);
       }
     }
@@ -124,9 +165,26 @@ export class SetpricesComponent implements OnInit {
       let alldebString = localStorage.getItem("allDebts");
       this.all_debtors = JSON.parse(alldebString || '{}');
     }
+
+
+    this.http.get(environment.webservicebaseUrl + "/all-debtor-product").subscribe(responseData => {
+
+      if (responseData["msg"]) {
+        responseData["msg"].forEach((value, key) => {
+          var element = {};
+          element[value["customer_group_name"]] = value["product_ids"];
+
+          this.debterProds.push(element);
+        });
+      }
+
+    });
+
+
   }
 
   ngOnInit() {
+
     this.subcat = this.categoryService.categorySelected.subscribe((allselectedcats) => {
       this.cats = allselectedcats;
       this.updatedProducts = [];
@@ -181,6 +239,7 @@ export class SetpricesComponent implements OnInit {
       }
 
     });
+
   }
 
   ngOnDestroy() {
@@ -316,10 +375,18 @@ export class SetpricesComponent implements OnInit {
       }
       return { background: '' };
     };
+
+    debterCheckboxes();
   }
 
   loadAGGrid() {
-    var datasource = createServerSideDatasource(this.gridParams, this.cats);
+    var cat_all_str = this.cats;
+    if ($('.show_deb_cols').find("input[type='checkbox']").is(':checked') && cat_all_str != '' && cat_all_str != '-1') {//means this is a group list
+      if (!$('#flexCheckDefault').is(':checked')) {
+        cat_all_str = '-1';
+      }
+    }
+    var datasource = createServerSideDatasource(this.gridParams, cat_all_str);
     this.api.setServerSideDatasource(datasource);
     this.fillHandleDirection = 'y';
   }
@@ -533,8 +600,114 @@ export class SetpricesComponent implements OnInit {
     }
   }
 
+
+
+  onApplyDebterCategories() {
+    let selected_group = new Array();
+    let unique_group = new Array();
+    //$('.show_cols_dmbp, .show_cols_dmsp, .show_cols_ddgp, .show_cols_dsp').each(function (index) {
+    $('.show_deb_cols').each(function (index) {
+      var checkbox_group = "";
+      if ($(this).find("input[type='checkbox']").is(':checked')) {
+        checkbox_group = $(this).find("span.ag-column-select-column-label").text();
+        var myArray = checkbox_group.split("(");
+        var myArray_2 = myArray[1].split(")");
+        selected_group.push(myArray_2[0]);
+      }
+    });
+    // to ask sir that group name is not coming instantly
+    unique_group = removeDuplicates(selected_group);
+    const toObject = Object.assign({}, unique_group);
+
+
+    this.http.post(environment.webservicebaseUrl + "/dbt-alias-cats", toObject)
+      .pipe(map(responseData => {
+        const category_ids: string[] = [];
+
+        responseData["rows"].forEach(function1);
+
+        function function1(currentValue, index) {
+          // console.log("Index in array is: " + index + " ::  Value is: " + currentValue.product_id);
+          category_ids.push(currentValue.category_ids);
+        }
+        let comma_sperated_ids = category_ids.toString();
+        return comma_sperated_ids;
+      }))
+      .subscribe(
+        responseData => {
+          $("#btnDebCategories").css("opacity", 0.5);
+          $("#btnDebCategories").find('span.loading-img-update').css({ "display": "inline-block" });
+          $("#btnDebCategories").attr('disabled', 'disabled');
+
+          var debter_cats = responseData;
+          $("#hdn_selectedcategories").val(debter_cats);
+          checkIt(false);
+          if (debter_cats != "") { // means status = checked
+            $('#flexCheckDefault').prop('checked', true);
+
+            var cat_id_arr = debter_cats.split(',');
+            $.each(cat_id_arr, function (key, value) {
+              var $li = $('li[data-id=' + value + ']');
+              checkGiven($li, true);
+            });
+            this.toggleCheckbox('none');
+          } else { // remove category filter
+            $("i.sim-tree-checkbox").parent('a').parent('li').addClass('disabled');
+            $("#flexCheckDefault").attr("disabled", "true");
+          }
+          $("#btnDebCategories").css("opacity", 1);
+          $("#btnDebCategories").find('span.loading-img-update').css({ "display": "none" });
+          $('#btnDebCategories').removeAttr('disabled');
+
+          //this.categoryService.categorySelected.subscribe((allselectedcats) => {
+          this.cats = debter_cats;
+          //});
+
+          this.loadAGGrid();
+        });
+
+
+
+  }//end onApplyDebterCategories()
+
+
+
+  toggleCheckbox(new_status) {
+    $('a>i.sim-tree-checkbox').each(function (index) {
+      $(this).parent('a').parent('li').removeClass('disabled');
+      if (!$(this).hasClass('checked')) {
+        if (new_status == 'none') {
+          $(this).parent('a').parent('li').addClass('disabled');
+        } else {
+          $(this).parent('a').parent('li').removeClass('disabled');
+        }
+      }
+    });
+  }
+
+  checkIfDebterProduct(product_id, current_group_name) {
+    var group_name_product = false;
+    var column_name: string = current_group_name;
+    var column_name_seperated = column_name.split('_');
+    this.debterProds.forEach((value, key) => {
+      if (column_name_seperated[1] in value) {
+        const x = value;
+        var debter_name_product_ids = value[column_name_seperated[1]];
+        if (debter_name_product_ids.indexOf(product_id) !== -1) {
+          group_name_product = true;
+        }
+      }
+
+    });
+    return group_name_product;
+  }
+
 }
 
+function removeDuplicates(arr: any[]) {
+  return arr.filter((item,
+    index) => arr.indexOf(item) === index);
+}
 
 
 function createServerSideDatasource(server: any, cats: any): IServerSideDatasource {
@@ -652,3 +825,22 @@ function processUpdatedProduct(productData) {
   }
   return productData;
 }
+
+function debterCheckboxes() {
+
+  var count = 0;
+  $('div.show_deb_cols').on('click', function (e) {
+
+    if ($(this).find('.ag-column-select-checkbox').find('.ag-checkbox-input-wrapper').find("input[type='checkbox']").is(':checked')) {
+      count++;
+      if ($("label[for='btnDebCategories']").parent('div').css('display') != 'inline') {
+        $("label[for='btnDebCategories']").parent('div').css('display', 'inline');
+      }
+    } else {
+      count--;
+      if (count == 0) {
+        $("label[for='btnDebCategories']").parent('div').css('display', 'none');
+      }
+    };
+  });
+}//end debterCheckboxes()

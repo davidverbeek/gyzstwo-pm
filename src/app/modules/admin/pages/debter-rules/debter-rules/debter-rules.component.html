@@ -1,3 +1,8 @@
+<style>
+    .reduce_width {
+        width: 30%;
+    }
+</style>
 <section class="content-header">
     <h1>
         Debter Rules
@@ -7,6 +12,7 @@
         <li class="active">Debter Rules</li>
     </ol>
 </section>
+
 <div class="" id="data_filters1" style=" align-items-center">
     <div class="panel panel-primary">
         <div class="panel-heading">Add and Update Customer Group</div>
@@ -48,5 +54,31 @@
 
         </div>
 
+    </div>
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">Copy Categories</div>
+        <div class="panel-body">
+            <div class="form-group">
+                <label for="parent_debt_group">Copy From customer group:</label>
+                <select class="form-control required reduce_width" id="parent_debt_group" name="parent_debt_group">
+                    <option value="">Copy From</option>
+                    <option *ngFor="let x of from_debters" value="{{x.magento_id}}">{{x.group_alias}}</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="child_debt_group">Copy To customer group:</label>
+                <select class="form-control required reduce_width" id="child_debt_group" name="child_debt_group">
+                    <option value="">Copy To</option>
+                    <option *ngFor="let x of debters" value="{{x.customer_group_id}}">{{x.group_alias}}</option>
+                </select>
+
+
+            </div>
+
+            <button type="button" class="btn btn-primary btn-sm" name="btncopy" id="btncopy"
+                (click)="onCopyGroup($event)">Copy Categories</button>
+        </div>
     </div>
 </div>

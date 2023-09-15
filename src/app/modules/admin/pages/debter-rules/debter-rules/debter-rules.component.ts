@@ -26,6 +26,7 @@ export class DebterRulesComponent implements OnInit {
   checkproperty = '';
   product_ids_arr: any = {};
   category_ids: any = "";
+  from_debters: any = [];
   constructor(private http: HttpClient, private categoryService: PmCategoryService, private debterRulesService: LoadDebtorsService) {
   }
   @ViewChild('existingCats') existingCats: ElementRef;
@@ -41,6 +42,9 @@ export class DebterRulesComponent implements OnInit {
       }
     });
     $('#flexCheckDefault').prop('checked', false);
+
+    this.getCopyFromDebtor();
+
   }
 
   onSaveChanges() {
@@ -112,10 +116,7 @@ export class DebterRulesComponent implements OnInit {
             if (reset_product_ids != "") {
               this.debterRulesService.resetDebterPrices(debter_group, reset_product_ids);
             }
-
           });
-
-
     }
 
     var filterProcessData = updated_cats.filter(function () { return true; });
@@ -238,14 +239,60 @@ export class DebterRulesComponent implements OnInit {
         this.toggleCheckbox('none');//add disabled
         $("#flexCheckDefault").prop('checked', false);
       });
-
-
-
   };
 
   onLinkCategories(event: Event) {
     event.preventDefault();
     this.toggleCheckbox('');
+  }
+
+  showDivMessage(msg) {
+    $('<div class="alert alert-success" role="alert">' + msg + '</div>').insertBefore("#data_filters1");
+
+    window.setTimeout(function () {
+      $(".alert").fadeTo(500, 0).slideUp(500, function () {
+        $(this).remove();
+      });
+    }, 4000);
+  }
+
+  getCopyFromDebtor() {
+    this.from_debters = [];
+    this.http.get<any>(environment.webservicebaseUrl + "/list-copy-debtors").subscribe(responseData => {
+      if (responseData["error"] == null) {
+        responseData["rows"].forEach((value, key) => {
+          this.from_debters.push({ magento_id: value["magento_id"], group_alias: value["group_alias"] },
+          );
+        });
+      }
+    });
+  }
+
+  onCopyGroup(event: Event) {
+    var source_group_id = $('#parent_debt_group').val();
+    var child_group_id = $('#child_debt_group').val();
+
+    if (source_group_id == '') {
+      alert('Please select Group to copy FROM.');
+      $('#parent_debt_group').trigger('focus');
+      return false;
+    } else if (child_group_id == '') {
+      alert('Please select Group to copy TO.');
+      $('#child_debt_group').trigger('focus');
+      return false;
+    } else if (confirm("Existing products of TO DEBTER will be unassinged and their prices will be set to ZERO. Are you sure you want to continue?")) {
+
+      this.http.post<any>(environment.webservicebaseUrl + "/copy-groups", { source_group_id: source_group_id, destination_group_id: child_group_id }).subscribe(responseData => {
+        // var res = jQuery.parseJSON(data);
+        //showDivMessage(res["msg"]);
+        if (responseData["msg"]) {
+          this.showDivMessage(responseData["msg"]);
+          this.getCopyFromDebtor();
+        }
+        $('.reduce_width').val('');
+      });
+    }
+    return true;
   }
 
 }

@@ -16,6 +16,7 @@ export class LoadDebtorsService {
   //public debter_category_id = "";
   debtorColumns: any = [];
   allDebtors = new Object();
+  debterProds: any = [];
 
   constructor(private http: HttpClient) { }
 
@@ -72,5 +73,52 @@ export class LoadDebtorsService {
         alert('reset is done');
       }
     });
+  }
+
+
+  getMultipleDebterCats(debters_arr: any) {
+    //console.log(categories);
+    // const debter_id = debters_arr;
+
+    this.http.post(environment.webservicebaseUrl + "/dbt-rules-cats", { debter_id: debters_arr })
+      .pipe(map(responseData => {
+        let cats_ids: any = [];
+
+        responseData["debter_cats"].forEach(function1);
+
+        function function1(currentValue, index) {
+          // console.log("Index in array is: " + index + " ::  Value is: " + currentValue.product_id);
+          cats_ids.push(currentValue.category_ids);
+        }
+
+        //let comma_sperated_ids = cats_ids.toString();
+        return cats_ids;
+      }))
+      .subscribe(
+        responseData => {
+          // console.log(responseData);
+          //localStorage.setItem("categoryProds", responseData);
+        });
+  }
+
+  setDebtorProds() {
+
+    this.http.get(environment.webservicebaseUrl + "/all-debtor-product").subscribe(responseData => {
+      var element = {};
+      if (responseData["msg"]) {
+        responseData["msg"].forEach((value, key) => {
+          element[value["customer_group_name"]] = value["product_ids"];
+
+          this.debterProds.push(element);
+
+        });
+      }
+      let stringDeb_prods = JSON.stringify(this.debterProds);
+      localStorage.setItem("debtorProds", stringDeb_prods);
+    });
+  }
+
+  getDebtorProds() {
+    return localStorage.getItem("debtorProds");
   }
 }

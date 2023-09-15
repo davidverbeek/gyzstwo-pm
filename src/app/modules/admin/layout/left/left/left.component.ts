@@ -1,64 +1,69 @@
-import { Component, ElementRef, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 declare var simTree: any;
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { PmCategoryService } from '../../../../../services/pm.category.service';
+declare function checkGiven(any, boolean): void;
+declare function checkIt(boolean): void;
 
 @Component({
-  selector: 'app-left',
-  templateUrl: './left.component.html',
-  styleUrls: ['./left.component.css']
+    selector: 'app-left',
+    templateUrl: './left.component.html',
+    styleUrls: ['./left.component.css']
 })
 export class LeftComponent implements OnInit {
 
-  list: string;
-  constructor(private http: HttpClient, private categoryService: PmCategoryService) { }
+    list: string;
+    cats: string = "";
+    api: any;
+    gridParams: any;
+    columnApi: any;
+    constructor(private http: HttpClient, private categoryService: PmCategoryService, private router: Router) {
+    }
 
-  @ViewChild('allSelectedCats') allSelectedCats: ElementRef;
+    @ViewChild('allSelectedCats') allSelectedCats: ElementRef;
 
-  /*list = [{
-    "id": '1',
-    "pid": '',
-    "name": "JavaScript",
-  },
-  {
-    "id": '11',
-    "pid": '1', // parent ID
-    "name": "Angular"
-  },
-  {
-    "id": '12',
-    "pid": '1',
-    "name": "React"
-  }, {
-    "id": '13',
-    "pid": '1',
-    "name": "Vuejs"
-  }, {
-    "id": '14',
-    "pid": '1',
-    "name": "jQueryScript.Net"
-  },
-  {
-    "id": '2',
-    "pid": '',
-    "name": "HTML5"
-  },
-  {
-    "id": '3',
-    "pid": '',
-    "name": "CSS3",
-    "disabled": true
-  }]; */
+    /*list = [{
+      "id": '1',
+      "pid": '',
+      "name": "JavaScript",
+    },
+    {
+      "id": '11',
+      "pid": '1', // parent ID
+      "name": "Angular"
+    },
+    {
+      "id": '12',
+      "pid": '1',
+      "name": "React"
+    }, {
+      "id": '13',
+      "pid": '1',
+      "name": "Vuejs"
+    }, {
+      "id": '14',
+      "pid": '1',
+      "name": "jQueryScript.Net"
+    },
+    {
+      "id": '2',
+      "pid": '',
+      "name": "HTML5"
+    },
+    {
+      "id": '3',
+      "pid": '',
+      "name": "CSS3",
+      "disabled": true
+    }]; */
 
 
- 
+
 
     ngOnInit() {
-       // console.log("left");
         this.http.get<any>(environment.webservicebaseUrl + "/all-categories").subscribe(data => {
             this.list = data.categories;
-          //  console.log(data.categories);
 
             var tree = simTree({
                 el: '#tree',
@@ -73,19 +78,32 @@ export class LeftComponent implements OnInit {
                     //console.log(item);
 
                 },
-                onChange: function (item) {
+                onChange: (item) => {
+
+
                     var selectedCategories = new Array();
                     $.each(item, function (key, value) {
                         selectedCategories.push(value["id"]);
                     });
-                    $("#hdn_selectedcategories").val(selectedCategories);
-                    $("#btnloadcats").click();
+                    if (selectedCategories.length > 0) {
+                        $("#hdn_selectedcategories").val(selectedCategories);
+                    } else {
+                        $("#hdn_selectedcategories").val('-1');
+                    }
+
+                    $("#btnloadcats").trigger('click');
+
                 },
-                done: function () {
-                    $('#flexCheckDefault').prop('checked', true)
+                done: () => {
+                    $('#flexCheckDefault').prop('checked', true);
+                    this.toggleAllCategories(true);
+
+                    var left_cats = this.getTreeCategories();
+                    $('#hdn_selectedcategories').val(left_cats);
+                    $("#btnloadcats").trigger('click');
                 }
             });
-            this.toggleAllCategories(true);
+
         });
 
         setTimeout(function () {
@@ -116,6 +134,12 @@ export class LeftComponent implements OnInit {
 
         }, 3000);
 
+
+        this.categoryService.categorySelected.subscribe((allselectedcats) => {
+
+            this.cats = allselectedcats;
+        });
+
     }
 
 
@@ -124,29 +148,41 @@ export class LeftComponent implements OnInit {
         this.categoryService.categorySelected.next(this.allSelectedCats.nativeElement.value);
     }
 
+
     checkAllcats() {
         var current_status = $('#flexCheckDefault').prop('checked');
         let cat_all_str: any;
         cat_all_str = $("#hdn_selectedcategories").val();
-        if ($('input.show_deb_cols').is(":checked") && cat_all_str != '' && cat_all_str != '-1') {//means this is a group list
+
+        if ($('.show_deb_cols').find("input[type='checkbox']").is(':checked') && cat_all_str != '' && cat_all_str != '-1') {//means this is a group list
+
             let cat_all_arr = cat_all_str.split(',');
             if (current_status) { // check all hiddencategories
+
                 $.each(cat_all_arr, function (key, value) {
                     var $li = $('li[data-id=' + value + ']');
-                    this.checkGiven($li, true, true);
+                    checkGiven($li, true);
                 });
+
             } else { //uncheck all hiddencategories
                 $.each(cat_all_arr, function (key, value) {
                     var $li = $('li[data-id=' + value + ']');
-                    this.checkGiven($li, false, true);
+                    checkGiven($li, false);
                 });
             }
-        } else if (current_status) {
+        } else if (cat_all_str == '-1') {
             this.toggleAllCategories(current_status);
+            var left_cats = this.getTreeCategories();
+            $('#hdn_selectedcategories').val(left_cats);
         } else {
             this.toggleAllCategories(current_status);
+            var left_cats = this.getTreeCategories();
+            $('#hdn_selectedcategories').val(left_cats);
         }
+
+        $('#btnloadcats').trigger('click');
     }
+
 
     /**
      * name
@@ -173,4 +209,63 @@ export class LeftComponent implements OnInit {
         }
         return true;
     }
+
+
+    createServerSideDatasource(server: any, cats: any): IServerSideDatasource {
+        return {
+            getRows(params) {
+
+                params.request["cats"] = cats;
+                //console.log(params.request);
+                fetch(environment.webservicebaseUrl + "/pm-products", {
+                    method: 'post',
+                    body: JSON.stringify(params.request),
+                    headers: { "Content-Type": "application/json; charset=utf-8" }
+                })
+                    .then(httpResponse => httpResponse.json())
+                    .then(response => {
+
+                        //console.log(response);
+                        if (response.lastRow == null) {
+                            response.lastRow = 0;
+                        }
+                        //params.successCallback(response.rows, response.lastRow);
+                        var limitIndex = (response.currentSql).indexOf("limit");
+                        localStorage.setItem("currentSql", (response.currentSql).substring(0, limitIndex));
+                        params.success({ rowData: response.rows, rowCount: response.lastRow })
+
+                    })
+                    .catch(error => {
+                        // params.failCallback();
+                        params.fail();
+                    })
+            }
+        };
+    }
+    onGridReady(params: GridReadyEvent) {
+        this.api = params.api;
+        this.gridParams = params;
+
+    }
+
+    loadAGGrid() {
+        var datasource = this.createServerSideDatasource(this.gridParams, this.cats);
+        this.api.setServerSideDatasource(datasource);//this.api.setServerSideDatasource
+    }
+
+    getTreeCategories() {
+        var selected_categories = "-1";
+        if ($('a>i.sim-tree-checkbox').hasClass('checked')) {
+            var updated_cats = new Array();
+            $.each($('.sim-tree-checkbox'), function (index, value) {
+                if ($(this).hasClass('checked')) {
+                    updated_cats.push($(this).parent('a').parent('li').attr('data-id'));
+                }
+            });
+            selected_categories = updated_cats.toString();
+        }
+        return selected_categories;
+    }//end getTreeCategories()
+
+
 }
