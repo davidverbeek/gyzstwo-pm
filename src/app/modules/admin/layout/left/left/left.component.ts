@@ -15,8 +15,6 @@ export class LeftComponent implements OnInit {
 
     list: string;
     cats: string = "";
-    api: any;
-    gridParams: any;
     columnApi: any;
     constructor(private http: HttpClient, private categoryService: PmCategoryService) {
     }
@@ -210,48 +208,6 @@ export class LeftComponent implements OnInit {
         return true;
     }
 
-
-    createServerSideDatasource(server: any, cats: any): IServerSideDatasource {
-        return {
-            getRows(params) {
-
-                params.request["cats"] = cats;
-                //console.log(params.request);
-                fetch(environment.webservicebaseUrl + "/pm-products", {
-                    method: 'post',
-                    body: JSON.stringify(params.request),
-                    headers: { "Content-Type": "application/json; charset=utf-8" }
-                })
-                    .then(httpResponse => httpResponse.json())
-                    .then(response => {
-
-                        //console.log(response);
-                        if (response.lastRow == null) {
-                            response.lastRow = 0;
-                        }
-                        //params.successCallback(response.rows, response.lastRow);
-                        var limitIndex = (response.currentSql).indexOf("limit");
-                        localStorage.setItem("currentSql", (response.currentSql).substring(0, limitIndex));
-                        params.success({ rowData: response.rows, rowCount: response.lastRow })
-
-                    })
-                    .catch(error => {
-                        // params.failCallback();
-                        params.fail();
-                    })
-            }
-        };
-    }
-    onGridReady(params: GridReadyEvent) {
-        this.api = params.api;
-        this.gridParams = params;
-
-    }
-
-    loadAGGrid() {
-        var datasource = this.createServerSideDatasource(this.gridParams, this.cats);
-        this.api.setServerSideDatasource(datasource);//this.api.setServerSideDatasource
-    }
 
     getTreeCategories() {
         var selected_categories = "-1";
