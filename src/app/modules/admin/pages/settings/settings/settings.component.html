@@ -13,6 +13,90 @@
 <!-- form start -->
 <form (ngSubmit)="onSubmit(fs)" #fs="ngForm">
   <div style="padding: 15px;">
+
+
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">Set Roas</h3>
+      </div>
+      <!-- /.box-header -->
+      <div class="box-body">
+        <div class="row">
+          <div class="addmore" style="width: 87px;">
+            If ROAS is &lt;
+          </div>
+          <div class="addmore {{!roasval_lb_set_option.valid && roasval_lb_set_option.touched ? 'has-error':''}}">
+            <input type="number" name="roasval_lb_set_option" [ngModel]="settingsData['roasval_lb_set_option']"
+              #roasval_lb_set_option="ngModel" class="form-control" placeholder="lowerboundoption" value="" required>
+          </div>
+          <div class="addmore" style="width: 47px;">
+            then
+          </div>
+          <div class="addmore {{!roasval_lb_set_value.valid && roasval_lb_set_value.touched ? 'has-error':''}}">
+            <input type="number" name="roasval_lb_set_value" [ngModel]="settingsData['roasval_lb_set_value']"
+              #roasval_lb_set_value="ngModel" class="form-control" placeholder="lowerboundvalue" value="" required>
+          </div>
+        </div>
+
+
+        <div class="row" *ngFor="let obj of roasArray; let i=index;">
+          <div class="addmore">
+            If ROAS is >=
+          </div>
+          <div class="addmore">
+            <input type="number" name="roasmin{{i}}" [(ngModel)]="obj.roasmin" class="form-control" placeholder="min"
+              value="" required>
+          </div>
+          <div class="addmore">
+            and &lt;
+          </div>
+          <div class="addmore">
+            <input type="number" name="roasmax{{i}}" [(ngModel)]="obj.roasmax" class="form-control" placeholder="max"
+              value="" required>
+          </div>
+          <div class="addmore">
+            then
+          </div>
+          <div class="addmore">
+            <input type="number" name="roasval{{i}}" [(ngModel)]="obj.roasval" class="form-control"
+              placeholder="set roas" value="" required>
+          </div>
+          <div class="addmore">
+            <input type="checkbox" name="roasvaltype{{i}}" [(ngModel)]="obj.roasvaltype" class="chkroas"
+              style="margin-top: 7px;" />&nbsp;Fixed
+            Value
+          </div>
+          <div class="addmore">
+            <button class="btn btn-danger remove btn-sm" type="button" style="line-height: 1.3;"
+              (click)="removeroasRange(i)" *ngIf="i!=0"><i class="fa fa-times"></i> Remove</button>
+            <button class="btn btn-success add-more btn-sm" type="button" style="line-height: 1.3;"
+              (click)="addroasRange()" *ngIf="i==0"><i class="fa fa-plus" aria-hidden="true"></i> Add Range</button>
+          </div>
+          <div style="clear: both;"></div>
+        </div>
+
+        <div class="row">
+          <div class="addmore" style="width: 87px;">
+            If ROAS is >=
+          </div>
+          <div class="addmore {{!roasval_ub_set_option.valid && roasval_ub_set_option.touched ? 'has-error':''}}">
+            <input type="number" name="roasval_ub_set_option" [ngModel]="settingsData['roasval_ub_set_option']"
+              #roasval_ub_set_option="ngModel" class="form-control" placeholder="upperboundoption" value="" required>
+          </div>
+          <div class="addmore" style="width: 47px;">
+            then
+          </div>
+          <div class="addmore {{!roasval_ub_set_value.valid && roasval_ub_set_value.touched ? 'has-error':''}}">
+            <input type="number" name="roasval_ub_set_value" [ngModel]="settingsData['roasval_ub_set_value']"
+              #roasval_ub_set_value="ngModel" class="form-control" placeholder="upperboundvalue" value="" required>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
     <div class="box box-primary">
       <div class="box-header with-border">
         <h3 class="box-title">Transmission</h3>
@@ -150,6 +234,190 @@
         </div>
       </div>
     </div>
+
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">Shippment Revenue</h3>
+      </div>
+      <!-- /.box-header -->
+      <div class="box-body">
+        <div
+          class="form-group has-feedback {{!shippment_revenue_order_value_peak.valid && shippment_revenue_order_value_peak.touched ? 'has-error':''}}">
+          <label class="col-sm-2 col-form-label">Order Value</label>
+          <div class="col-sm-10">
+            <input type="number" step="0.01" class="form-control form-control-user"
+              placeholder="Shippment Revenue Order Value" name="shippment_revenue_order_value_peak"
+              [(ngModel)]="settingsData['shippment_revenue_order_value_peak']"
+              #shippment_revenue_order_value_peak="ngModel" value="" required>
+            <span class="help-block">Enter Order Value. (Eg 82.64)
+            </span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-6">
+
+            <div class="box box-info">
+              <div class="box-header with-border">
+                <h3 class="box-title">Transmission</h3>
+              </div>
+              <!-- /.box-header -->
+              <div class="box-body">
+                <div
+                  class="form-group has-feedback {{!transmission_shippment_revenue_less_then.valid && transmission_shippment_revenue_less_then.touched ? 'has-error':''}}">
+                  <label class="col-sm-4 col-form-label">If Order Value is &lt;
+                    {{settingsData['shippment_revenue_order_value_peak']}}
+                    then</label>
+                  <div class="col-sm-8">
+                    <input type="number" step="0.01" class="form-control form-control-user"
+                      placeholder="set shipment revenue" name="transmission_shippment_revenue_less_then"
+                      [ngModel]="settingsData['transmission_shippment_revenue_less_then']"
+                      #transmission_shippment_revenue_less_then="ngModel" value="" required>
+                    <span class="help-block">Enter Shipment Revenue (Eg 11.98)
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="form-group has-feedback {{!transmission_shippment_revenue_greater_then_or_equal.valid && transmission_shippment_revenue_greater_then_or_equal.touched ? 'has-error':''}}">
+                  <label class="col-sm-4 col-form-label">If Order Value is >=
+                    {{settingsData['shippment_revenue_order_value_peak']}}
+                    then</label>
+                  <div class="col-sm-8">
+                    <input type="number" step="0.01" class="form-control form-control-user"
+                      placeholder="set shipment revenue" name="transmission_shippment_revenue_greater_then_or_equal"
+                      [ngModel]="settingsData['transmission_shippment_revenue_greater_then_or_equal']"
+                      #transmission_shippment_revenue_greater_then_or_equal="ngModel" value="" required>
+                    <span class="help-block">Enter Shipment Revenue (Eg 8.68)
+                    </span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+          <div class="col-xs-6">
+
+            <div class="box box-info">
+              <div class="box-header with-border">
+                <h3 class="box-title">Pakketpost / Briefpost</h3>
+              </div>
+              <!-- /.box-header -->
+              <div class="box-body">
+                <div
+                  class="form-group has-feedback {{!other_shippment_revenue_less_then.valid && other_shippment_revenue_less_then.touched ? 'has-error':''}}">
+                  <label class="col-sm-4 col-form-label">If Order Value is &lt;
+                    {{settingsData['shippment_revenue_order_value_peak']}}
+                    then</label>
+                  <div class="col-sm-8">
+                    <input type="number" step="0.01" class="form-control form-control-user"
+                      placeholder="set shipment revenue" name="other_shippment_revenue_less_then"
+                      [ngModel]="settingsData['other_shippment_revenue_less_then']"
+                      #other_shippment_revenue_less_then="ngModel" value="" required>
+                    <span class="help-block">Enter Shipment Revenue (Eg 5.33)
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="form-group has-feedback {{!other_shippment_revenue_greater_then_or_equal.valid && other_shippment_revenue_greater_then_or_equal.touched ? 'has-error':''}}">
+                  <label class="col-sm-4 col-form-label">If Order Value is >=
+                    {{settingsData['shippment_revenue_order_value_peak']}}
+                    then</label>
+                  <div class="col-sm-8">
+                    <input type="number" step="0.01" class="form-control form-control-user"
+                      placeholder="set shipment revenue" name="other_shippment_revenue_greater_then_or_equal"
+                      [ngModel]="settingsData['other_shippment_revenue_greater_then_or_equal']"
+                      #other_shippment_revenue_greater_then_or_equal="ngModel" value="" required>
+                    <span class="help-block">>Enter Shipment Revenue (Eg 0)
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">Employee Cost</h3>
+      </div>
+      <!-- /.box-header -->
+      <div class="box-body">
+        <div class="row">
+          <div class="addmore" style="width: 123px;">
+            If Order Value is &lt;
+          </div>
+          <div class="addmore {{!empcost_ov_lb_set_option.valid && empcost_ov_lb_set_option.touched ? 'has-error':''}}">
+            <input type="number" name="empcost_ov_lb_set_option" [ngModel]="settingsData['empcost_ov_lb_set_option']"
+              #empcost_ov_lb_set_option="ngModel" class="form-control" placeholder="min" value="" required>
+          </div>
+          <div class="addmore" style="width: 47px;">
+            then
+          </div>
+          <div class="addmore {{!empcost_lb_set_value.valid && empcost_lb_set_value.touched ? 'has-error':''}}">
+            <input type="number" name="empcost_lb_set_value" [ngModel]="settingsData['empcost_lb_set_value']"
+              #empcost_lb_set_value="ngModel" class="form-control" placeholder="set employee cost" value="" required>
+          </div>
+        </div>
+
+
+        <div class="row" *ngFor="let ovobj of empcostArray; let e=index;">
+          <div class="addmore">
+            If Order Value is >=
+          </div>
+          <div class="addmore">
+            <input type="number" name="empcost_ov_min{{e}}" [(ngModel)]="ovobj.empcost_ov_min" class="form-control"
+              placeholder="min" value="" required>
+          </div>
+          <div class="addmore">
+            and &lt;
+          </div>
+          <div class="addmore">
+            <input type="number" name="empcost_ov_max{{e}}" [(ngModel)]="ovobj.empcost_ov_max" class="form-control"
+              placeholder="max" value="" required>
+          </div>
+          <div class="addmore">
+            then
+          </div>
+          <div class="addmore">
+            <input type="number" name="empcostval{{e}}" [(ngModel)]="ovobj.empcostval" class="form-control"
+              placeholder="set roas" value="" required>
+          </div>
+          <div class="addmore">
+            <button class="btn btn-danger remove btn-sm" type="button" style="line-height: 1.3;"
+              (click)="removeemployeecostRange(e)" *ngIf="e!=0"><i class="fa fa-times"></i> Remove</button>
+            <button class="btn btn-success add-more btn-sm" type="button" style="line-height: 1.3;"
+              (click)="addemployeecostRange()" *ngIf="e==0"><i class="fa fa-plus" aria-hidden="true"></i> Add
+              Range</button>
+          </div>
+          <div style="clear: both;"></div>
+        </div>
+
+        <div class="row">
+          <div class="addmore" style="width: 123px;">
+            If Order Value is >=
+          </div>
+          <div class="addmore {{!empcost_ov_ub_set_option.valid && empcost_ov_ub_set_option.touched ? 'has-error':''}}">
+            <input type="number" name="empcost_ov_ub_set_option" [ngModel]="settingsData['empcost_ov_ub_set_option']"
+              #empcost_ov_ub_set_option="ngModel" class="form-control" placeholder="min" value="" required>
+          </div>
+          <div class="addmore" style="width: 47px;">
+            then
+          </div>
+          <div class="addmore {{!empcost_ub_set_value.valid && empcost_ub_set_value.touched ? 'has-error':''}}">
+            <input type="number" name="empcost_ub_set_value" [ngModel]="settingsData['empcost_ub_set_value']"
+              #empcost_ub_set_value="ngModel" class="form-control" placeholder="set employee cost" value="" required>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
 
 
     <div class="box box-primary">
