@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 declare var simTree: any;
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
@@ -18,7 +18,7 @@ export class LeftComponent implements OnInit {
     api: any;
     gridParams: any;
     columnApi: any;
-    constructor(private http: HttpClient, private categoryService: PmCategoryService, private router: Router) {
+    constructor(private http: HttpClient, private categoryService: PmCategoryService) {
     }
 
     @ViewChild('allSelectedCats') allSelectedCats: ElementRef;

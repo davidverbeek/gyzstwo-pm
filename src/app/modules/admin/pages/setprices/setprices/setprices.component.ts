@@ -615,7 +615,6 @@ export class SetpricesComponent implements OnInit {
         selected_group.push(myArray_2[0]);
       }
     });
-    // to ask sir that group name is not coming instantly
     unique_group = removeDuplicates(selected_group);
     const toObject = Object.assign({}, unique_group);
 
@@ -659,9 +658,9 @@ export class SetpricesComponent implements OnInit {
           $("#btnDebCategories").find('span.loading-img-update').css({ "display": "none" });
           $('#btnDebCategories').removeAttr('disabled');
 
-          //this.categoryService.categorySelected.subscribe((allselectedcats) => {
+
           this.cats = debter_cats;
-          //});
+
 
           this.loadAGGrid();
         });
