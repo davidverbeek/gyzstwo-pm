@@ -106,11 +106,12 @@ export class SetpricesComponent implements OnInit {
 
       let debColString = localStorage.getItem("debtorCols");
 
-      var deb_columns = [];
+      let deb_columns = [];
       deb_columns = JSON.parse(debColString || '{}');
       for (const [key, value] of Object.entries(deb_columns)) {
-        var debcellbg_color = "";
-        var checkbox_class = "";
+
+        let debcellbg_color = "";
+        let checkbox_class = "";
         if (value["type"] == "debsp") {
           debcellbg_color = "#90ee90";
           checkbox_class = "show_cols_dsp";
@@ -124,7 +125,6 @@ export class SetpricesComponent implements OnInit {
           debcellbg_color = "#fc6b6b";
           checkbox_class = "show_cols_ddgp";
         }
-
         //'.show_cols_dmbp, .show_cols_dmsp, .show_cols_ddgp, .show_cols_dsp'
 
         let definition: ColDef = {
@@ -149,12 +149,11 @@ export class SetpricesComponent implements OnInit {
           cellStyle: params => {
             var status_of_debter_product = this.checkIfDebterProduct(params.data.product_id, value["customer_group_name"]);
             if (status_of_debter_product) {
-
               //mark police cells as red
               return { backgroundColor: debcellbg_color };
+            } else {
+              return { backgroundColor: "#808080" };//grey
             }
-
-            return { backgroundColor: "#808080" };//grey
           }, toolPanelClass: 'show_deb_cols ' + checkbox_class
         };
         this.columnDefs.push(definition);
