@@ -1,0 +1,49 @@
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Current ROAS <span style="font-size:12px; color: #3c763d;">[Live Feed Date :
+            {{roasLiveDate}}] </span> <span style="font-size:12px; color: #c10000;">[New Live Feed
+            Date Set : {{roasSetDate}}]</span>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Current ROAS</li>
+    </ol>
+</section>
+
+<div style="padding: 15px;">
+    <div style="float: left; padding-top: 22px;">
+        Date:- {{selectedDate}} <span style="font-weight: bold;">[{{roasBol}}]</span>
+    </div>
+
+    <div style="float: right;">
+        <mat-form-field style="margin-right: 10px;">
+            <input matInput [matDatepicker]="datepicker1" placeholder="From" (dateChange)="getStartDate($event)">
+            <mat-datepicker-toggle matSuffix [for]="datepicker1"></mat-datepicker-toggle>
+            <mat-datepicker #datepicker1></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field style="margin-right: 10px;">
+            <input matInput [matDatepicker]="datepicker2" placeholder="To" (dateChange)="getEndDate($event)">
+            <mat-datepicker-toggle matSuffix [for]="datepicker2"></mat-datepicker-toggle>
+            <mat-datepicker #datepicker2></mat-datepicker>
+        </mat-form-field>
+        <button type="button" class="btn btn-primary" (click)="getRoas()" style="margin-right: 10px;"
+            [disabled]="isRoasDisabled"><span class="glyphicon glyphicon-stats"></span> Get
+            Roas <i *ngIf="roasSpinner" class="fa fa-circle-o-notch fa-spin"></i></button>
+        <button type="button" class="btn btn-primary" style="margin-right: 10px;" (click)="exportRoas()"
+            [disabled]="isExportRoasDisabled"><i class="fa fa-fw fa-cloud-download"></i> Export Roas <i
+                *ngIf="exportroasSpinner" class="fa fa-circle-o-notch fa-spin"
+                style="font-size:12px; margin-left:5px;"></i></button>
+        <button type="button" class="btn btn-primary" (click)="setRoasDate()" [disabled]="isSetRoasDisabled"> <i
+                class="fa fa-fw fa-check-circle"></i> Set Roas Date
+            <i *ngIf="setroasSpinner" class="fa fa-circle-o-notch fa-spin"
+                style="font-size:12px; margin-left:5px;"></i></button>
+    </div>
+    <div style="clear: both;"></div>
+    <ag-grid-angular style="width: 100%; height:800px;" class="ag-theme-alpine" [rowData]="rowData"
+        [columnDefs]="columnDefs" [rowModelType]="rowModelType" [rowStyle]="rowStyle" [getRowStyle]="getRowStyle"
+        (gridReady)="onGridReady($event)" [pagination]="true" [paginationPageSize]="paginationPageSize"
+        [serverSideStoreType]="serverSideStoreType" [cacheBlockSize]="cacheBlockSize" [animateRows]="true"
+        [suppressMenuHide]="true"></ag-grid-angular>
+</div>

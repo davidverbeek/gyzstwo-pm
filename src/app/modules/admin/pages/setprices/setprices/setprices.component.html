@@ -35,6 +35,6 @@
     (cellValueChanged)="onCellValueChanged($event)" [enableFillHandle]="true" [enableRangeSelection]="true"
     [fillHandleDirection]="fillHandleDirection" [undoRedoCellEditing]="true" [undoRedoCellEditingLimit]="20"
     (cellEditingStopped)="onCellEditingStopped($event)" (dragStopped)="onDragStopped($event)"
-    (cellKeyDown)="onCellKeyDown($event)" (paginationChanged)="onPaginationChanged($event)"
-    rowSelection='multiple'></ag-grid-angular>
+    (cellKeyDown)="onCellKeyDown($event)" (paginationChanged)="onPaginationChanged($event)" rowSelection='multiple'
+    [suppressMenuHide]="true"></ag-grid-angular>
 </div>

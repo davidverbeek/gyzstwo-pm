@@ -355,7 +355,7 @@ export class SetpricesComponent implements OnInit {
     sortable: true,
     filter: true,
     flex: 1,
-    minWidth: 100,
+    minWidth: 115,
     resizable: true
   };
 

@@ -8,3 +8,20 @@ body {
    padding: 5px;
    box-sizing: border-box;
 }
+
+.ag-theme-alpine {
+   --ag-header-height: 40px;
+   --ag-header-foreground-color: #FFFFFF;
+   --ag-header-background-color: #222d32;
+   --ag-grid-size: 5px;
+}
+
+.ag-theme-alpine .ag-header-cell {
+   font-weight: normal;
+   font-size: 12px;
+}
+
+.ag-theme-alpine .ag-icon-menu {
+   background: transparent;
+   color: #FFFFFF;
+}

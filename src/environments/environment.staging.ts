@@ -3,5 +3,7 @@ export const environment = {
   webservicebaseUrl: "https://dev.onlinedeurbeslag.com/gyzstwo-pm-ws",
   agbaseUrl: "https://dev.onlinedeurbeslag.com/AG/",
   revenueUrl: "https://dev.onlinedeurbeslag.com/pm_getdata/get_revenue.php",
-  revenueSyncUrl: "https://dev.onlinedeurbeslag.com/pm_getdata/set_sortorder.php"
+  revenueSyncUrl: "https://dev.onlinedeurbeslag.com/pm_getdata/set_sortorder.php",
+  roasUrl: "https://dev.onlinedeurbeslag.com/pm_getdata/get_roas.php",
+  roasCalUrl: "https://dev.onlinedeurbeslag.com/pm_getdata/debug_roas.php"
 };

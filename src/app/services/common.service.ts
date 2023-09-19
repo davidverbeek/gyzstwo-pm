@@ -9,6 +9,7 @@ export class CommonService {
   productHistoryData = new Subject<object>();
   bolCalculation = new Subject<object>();
   revenueCalculation = new Subject<object>();
+  roasCalculation = new Subject<object>();
 
   constructor() { }
 }

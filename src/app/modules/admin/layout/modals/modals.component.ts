@@ -2,6 +2,8 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { GridReadyEvent, IServerSideDatasource, ServerSideStoreType, RowClassParams } from 'ag-grid-community';
 import { CommonService } from 'src/app/services/common.service';
+import { HttpClient } from '@angular/common/http';
+import { parseJSON } from 'jquery';
 
 
 @Component({
@@ -29,6 +31,7 @@ export class ModalsComponent implements OnInit {
 
   bolSku = "";
   bolSub: any;
+  roasSub: any;
   bolCalculation = "";
 
   revenueSub: any;
@@ -36,12 +39,36 @@ export class ModalsComponent implements OnInit {
   revenueEndDate: any;
   revenueSku: any;
 
+  roasSku = "";
+  roasFrom: any;
+  roasTo: any;
+  roasCalculation: any;
+
   // Data that gets displayed in the grid
   public rowData: any;
 
-  constructor(private CommonService: CommonService) { }
+  constructor(private CommonService: CommonService, private http: HttpClient) { }
 
   ngOnInit(): void {
+    this.roasSub = this.CommonService.roasCalculation.subscribe((roasData) => {
+      var post_data = Array();
+      post_data[0] = roasData[0];
+      post_data[1] = roasData[1];
+      post_data[2] = roasData[2];
+
+      this.roasSku = roasData[2];
+      this.roasFrom = roasData[0];
+      this.roasTo = roasData[1];
+
+      this.http.post(environment.roasCalUrl, post_data).subscribe(responseData => {
+        if (responseData["err"] == "error") {
+          alert("Something Went wrong. Please try again with different date range")
+        } else {
+          this.roasCalculation = responseData;
+        }
+      });
+
+    });
   }
 
   public columnDefs = [
@@ -190,6 +217,7 @@ export class ModalsComponent implements OnInit {
     this.subHistoryPid.unsubscribe();
     this.bolSub.unsubscribe();
     this.revenueSub.unsubscribe();
+    this.roasSub.unsubscribe();
   }
 
   loadAGGrid() {

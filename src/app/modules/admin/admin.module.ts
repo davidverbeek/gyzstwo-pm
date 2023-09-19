@@ -25,6 +25,8 @@ import { RevenueComponent } from './pages/revenue/revenue/revenue.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
+import { RoasModule } from './pages/roas/roas.module'
+import { CurrentroasComponent } from './pages/roas/currentroas/currentroas.component'
 
 
 const gyzsroutes: Routes = [
@@ -37,6 +39,7 @@ const gyzsroutes: Routes = [
       { path: "bolcommission", canActivate: [AuthGuard], component: BolcommissionComponent },
       { path: "bolminimum", canActivate: [AuthGuard], component: BolminimumComponent },
       { path: "revenue", canActivate: [AuthGuard], component: RevenueComponent },
+      { path: "currentroas", canActivate: [AuthGuard], component: CurrentroasComponent },
       { path: "settings", canActivate: [AuthGuard], component: SettingsComponent },
       { path: '', redirectTo: '/admin/dashboard', pathMatch: 'full' },
     ],
@@ -65,6 +68,7 @@ const gyzsroutes: Routes = [
     MatDatepickerModule,
     MatNativeDateModule,
     MatInputModule,
+    RoasModule,
     RouterModule.forChild(gyzsroutes)
   ]
 })
