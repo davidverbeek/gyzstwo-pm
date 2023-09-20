@@ -41,6 +41,8 @@ export class SetpricesComponent implements OnInit {
   deb_products: any = [];
   debterProds: any = [];
   debter_product_data = "";
+  product_brands: any = this.categoryService.setCategoryBrands();
+  product_supplier: any = [];
   //public rowModelType: 'serverSide';
 
   public paginationPageSize = 500;
@@ -53,14 +55,28 @@ export class SetpricesComponent implements OnInit {
     { field: 'product_id', headerName: 'ID', sortable: true, filter: 'number', hide: true },
     {
       field: 'supplier_type', headerName: 'Leverancier', sortable: true, filter: 'agSetColumnFilter', filterParams: {
-        values: ['Gyzs', 'JRS', 'Transferro']
+        values: params => {
+          this.product_supplier = this.categoryService.product_supplier_arr;
+
+          // simulating async delay
+          setTimeout(() => params.success(this.product_supplier), 500);
+        }
       }
     },
     { field: 'name', headerName: 'Naam', sortable: true, filter: 'text' },
     { field: 'sku', headerName: 'SKU', sortable: true, filter: 'text', cellRenderer: PricehistoryComponent },
     { field: 'supplier_sku', headerName: 'SKU (Sup)', sortable: true, filter: 'text', hide: true },
     { field: 'eancode', headerName: 'Ean', sortable: true, filter: 'text', hide: true },
-    { field: 'merk', headerName: 'Merk', sortable: true, filter: 'text' },
+    {
+      field: 'merk', headerName: 'Merk', sortable: true, filter: 'agSetColumnFilter', filterParams: {
+        values: params => {
+          this.product_brands = this.categoryService.product_brand_arr;
+
+          // simulating async delay
+          setTimeout(() => params.success(this.product_brands), 500);
+        }
+      }
+    },
     { field: 'gross_unit_price', headerName: 'Brutopr', sortable: true, filter: 'number', hide: true },
     { field: 'supplier_discount_gross_price', headerName: 'Korting brutopr', sortable: true, filter: 'number', hide: true },
     { field: 'net_unit_price', headerName: 'Nettopr Lev', sortable: true, filter: 'number', hide: true },

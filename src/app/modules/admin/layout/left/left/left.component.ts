@@ -211,6 +211,7 @@ export class LeftComponent implements OnInit {
 
     getTreeCategories() {
         var selected_categories = "-1";
+
         if ($('a>i.sim-tree-checkbox').hasClass('checked')) {
             var updated_cats = new Array();
             $.each($('.sim-tree-checkbox'), function (index, value) {
