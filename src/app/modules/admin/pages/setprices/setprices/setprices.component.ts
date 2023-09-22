@@ -41,7 +41,7 @@ export class SetpricesComponent implements OnInit {
   deb_products: any = [];
   debterProds: any = [];
   debter_product_data = "";
-  product_brands: any = this.categoryService.setCategoryBrands();
+  product_brands: any = [];
   product_supplier: any = [];
   //public rowModelType: 'serverSide';
 
@@ -60,7 +60,9 @@ export class SetpricesComponent implements OnInit {
 
           // simulating async delay
           setTimeout(() => params.success(this.product_supplier), 500);
-        }
+
+        },
+        refreshValuesOnOpen: true
       }
     },
     { field: 'name', headerName: 'Naam', sortable: true, filter: 'text' },
@@ -74,7 +76,8 @@ export class SetpricesComponent implements OnInit {
 
           // simulating async delay
           setTimeout(() => params.success(this.product_brands), 500);
-        }
+        },
+        refreshValuesOnOpen: true
       }
     },
     { field: 'gross_unit_price', headerName: 'Brutopr', sortable: true, filter: 'number', hide: true },
@@ -194,16 +197,16 @@ export class SetpricesComponent implements OnInit {
       }
 
     });
-
-
   }
 
-  ngOnInit() {
 
+
+  ngOnInit() {
     this.subcat = this.categoryService.categorySelected.subscribe((allselectedcats) => {
       this.cats = allselectedcats;
       this.updatedProducts = [];
       this.loadAGGrid();
+      this.product_brands = this.categoryService.setCategoryBrands(this.cats);
     });
 
     this.subbtnclicked = this.sidebarService.btnClicked.subscribe((priceType) => {
@@ -315,7 +318,6 @@ export class SetpricesComponent implements OnInit {
     }
     this.createProductData(prepareProductData);
   }
-
 
 
   public sideBar: SideBarDef | string | string[] | boolean | null = {
@@ -600,7 +602,6 @@ export class SetpricesComponent implements OnInit {
         this.api.forEachNode((rowNode) => {
           rowNode.setSelected(true)
         });
-
 
       });
     } else {
