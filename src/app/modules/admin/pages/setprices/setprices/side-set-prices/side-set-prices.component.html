@@ -2,9 +2,12 @@
     <div class="panel panel-default" style="padding: 5px;;">
         <div class="panel-heading">
             <label class="radio-inline"><input type="radio" name="opsetprice" (click)="selectedOption('SP')">SP</label>
-            <label class="radio-inline"><input type="radio" name="opsetprice" (click)="selectedOption('PBP')">PBP</label>
-            <label class="radio-inline"><input type="radio" name="opsetprice" (click)="selectedOption('PSP')">PSP</label>
-            <label class="radio-inline"><input type="radio" name="opsetprice" (click)="selectedOption('DGP')">DGP</label>
+            <label class="radio-inline"><input type="radio" name="opsetprice"
+                    (click)="selectedOption('PBP')">PBP</label>
+            <label class="radio-inline"><input type="radio" name="opsetprice"
+                    (click)="selectedOption('PSP')">PSP</label>
+            <label class="radio-inline"><input type="radio" name="opsetprice"
+                    (click)="selectedOption('DGP')">DGP</label>
         </div>
         <div class="panel-body">
             <div class="form-group">
@@ -16,8 +19,20 @@
             </div>
             <div class="form-group">
                 <input type="text" class="form-control" placeholder="{{ textPlacehoder }}" [(ngModel)]="this.txtValue">
+
+                <input type="hidden" id="hdn_update_type" value="{{actionType}}" #hdnUpdateType />
+                <input type="hidden" id="hdn_undo_swap" value="" #hdnUndoSwap />
+                <input type="hidden" id="hdn_redo_swap" value="" #hdnRedoSwap />
             </div>
         </div>
-        <div class="panel-footer"><button type="button" class="btn btn-primary" style="width: 100%;" (click)="btnSetPrice()">{{ textButton }}</button></div>
+        <div class="panel-footer">
+            <button type="button" class="btn btn-primary" style="width: 100%;" (click)="btnSetPrice()">
+                {{ textButton}}</button>
+            &nbsp;
+            <button type="button" class="btn btn-primary" style="width: 100%;" (click)="btnUndoPrice()"
+                [disabled]="allowUndoRedo">{{undoButton}}</button>&nbsp;
+            <button type="button" class="btn btn-primary" style="width: 100%;" (click)="btnRedoPrice()"
+                [disabled]="allowUndoRedo">{{redoButton}}</button>
+        </div>
     </div>
 </div>
