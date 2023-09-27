@@ -43,9 +43,9 @@ export class PmCategoryService {
   }
 
 
-  setCategoryBrands(categories: any = []) {
-    const cats: string = categories.toString();
-    this.http.post(environment.webservicebaseUrl + "/category-brand", { selected_cats: cats })
+  setCategoryBrands(categories: any = "") {
+    //const cats: string = categories.toString();
+    this.http.post(environment.webservicebaseUrl + "/category-brand", { selected_cats: categories })
       .pipe(map(responseData => {
         let merk_dd: any = [];
         let supplier_dd: any = [];
@@ -58,8 +58,6 @@ export class PmCategoryService {
           merk_dd[currentValue.id] = currentValue.product_count;
           supplier_dd[currentValue.id] = currentValue.supplier_type;
         }
-
-
         let comma_sperated_brands = merk_dd;
         return [comma_sperated_brands, supplier_dd];
       }))
