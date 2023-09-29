@@ -53,6 +53,8 @@ export class SetpricesComponent implements OnInit {
   public paginationPageSize = 500;
   public cacheBlockSize = 500;
   rowStyle = { background: '' };
+  newArray: any[] = [];
+
   getRowStyle = (params: RowClassParams) => this.rowStyle;
 
   // Each Column Definition results in one Column.
@@ -123,8 +125,14 @@ export class SetpricesComponent implements OnInit {
 
   ];
 
+  public customToolPanelColumnDefs: any = [];
 
   constructor(private http: HttpClient, private categoryService: PmCategoryService, private sidebarService: PmSidebarService, private loaddebtorsService: LoadDebtorsService) {
+
+    this.newArray = this.columnDefs.map((item) => ({
+      headerName: item.headerName,
+      field: item.field,
+    }));
 
     if (localStorage.getItem("debtorCols") != null) {
 
@@ -132,6 +140,10 @@ export class SetpricesComponent implements OnInit {
 
       let deb_columns = [];
       deb_columns = JSON.parse(debColString || '{}');
+      let arrayOfObjects: any = [];
+      let arrayOfObjects_mbp: any = [];
+      let arrayOfObjects_msp: any = [];
+      let arrayOfObjects_dgp: any = [];
       for (const [key, value] of Object.entries(deb_columns)) {
 
         let debcellbg_color = "";
@@ -180,8 +192,71 @@ export class SetpricesComponent implements OnInit {
             }
           }, toolPanelClass: 'show_deb_cols ' + checkbox_class
         };
+
+
         this.columnDefs.push(definition);
-      }
+
+        let deb_fields: string = value["customer_group_name"];
+        if (deb_fields.indexOf("_debter_selling_price") !== -1) {
+          const dynamicObject = {
+            headerName: value['group_alias'],
+            field: value['customer_group_name'], // Generate an array of sub-objects
+          };
+          arrayOfObjects.push(dynamicObject);
+        } else if (deb_fields.indexOf("_margin_on_buying_price") !== -1) {
+          const dynamicObject_mbp = {
+            headerName: value['group_alias'],
+            field: value['customer_group_name'], // Generate an array of sub-objects
+          };
+          arrayOfObjects_mbp.push(dynamicObject_mbp);
+        } else if (deb_fields.indexOf("_margin_on_selling_price") !== -1) {
+          const dynamicObject_msp = {
+            headerName: value['group_alias'],
+            field: value['customer_group_name'], // Generate an array of sub-objects
+          };
+          arrayOfObjects_msp.push(dynamicObject_msp);
+        } else {
+          const dynamicObject_dgp = {
+            headerName: value['group_alias'],
+            field: value['customer_group_name'], // Generate an array of sub-objects
+          };
+          arrayOfObjects_dgp.push(dynamicObject_dgp);
+        }
+
+
+      };
+
+
+
+      this.customToolPanelColumnDefs.push(...this.newArray);
+
+
+      var newArray_2 = [
+
+        {
+          headerName: 'All SP',
+          children: arrayOfObjects,
+        },
+        {
+          headerName: 'All Marg.BP',
+          children: arrayOfObjects_mbp,
+        },
+        {
+          headerName: 'All Marg.SP',
+          children: arrayOfObjects_msp,
+        },
+        {
+          headerName: 'All Discount GP',
+          children: arrayOfObjects_dgp,
+        },
+
+      ];
+
+      this.customToolPanelColumnDefs.push(...newArray_2);
+
+
+
+
     }
 
     if (localStorage.getItem("allDebts") != null) {
@@ -457,7 +532,7 @@ export class SetpricesComponent implements OnInit {
     this.gridParams = params;
     this.columnApi = params.columnApi;
     this.loadAGGrid();
-
+    this.setCustomGroupLayout();
     this.getRowStyle = function (params) {
       if (typeof params.data != "undefined") {
         if (params.data.is_updated == 1) {
@@ -483,6 +558,9 @@ export class SetpricesComponent implements OnInit {
     this.api.setServerSideDatasource(datasource);
     this.fillHandleDirection = 'y';
   }
+
+
+
   onCellValueChanged(event: CellValueChangedEvent) {
     console.log(event);
     var prepareProductData = [];
@@ -762,7 +840,11 @@ export class SetpricesComponent implements OnInit {
 
   }//end onApplyDebterCategories()
 
+  setCustomGroupLayout() {
 
+    var columnToolPanel = this.api.getToolPanelInstance('columns');
+    columnToolPanel.setColumnLayout(this.customToolPanelColumnDefs);
+  }
 
   toggleCheckbox(new_status) {
     $('a>i.sim-tree-checkbox').each(function (index) {
@@ -936,3 +1018,4 @@ function debterCheckboxes() {
     };
   });
 }//end debterCheckboxes()
+
