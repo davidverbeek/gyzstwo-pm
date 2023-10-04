@@ -29,10 +29,10 @@
             <button type="button" class="btn btn-primary" style="width: 100%;" (click)="btnSetPrice()">
                 {{ textButton}}</button>
             &nbsp;
-            <button type="button" class="btn btn-primary" style="width: 100%;" (click)="btnUndoPrice()"
-                [disabled]="allowUndoRedo">{{undoButton}}</button>&nbsp;
-            <button type="button" class="btn btn-primary" style="width: 100%;" (click)="btnRedoPrice()"
-                [disabled]="allowUndoRedo">{{redoButton}}</button>
+            <button type="button" class="btn btn-primary" style="width: 100%;" (click)="btnUndoPrice()" disabled
+                id="btnundo" *ngIf="showButton">{{undoButton}}</button>&nbsp;
+            <button type="button" class="btn btn-primary" style="width: 100%;" (click)="btnRedoPrice()" disabled
+                id="btnredo" *ngIf="showButton">{{redoButton}}</button>
         </div>
     </div>
 </div>
