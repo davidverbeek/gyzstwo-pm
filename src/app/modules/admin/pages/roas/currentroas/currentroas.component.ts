@@ -129,7 +129,12 @@ export class CurrentroasComponent implements OnInit {
     { field: 'performance', headerName: 'Performance', sortable: true, filter: 'text' },
     { field: 'avg_per_cat', headerName: 'Average Per Category', sortable: true, filter: 'number' },
     { field: 'avg_per_cat_per_brand', headerName: 'Average Per Category Per Brand', sortable: true, filter: 'number' },
-    { field: 'roas_per_cat_per_brand', headerName: 'Roas Per Category Per Brand', sortable: true, filter: 'number' },
+    {
+      field: 'roas_per_cat_per_brand', headerName: 'Roas Per Category Per Brand', sortable: true, filter: 'number',
+      cellRenderer: params => {
+        return '<a href="#" data-toggle="tooltip" data-placement="top" data-html="true" title="' + params.data.roas_per_cat_per_brand_help + '">' + params.value + '</a>';
+      }
+    },
     { field: 'end_roas', headerName: 'End Roas (%)', sortable: true, filter: 'number' },
     {
       field: '', headerName: 'Calculation', cellRenderer: RoascalculationComponent
