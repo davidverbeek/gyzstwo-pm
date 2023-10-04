@@ -14,13 +14,15 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
   private params!: IToolPanelParams;
   allowUndoRedo = true;
   componentParent: any;
+  showButton = true;
 
   constructor(private sidebarService: PmSidebarService) { }
 
   agInit(params: IToolPanelParams): void {
     this.params = params;
     this.componentParent = this.params.context.componentParent;
-    this.allowUndoRedo = this.componentParent.updatePriceCompleted;
+    // this.allowUndoRedo = this.componentParent.updatePriceCompleted;
+
   }
 
   textPlacehoder: string = "";
@@ -31,6 +33,7 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
   selCG: string = "";
   priceType: any = [];
   actionType: string = "";
+  storeForRedo: string = "";
 
   selectedOption(type: string) {
     if (type == "SP") {
@@ -62,17 +65,19 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
 
   btnSetPrice() {
     this.actionType = "update";
+    this.storeForRedo = this.txtValue;
     this.submitForm();
-    this.allowUndoRedo = false;
   }
 
   btnUndoPrice() {
     this.actionType = "undo";
+    this.txtValue = "";
     this.submitForm();
   }
 
   btnRedoPrice() {
     this.actionType = "redo";
+    this.txtValue = this.storeForRedo;
     this.submitForm();
   }
 
@@ -86,5 +91,7 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
     this.priceType["update_type"] = this.actionType;
     this.sidebarService.btnClicked.next(this.priceType);
   }
+
+
 
 }

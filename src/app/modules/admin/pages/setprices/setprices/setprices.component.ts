@@ -309,7 +309,7 @@ export class SetpricesComponent implements OnInit {
           alert("Please select price type");
           err = 1;
         }
-        if (priceType["val"] == "") {
+        if (priceType["update_type"] == "update" && priceType["val"] == "") {
           alert("Please enter value");
           err = 1;
         }
@@ -338,7 +338,7 @@ export class SetpricesComponent implements OnInit {
                     this.undo_swap[rowNode.data.product_id] = rowNode.data.discount_on_gross_price;
                   }
                   this.formProductData(updated, priceType);
-                } if (priceType["update_type"] == "undo") {
+                } else if (priceType["update_type"] == "undo") {
                   if (priceType["type"] == "selling_price") {
                     this.redo_swap[rowNode.data.product_id] = rowNode.data.selling_price;
                   } else if (priceType["type"] == "profit_percentage") {
@@ -371,7 +371,47 @@ export class SetpricesComponent implements OnInit {
                 (value, key) => {
                   //console.log(key);
                   //console.log(value.product_id);
-                  this.formProductData(value, priceType);
+
+                  if (priceType["update_type"] == "update") {
+                    if (priceType["type"] == "selling_price") {
+                      this.redo_swap[value.product_id] = value.selling_price;
+                      this.undo_swap[value.product_id] = value.selling_price;
+                    } else if (priceType["type"] == "profit_percentage") {
+                      this.redo_swap[value.product_id] = value.profit_percentage;
+                      this.undo_swap[value.product_id] = value.profit_percentage;
+                    } else if (priceType["type"] == "profit_percentage_selling_price") {
+                      this.redo_swap[value.product_id] = value.profit_percentage_selling_price;
+                      this.undo_swap[value.product_id] = value.profit_percentage_selling_price;
+                    } else if (priceType["type"] == "discount_on_gross_price") {
+                      this.redo_swap[value.product_id] = value.discount_on_gross_price;
+                      this.undo_swap[value.product_id] = value.discount_on_gross_price;
+                    }
+                    this.formProductData(value, priceType);
+                  } else if (priceType["update_type"] == "undo") {
+                    if (priceType["type"] == "selling_price") {
+                      this.redo_swap[value.product_id] = value.selling_price;
+                    } else if (priceType["type"] == "profit_percentage") {
+                      this.redo_swap[value.product_id] = value.profit_percentage;
+                    } else if (priceType["type"] == "profit_percentage_selling_price") {
+                      this.redo_swap[value.product_id] = value.profit_percentage_selling_price;
+                    } else if (priceType["type"] == "discount_on_gross_price") {
+                      this.redo_swap[value.product_id] = value.discount_on_gross_price;
+                    }
+                    this.formProductData(value, priceType);
+                  } else {
+                    if (priceType["type"] == "selling_price") {
+                      this.undo_swap[value.product_id] = value.selling_price;
+                    } else if (priceType["type"] == "profit_percentage") {
+                      this.undo_swap[value.product_id] = value.profit_percentage;
+                    } else if (priceType["type"] == "profit_percentage_selling_price") {
+                      this.undo_swap[value.product_id] = value.profit_percentage_selling_price;
+                    } else if (priceType["type"] == "discount_on_gross_price") {
+                      this.undo_swap[value.product_id] = value.discount_on_gross_price;
+                    }
+                    this.formProductData(value, priceType);
+                  }
+
+
                 }
               )
             }
@@ -381,7 +421,8 @@ export class SetpricesComponent implements OnInit {
 
         }
       }
-
+      $('#btnundo').removeAttr("disabled");
+      $('#btnredo').removeAttr("disabled");
     });
 
   }
@@ -562,7 +603,7 @@ export class SetpricesComponent implements OnInit {
 
 
   onCellValueChanged(event: CellValueChangedEvent) {
-    console.log(event);
+
     var prepareProductData = [];
     var checkforDebtor: any = [];
     prepareProductData["field"] = event.colDef.field;
@@ -735,10 +776,13 @@ export class SetpricesComponent implements OnInit {
             this.updatedProducts = [];
             this.saveRow(finalPdata);
             this.updatePriceCompleted = false;
+
           } else if (this.isChkAllChecked == 1) {
             this.chkAllCount = "(" + (this.chkAllProducts["msg"]).length + " Products Updated Successfully)";
             this.updatedProducts = [];
             this.loadAGGrid();
+
+            this.updatePriceCompleted = false;
           }
         }
       });
@@ -846,6 +890,8 @@ export class SetpricesComponent implements OnInit {
     columnToolPanel.setColumnLayout(this.customToolPanelColumnDefs);
   }
 
+
+
   toggleCheckbox(new_status) {
     $('a>i.sim-tree-checkbox').each(function (index) {
       $(this).parent('a').parent('li').removeClass('disabled');
@@ -875,6 +921,7 @@ export class SetpricesComponent implements OnInit {
     });
     return group_name_product;
   }
+
 
 }
 
@@ -1018,4 +1065,3 @@ function debterCheckboxes() {
     };
   });
 }//end debterCheckboxes()
-
