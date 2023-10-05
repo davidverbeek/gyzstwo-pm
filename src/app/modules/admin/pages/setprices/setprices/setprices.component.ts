@@ -753,6 +753,7 @@ export class SetpricesComponent implements OnInit {
           updated["profit_percentage"] = value["profit_percentage"];
           updated["profit_percentage_selling_price"] = value["profit_percentage_selling_price"];
           updated["discount_on_gross_price"] = value["discount_on_gross_price"];
+          updated["percentage_increase"] = value["percentage_increase"];
           rowNode.setData(updated);
 
           /* rowNode.setDataValue('selling_price', value["selling_price"]);
