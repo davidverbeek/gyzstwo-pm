@@ -157,7 +157,6 @@ export class CurrentroasComponent implements OnInit {
     this.loadAGGrid();
 
     this.getRowStyle = function (params) {
-      console.log(params.data.performance);
       if (typeof params.data != "undefined") {
         if (params.data.performance == "Over Performance") {
           return { background: '#bce0bc' };
@@ -207,6 +206,18 @@ export class CurrentroasComponent implements OnInit {
         alert("Something Went wrong. Please try again with different date range")
       } else {
         this.loadAGGrid();
+        this.getRowStyle = function (params) {
+          if (typeof params.data != "undefined") {
+            if (params.data.performance == "Over Performance") {
+              return { background: '#bce0bc' };
+            } else if (params.data.performance == "Under Performance") {
+              return { background: '#fadbd8' };
+            } else {
+              return { background: '' };
+            }
+          }
+          return { background: '' };
+        };
       }
       this.roasSpinner = false;
       this.isRoasDisabled = false;
