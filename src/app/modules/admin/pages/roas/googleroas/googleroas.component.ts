@@ -45,7 +45,7 @@ export class GoogleroasComponent implements OnInit {
     {
       field: 'file_name', headerName: 'File', sortable: true, filter: 'text',
       cellRenderer: params => {
-        return '<a href="' + environment.nodebasePath + '/googleroas/' + (params.value).replace("%20", /\s/g) + '" targets="_blank">' + params.value + '</a>';
+        return '<a href="' + environment.nodebasePath + '/googleroas/' + params.value + '" targets="_blank">' + params.value + '</a>';
       }
     },
     { field: 'active', headerName: 'Active', sortable: true, filter: 'number', cellRenderer: ActivategoogleroasComponent }
