@@ -157,12 +157,17 @@ export class CurrentroasComponent implements OnInit {
     this.loadAGGrid();
 
     this.getRowStyle = function (params) {
-
-      if (params.node.rowPinned) {
-        return { background: '#c1d6e7' };
-      } else {
-        return { background: '' };
+      console.log(params.data.performance);
+      if (typeof params.data != "undefined") {
+        if (params.data.performance == "Over Performance") {
+          return { background: '#bce0bc' };
+        } else if (params.data.performance == "Under Performance") {
+          return { background: '#fadbd8' };
+        } else {
+          return { background: '' };
+        }
       }
+      return { background: '' };
     };
   }
 

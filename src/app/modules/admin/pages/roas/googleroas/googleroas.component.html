@@ -53,11 +53,15 @@
         </div>
 
     </div>
-
-    <ag-grid-angular style="width: 100%; height:800px;" class="ag-theme-alpine" [rowData]="rowData"
-        [columnDefs]="columnDefs" [defaultColDef]="defaultColDef" [rowModelType]="rowModelType" [rowStyle]="rowStyle"
-        [getRowStyle]="getRowStyle" (gridReady)="onGridReady($event)" [pagination]="true"
-        [paginationPageSize]="paginationPageSize" [serverSideStoreType]="serverSideStoreType"
-        [cacheBlockSize]="cacheBlockSize" [animateRows]="true" [suppressMenuHide]="true"></ag-grid-angular>
+    <div class="box" style="border: none;">
+        <!-- <div class="overlay">
+            <i class="fa fa-refresh fa-spin"></i>
+        </div> -->
+        <ag-grid-angular style="width: 100%; height:800px;" class="ag-theme-alpine" [rowData]="rowData"
+            [columnDefs]="columnDefs" [defaultColDef]="defaultColDef" [rowModelType]="rowModelType"
+            [rowStyle]="rowStyle" [getRowStyle]="getRowStyle" (gridReady)="onGridReady($event)" [pagination]="true"
+            [paginationPageSize]="paginationPageSize" [serverSideStoreType]="serverSideStoreType"
+            [cacheBlockSize]="cacheBlockSize" [animateRows]="true" [suppressMenuHide]="true"></ag-grid-angular>
+    </div>
 
 </div>
