@@ -9,7 +9,8 @@ export const environment = {
   revenueUrl: "http://localsymfony.com/nodewsrevenue/get_revenue.php",
   revenueSyncUrl: "http://localsymfony.com/nodewsrevenue/set_sortorder.php",
   roasUrl: "http://localsymfony.com/nodewsrevenue/get_roas.php",
-  roasCalUrl: "http://localsymfony.com/nodewsrevenue/debug_roas.php"
+  roasCalUrl: "http://localsymfony.com/nodewsrevenue/debug_roas.php",
+  nodebasePath: "http://agws.com"
 };
 
 /*

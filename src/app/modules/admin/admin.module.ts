@@ -27,6 +27,8 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { RoasModule } from './pages/roas/roas.module'
 import { CurrentroasComponent } from './pages/roas/currentroas/currentroas.component'
+import { GoogleroasComponent } from './pages/roas/googleroas/googleroas.component';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 
 const gyzsroutes: Routes = [
@@ -40,6 +42,7 @@ const gyzsroutes: Routes = [
       { path: "bolminimum", canActivate: [AuthGuard], component: BolminimumComponent },
       { path: "revenue", canActivate: [AuthGuard], component: RevenueComponent },
       { path: "currentroas", canActivate: [AuthGuard], component: CurrentroasComponent },
+      { path: "googleroas", canActivate: [AuthGuard], component: GoogleroasComponent },
       { path: "settings", canActivate: [AuthGuard], component: SettingsComponent },
       { path: '', redirectTo: '/admin/dashboard', pathMatch: 'full' },
     ],
@@ -69,6 +72,7 @@ const gyzsroutes: Routes = [
     MatNativeDateModule,
     MatInputModule,
     RoasModule,
+    MatProgressBarModule,
     RouterModule.forChild(gyzsroutes)
   ]
 })
