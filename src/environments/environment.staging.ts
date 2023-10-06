@@ -6,5 +6,5 @@ export const environment = {
   revenueSyncUrl: "https://dev.onlinedeurbeslag.com/pm_getdata/set_sortorder.php",
   roasUrl: "https://dev.onlinedeurbeslag.com/pm_getdata/get_roas.php",
   roasCalUrl: "https://dev.onlinedeurbeslag.com/pm_getdata/debug_roas.php",
-  nodebasePath: "https://dev.onlinedeurbeslag.com"
+  nodebasePath: "https://dev.onlinedeurbeslag.com/gyzstwo-pm-ws"
 };
