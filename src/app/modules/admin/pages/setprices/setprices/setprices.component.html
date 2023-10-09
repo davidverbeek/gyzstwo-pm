@@ -10,23 +10,32 @@
 </section>
 
 <div style="padding: 15px;">
-  <label><input type="checkbox" value="chkall" (change)="getAllProducts($event)">Check All {{ chkAllCount }}</label>
-
-  <div style="display: none;padding: 40px;">
-
-    <label for="btnDebCategories">
-      <button class="btn btn-primary btn-sm no-modal col-7" type="button" id="btnDebCategories"
-        (click)="onApplyDebterCategories()">
-        <i class="fa fa-filter"></i>Apply Debter Categories
-        <span class="loading-img-update" style="display: none;"></span>
-      </button>
-    </label>
-
+  <div class="checkbox" style="float: left;">
+    <label><input type="checkbox" value="chkall" (change)="getAllProducts($event)">Check All {{ chkAllCount }}</label>
+    <div style="display: none;padding-left: 20px;">
+      <label for="btnDebCategories">
+        <button class="btn btn-primary btn-sm no-modal col-7" type="button" id="btnDebCategories"
+          (click)="onApplyDebterCategories()">
+          <i class="fa fa-filter"></i>Apply Debter Categories
+          <span class="loading-img-update" style="display: none;"></span>
+        </button>
+      </label>
+    </div>
   </div>
+  <div style="float: right;">
+    <div class="checkbox">
+      <label style="padding-right: 10px;"><input type="checkbox" name="show_updated" (change)="showUpdated($event)">Show
+        updated&nbsp;&nbsp;&nbsp;|</label>
+      <label style="padding-right: 10px;"><input type="checkbox" name="show_negative"
+          (change)="ShowNegative($event)">Negative
+        Margins&nbsp;&nbsp;&nbsp;|</label>
+      <a style="cursor: pointer; color: green;" (click)="activateUpdated()"><i class="fa fa-fw fa-check-square-o"></i>
+        Activate Updated</a>&nbsp;&nbsp;&nbsp;|
+      <a style="cursor: pointer;" (click)="resetFilters()"><i class="fa fa-fw fa-refresh"></i> Reset Filters</a>
 
-
-  <!--  <div style="clear:both;"></div> -->
-
+    </div>
+  </div>
+  <div style="clear: both;"></div>
   <ag-grid-angular style="width: 100%; height:800px;" class="ag-theme-alpine" [rowData]="rowData" [getRowId]="getRowId"
     [columnDefs]="columnDefs" [defaultColDef]="defaultColDef" [rowModelType]="rowModelType" [rowStyle]="rowStyle"
     [getRowStyle]="getRowStyle" (gridReady)="onGridReady($event)" [pagination]="true"
@@ -36,5 +45,5 @@
     [fillHandleDirection]="fillHandleDirection" [undoRedoCellEditing]="true" [undoRedoCellEditingLimit]="20"
     (cellEditingStopped)="onCellEditingStopped($event)" (dragStopped)="onDragStopped($event)"
     (cellKeyDown)="onCellKeyDown($event)" (paginationChanged)="onPaginationChanged($event)" rowSelection='multiple'
-    [context]="context"></ag-grid-angular>
+    [suppressMenuHide]="true"></ag-grid-angular>
 </div>

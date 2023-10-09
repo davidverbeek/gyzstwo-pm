@@ -11,14 +11,15 @@ export class HeaderComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   onUserSignOut() {
     localStorage.removeItem("token");
     localStorage.removeItem("debtorCols");
     localStorage.removeItem("currentSql");
     localStorage.removeItem("allDebts");
-    window.location.href=""+environment.agbaseUrl+"";
+    localStorage.removeItem("settings");
+    window.location.href = "" + environment.agbaseUrl + "";
   }
 
 }

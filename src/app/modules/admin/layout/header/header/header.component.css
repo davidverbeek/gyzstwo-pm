@@ -1,0 +1,19 @@
+.loader {
+    position: fixed;
+    z-index: 9999999999;
+    opacity: 0.5;
+    left: 0px;
+    top: 0px;
+    background: url('../../../../../../dist/img/loading.gif') 50% 50% no-repeat #f9f9f9;
+}
+
+.loader_txt {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    color: #323584;
+    font-weight: bold;
+    font-style: italic;
+}

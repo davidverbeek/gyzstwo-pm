@@ -43,7 +43,7 @@
               <!-- inner menu: contains the actual data -->
               <ul class="menu">
                 <li><!-- start message -->
-                  <a href="#">
+                  <a [routerLink]="['/admin/bolcommission']">
                     <h4>
                       <i class="fa fa-file"></i><span style="margin-left: 8px;">Bol Commission</span>
                     </h4>
@@ -51,7 +51,7 @@
                 </li>
 
                 <li><!-- start message -->
-                  <a href="#">
+                  <a [routerLink]="['/admin/bolminimum']">
                     <h4>
                       <i class="fa fa-file"></i><span style="margin-left: 8px;">Bol Minimum</span>
                     </h4>
@@ -101,7 +101,7 @@
         </li>
 
         <li class="dropdown messages-menu">
-          <a href="#" class="dropdown-toggle">
+          <a [routerLink]="['/admin/revenue']" class="dropdown-toggle">
             <i class="fa fa-eur"></i><span style="margin-left: 8px;">Revenue Report</span>
           </a>
         </li>
@@ -123,7 +123,7 @@
                 </li>
 
                 <li><!-- start message -->
-                  <a href="#">
+                  <a [routerLink]="['/admin/currentroas']">
                     <h4>
                       <i class="fa fa-file"></i><span style="margin-left: 8px;">Current</span>
                     </h4>
@@ -136,7 +136,7 @@
         </li>
 
         <li class="dropdown messages-menu">
-          <a href="#" class="dropdown-toggle">
+          <a [routerLink]="['/admin/googleroas']" class="dropdown-toggle">
             <i class="fa fa-google"></i><span style="margin-left: 8px;">Google Roas</span>
           </a>
         </li>
@@ -186,3 +186,4 @@
     </div>
   </nav>
 </header>
+<div><span id="showloader" class="loader_txt" style="display:none;"></span></div>

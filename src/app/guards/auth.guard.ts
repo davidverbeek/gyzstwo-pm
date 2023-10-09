@@ -18,6 +18,7 @@ export class AuthGuard implements CanActivate {
     this.authService.verifyToken(localStorage.getItem("token")).subscribe(
       responseData => {
         this.authService.setLogggedInDetails(responseData);
+        this.authService.setSettings();
         this.authUserDetails = this.authService.getLoggedInDetails();
         let currentUrl = (state.url).split("/");
         this.userPageAccess = this.authUserDetails["page_access"].split(",");

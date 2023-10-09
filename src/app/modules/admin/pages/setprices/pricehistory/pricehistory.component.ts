@@ -29,7 +29,7 @@ export class PricehistoryComponent implements ICellRendererAngularComp {
 
   constructor(private CommonService: CommonService) { }
   openPriceHistory() {
-    $("#imagemodal").modal("show");
+    $("#modalprice").modal("show");
     this.CommonService.productHistoryData.next(this.historyData);
   }
 
