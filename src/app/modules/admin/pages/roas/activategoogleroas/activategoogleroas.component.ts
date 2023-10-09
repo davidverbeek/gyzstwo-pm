@@ -30,6 +30,9 @@ export class ActivategoogleroasComponent implements ICellRendererAngularComp {
 
   onActivate() {
     if (confirm("Are you sure you want to activate it?")) {
+      $("#showloader").addClass("loader");
+      $(".loader_txt").show();
+      $("#showloader").html("Please Wait....<br>Activating<br>" + this.filename + "");
       const xlsxUrl = environment.nodebasePath + '/googleroas/' + this.filename;
       this.readXlsxDataFromUrl(xlsxUrl);
     }
