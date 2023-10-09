@@ -425,6 +425,12 @@ export class SetpricesComponent implements OnInit {
       $('#btnredo').removeAttr("disabled");
     });
 
+    $('#flexCheckDefault').prop('checked', true);
+
+    $('a>i.sim-tree-checkbox').each(function (index) {
+      $(this).addClass('checked');
+    });
+
   }
 
   ngOnDestroy() {

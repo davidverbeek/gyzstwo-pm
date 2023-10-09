@@ -83,11 +83,9 @@ export class LeftComponent implements OnInit {
                     $.each(item, function (key, value) {
                         selectedCategories.push(value["id"]);
                     });
-                    if (selectedCategories.length > 0) {
-                        $("#hdn_selectedcategories").val(selectedCategories);
-                    } else {
-                        $("#hdn_selectedcategories").val('-1');
-                    }
+                    // if (selectedCategories.length > 0) {
+                    $("#hdn_selectedcategories").val(selectedCategories);
+                    // }
 
                     $("#btnloadcats").trigger('click');
 
@@ -97,6 +95,7 @@ export class LeftComponent implements OnInit {
                     this.toggleAllCategories(true);
 
                     var left_cats = this.getTreeCategories();
+
                     $('#hdn_selectedcategories').val(left_cats);
                     $("#btnloadcats").trigger('click');
                 }

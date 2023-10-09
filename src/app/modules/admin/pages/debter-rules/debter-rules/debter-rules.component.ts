@@ -41,9 +41,14 @@ export class DebterRulesComponent implements OnInit {
         });
       }
     });
-    $('#flexCheckDefault').prop('checked', false);
 
     this.getCopyFromDebtor();
+
+    $('#flexCheckDefault').prop('checked', false);
+
+    $('a>i.sim-tree-checkbox').each(function (index) {
+      $(this).removeClass('checked');
+    });
 
   }
 
