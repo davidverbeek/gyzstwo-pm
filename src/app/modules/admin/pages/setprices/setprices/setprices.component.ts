@@ -34,7 +34,7 @@ export class SetpricesComponent implements OnInit {
   chkAllProducts: any;
   isChkAllChecked: number = 0;
   fileUploadDone: any;
-  
+
   public rowModelType: 'serverSide' = 'serverSide';
   public serverSideStoreType: ServerSideStoreType = 'partial';
   public fillHandleDirection: 'x' | 'y' | 'xy' = 'x';
@@ -306,7 +306,6 @@ export class SetpricesComponent implements OnInit {
       this.cats = allselectedcats;
       this.updatedProducts = [];
       this.loadAGGrid();
-      this.product_brands = this.categoryService.setCategoryBrands(this.cats);
     });
 
     this.fileUploadDone = this.sidebarService.loadAgGrid.subscribe((isUploaded) => {
@@ -649,6 +648,7 @@ export class SetpricesComponent implements OnInit {
     this.gridParams = params;
     this.columnApi = params.columnApi;
     this.loadAGGrid();
+
     this.setCustomGroupLayout();
     this.getRowStyle = function (params) {
       if (typeof params.data != "undefined") {
@@ -674,6 +674,7 @@ export class SetpricesComponent implements OnInit {
     var datasource = createServerSideDatasource(this.gridParams, cat_all_str);
     this.api.setServerSideDatasource(datasource);
     this.fillHandleDirection = 'y';
+    this.product_brands = this.categoryService.setCategoryBrands(this.cats);
   }
 
 

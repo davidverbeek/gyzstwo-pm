@@ -97,7 +97,7 @@ export class LeftComponent implements OnInit {
                     var left_cats = this.getTreeCategories();
 
                     $('#hdn_selectedcategories').val(left_cats);
-                    $("#btnloadcats").trigger('click');
+                    //$("#btnloadcats").trigger('click');
                 }
             });
 
@@ -132,10 +132,10 @@ export class LeftComponent implements OnInit {
         }, 3000);
 
 
-        this.categoryService.categorySelected.subscribe((allselectedcats) => {
+        //this.categoryService.categorySelected.subscribe((allselectedcats) => {
 
-            this.cats = allselectedcats;
-        });
+        // this.cats = allselectedcats;
+        // });
 
     }
 
