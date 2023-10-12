@@ -9,6 +9,11 @@ import { PmSidebarService } from '../../../../../services/pm-sidebar.service';
 import { SideSetPricesComponent } from 'src/app/modules/admin/pages/setprices/setprices/side-set-prices/side-set-prices.component';
 import { LoadDebtorsService } from 'src/app/services/load-debtors.service';
 import { PricehistoryComponent } from 'src/app/modules/admin/pages/setprices/pricehistory/pricehistory.component';
+declare function checkGiven(any, boolean): void;
+declare function checkIt(boolean): void;
+
+//import { PmDebterService } from '../../../../../services/load-debtors.service';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-setprices',
@@ -29,18 +34,27 @@ export class SetpricesComponent implements OnInit {
   chkAllProducts: any;
   isChkAllChecked: number = 0;
   fileUploadDone: any;
-
-
+  
   public rowModelType: 'serverSide' = 'serverSide';
   public serverSideStoreType: ServerSideStoreType = 'partial';
   public fillHandleDirection: 'x' | 'y' | 'xy' = 'x';
   all_debtors: any = [];
-
+  deb_products: any = [];
+  debterProds: any = [];
+  debter_product_data = "";
+  product_brands: any = [];
+  product_supplier: any = [];
+  redo_swap: any = [];
+  undo_swap: any = [];
+  context: any
+  updatePriceCompleted: boolean = true;
   //public rowModelType: 'serverSide';
 
   public paginationPageSize = 500;
   public cacheBlockSize = 500;
   rowStyle = { background: '' };
+  newArray: any[] = [];
+
   getRowStyle = (params: RowClassParams) => this.rowStyle;
 
   // Each Column Definition results in one Column.
@@ -48,7 +62,14 @@ export class SetpricesComponent implements OnInit {
     { field: 'product_id', headerName: 'ID', sortable: true, filter: 'number', hide: true },
     {
       field: 'supplier_type', headerName: 'Leverancier', sortable: true, filter: 'agSetColumnFilter', filterParams: {
-        values: ['Gyzs', 'JRS', 'Transferro']
+        values: params => {
+          this.product_supplier = this.categoryService.product_supplier_arr;
+
+          // simulating async delay
+          setTimeout(() => params.success(this.product_supplier), 500);
+
+        },
+        refreshValuesOnOpen: true
       },
       cellRenderer: params => {
         var supplier_value = params.value;
@@ -60,7 +81,6 @@ export class SetpricesComponent implements OnInit {
         if (params.data.is_activated == 1) {
           is_activated = '<i class="fa fa-fw fa-check-square-o" style="color:green;"></i>';
         }
-
         return updated_product_count + is_activated + supplier_value;
       }
     },
@@ -68,7 +88,17 @@ export class SetpricesComponent implements OnInit {
     { field: 'sku', headerName: 'SKU', sortable: true, filter: 'text', cellRenderer: PricehistoryComponent },
     { field: 'supplier_sku', headerName: 'SKU (Sup)', sortable: true, filter: 'text', hide: true },
     { field: 'eancode', headerName: 'Ean', sortable: true, filter: 'text', hide: true },
-    { field: 'merk', headerName: 'Merk', sortable: true, filter: 'text' },
+    {
+      field: 'merk', headerName: 'Merk', sortable: true, filter: 'agSetColumnFilter', filterParams: {
+        values: params => {
+          this.product_brands = this.categoryService.product_brand_arr;
+
+          // simulating async delay
+          setTimeout(() => params.success(this.product_brands), 500);
+        },
+        refreshValuesOnOpen: true
+      }
+    },
     { field: 'gross_unit_price', headerName: 'Brutopr', sortable: true, filter: 'number', hide: true },
     { field: 'supplier_discount_gross_price', headerName: 'Korting brutopr', sortable: true, filter: 'number', hide: true },
     { field: 'net_unit_price', headerName: 'Nettopr Lev', sortable: true, filter: 'number', hide: true },
@@ -110,44 +140,173 @@ export class SetpricesComponent implements OnInit {
 
   ];
 
+  public customToolPanelColumnDefs: any = [];
 
   constructor(private http: HttpClient, private categoryService: PmCategoryService, private sidebarService: PmSidebarService, private loaddebtorsService: LoadDebtorsService) {
 
-    if (localStorage.getItem("debtorCols") != null) {
+    this.newArray = this.columnDefs.map((item) => ({
+      headerName: item.headerName,
+      field: item.field,
+    }));
 
+    if (localStorage.getItem("debtorCols") != null) {
 
       let debColString = localStorage.getItem("debtorCols");
 
-      var deb_columns = [];
+      let deb_columns = [];
       deb_columns = JSON.parse(debColString || '{}');
+      let arrayOfObjects: any = [];
+      let arrayOfObjects_mbp: any = [];
+      let arrayOfObjects_msp: any = [];
+      let arrayOfObjects_dgp: any = [];
       for (const [key, value] of Object.entries(deb_columns)) {
-        var debcellbg_color = "";
+
+        let debcellbg_color = "";
+        let checkbox_class = "";
         if (value["type"] == "debsp") {
           debcellbg_color = "#90ee90";
+          checkbox_class = "show_cols_dsp";
         } else if (value["type"] == "debppbp") {
           debcellbg_color = "#7ac3ff";
+          checkbox_class = "show_cols_dmbp";
         } else if (value["type"] == "debppsp") {
           debcellbg_color = "#fffd6e";
+          checkbox_class = "show_cols_dmsp";
         } else if (value["type"] == "debdgp") {
           debcellbg_color = "#fc6b6b";
+          checkbox_class = "show_cols_ddgp";
+        }
+        //'.show_cols_dmbp, .show_cols_dmsp, .show_cols_ddgp, .show_cols_dsp'
+
+        let definition: ColDef = {
+          headerName: value["group_alias"], field: value["customer_group_name"], sortable: true, filter: 'number',
+          editable: (params) => {
+
+            var group_name_product = false;
+            var column_name: string = value["customer_group_name"];
+            var column_name_seperated = column_name.split('_');
+            this.debterProds.forEach((value, key) => {
+              if (column_name_seperated[1] in value) {
+                const x = value;
+                var debter_name_product_ids = value[column_name_seperated[1]];
+                if (debter_name_product_ids.indexOf(params.data.product_id) !== -1) {
+                  group_name_product = true;
+                }
+              }
+
+            });
+            return group_name_product;
+          }, hide: true,
+          cellStyle: params => {
+            var status_of_debter_product = this.checkIfDebterProduct(params.data.product_id, value["customer_group_name"]);
+            if (status_of_debter_product) {
+              //mark police cells as red
+              return { backgroundColor: debcellbg_color };
+            } else {
+              return { backgroundColor: "#808080" };//grey
+            }
+          }, toolPanelClass: 'show_deb_cols ' + checkbox_class
+        };
+
+
+        this.columnDefs.push(definition);
+
+        let deb_fields: string = value["customer_group_name"];
+        if (deb_fields.indexOf("_debter_selling_price") !== -1) {
+          const dynamicObject = {
+            headerName: value['group_alias'],
+            field: value['customer_group_name'], // Generate an array of sub-objects
+          };
+          arrayOfObjects.push(dynamicObject);
+        } else if (deb_fields.indexOf("_margin_on_buying_price") !== -1) {
+          const dynamicObject_mbp = {
+            headerName: value['group_alias'],
+            field: value['customer_group_name'], // Generate an array of sub-objects
+          };
+          arrayOfObjects_mbp.push(dynamicObject_mbp);
+        } else if (deb_fields.indexOf("_margin_on_selling_price") !== -1) {
+          const dynamicObject_msp = {
+            headerName: value['group_alias'],
+            field: value['customer_group_name'], // Generate an array of sub-objects
+          };
+          arrayOfObjects_msp.push(dynamicObject_msp);
+        } else {
+          const dynamicObject_dgp = {
+            headerName: value['group_alias'],
+            field: value['customer_group_name'], // Generate an array of sub-objects
+          };
+          arrayOfObjects_dgp.push(dynamicObject_dgp);
         }
 
-        let definition: ColDef = { headerName: value["group_alias"], field: value["customer_group_name"], sortable: true, filter: 'number', editable: true, hide: true, cellStyle: { 'background-color': '' + debcellbg_color + '' } };
-        this.columnDefs.push(definition);
-      }
+
+      };
+
+
+
+      this.customToolPanelColumnDefs.push(...this.newArray);
+
+
+      var newArray_2 = [
+
+        {
+          headerName: 'All SP',
+          children: arrayOfObjects,
+        },
+        {
+          headerName: 'All Marg.BP',
+          children: arrayOfObjects_mbp,
+        },
+        {
+          headerName: 'All Marg.SP',
+          children: arrayOfObjects_msp,
+        },
+        {
+          headerName: 'All Discount GP',
+          children: arrayOfObjects_dgp,
+        },
+
+      ];
+
+      this.customToolPanelColumnDefs.push(...newArray_2);
+
+
+
+
     }
 
     if (localStorage.getItem("allDebts") != null) {
       let alldebString = localStorage.getItem("allDebts");
       this.all_debtors = JSON.parse(alldebString || '{}');
     }
+
+
+    this.http.get(environment.webservicebaseUrl + "/all-debtor-product").subscribe(responseData => {
+
+      if (responseData["msg"]) {
+        responseData["msg"].forEach((value, key) => {
+          var element = {};
+          element[value["customer_group_name"]] = value["product_ids"];
+
+          this.debterProds.push(element);
+        });
+      }
+
+    });
+
+    this.context = {
+      componentParent: this
+    }
+
   }
+
+
 
   ngOnInit() {
     this.subcat = this.categoryService.categorySelected.subscribe((allselectedcats) => {
       this.cats = allselectedcats;
       this.updatedProducts = [];
       this.loadAGGrid();
+      this.product_brands = this.categoryService.setCategoryBrands(this.cats);
     });
 
     this.fileUploadDone = this.sidebarService.loadAgGrid.subscribe((isUploaded) => {
@@ -171,17 +330,59 @@ export class SetpricesComponent implements OnInit {
           alert("Please select price type");
           err = 1;
         }
-        if (priceType["val"] == "") {
+        if (priceType["update_type"] == "update" && priceType["val"] == "") {
           alert("Please enter value");
           err = 1;
         }
         if (err == 0) {
 
           if (this.isChkAllChecked == 0) {
+
             this.api.forEachNode((rowNode) => {
               if (idsToUpdate.indexOf(rowNode.data.product_id) >= 0) {
                 var updated = JSON.parse(JSON.stringify(rowNode.data));
-                this.formProductData(updated, priceType);
+
+
+
+                if (priceType["update_type"] == "update") {
+                  if (priceType["type"] == "selling_price") {
+                    this.redo_swap[rowNode.data.product_id] = rowNode.data.selling_price;
+                    this.undo_swap[rowNode.data.product_id] = rowNode.data.selling_price;
+                  } else if (priceType["type"] == "profit_percentage") {
+                    this.redo_swap[rowNode.data.product_id] = rowNode.data.profit_percentage;
+                    this.undo_swap[rowNode.data.product_id] = rowNode.data.profit_percentage;
+                  } else if (priceType["type"] == "profit_percentage_selling_price") {
+                    this.redo_swap[rowNode.data.product_id] = rowNode.data.profit_percentage_selling_price;
+                    this.undo_swap[rowNode.data.product_id] = rowNode.data.profit_percentage_selling_price;
+                  } else if (priceType["type"] == "discount_on_gross_price") {
+                    this.redo_swap[rowNode.data.product_id] = rowNode.data.discount_on_gross_price;
+                    this.undo_swap[rowNode.data.product_id] = rowNode.data.discount_on_gross_price;
+                  }
+                  this.formProductData(updated, priceType);
+                } else if (priceType["update_type"] == "undo") {
+                  if (priceType["type"] == "selling_price") {
+                    this.redo_swap[rowNode.data.product_id] = rowNode.data.selling_price;
+                  } else if (priceType["type"] == "profit_percentage") {
+                    this.redo_swap[rowNode.data.product_id] = rowNode.data.profit_percentage;
+                  } else if (priceType["type"] == "profit_percentage_selling_price") {
+                    this.redo_swap[rowNode.data.product_id] = rowNode.data.profit_percentage_selling_price;
+                  } else if (priceType["type"] == "discount_on_gross_price") {
+                    this.redo_swap[rowNode.data.product_id] = rowNode.data.discount_on_gross_price;
+                  }
+                  this.formProductData(updated, priceType);
+                } else {
+                  if (priceType["type"] == "selling_price") {
+                    this.undo_swap[rowNode.data.product_id] = rowNode.data.selling_price;
+                  } else if (priceType["type"] == "profit_percentage") {
+                    this.undo_swap[rowNode.data.product_id] = rowNode.data.profit_percentage;
+                  } else if (priceType["type"] == "profit_percentage_selling_price") {
+                    this.undo_swap[rowNode.data.product_id] = rowNode.data.profit_percentage_selling_price;
+                  } else if (priceType["type"] == "discount_on_gross_price") {
+                    this.undo_swap[rowNode.data.product_id] = rowNode.data.discount_on_gross_price;
+                  }
+                  this.formProductData(updated, priceType);
+                }
+
               }
             });
           } else if (this.isChkAllChecked == 1) {
@@ -191,19 +392,66 @@ export class SetpricesComponent implements OnInit {
                 (value, key) => {
                   //console.log(key);
                   //console.log(value.product_id);
-                  this.formProductData(value, priceType);
+
+                  if (priceType["update_type"] == "update") {
+                    if (priceType["type"] == "selling_price") {
+                      this.redo_swap[value.product_id] = value.selling_price;
+                      this.undo_swap[value.product_id] = value.selling_price;
+                    } else if (priceType["type"] == "profit_percentage") {
+                      this.redo_swap[value.product_id] = value.profit_percentage;
+                      this.undo_swap[value.product_id] = value.profit_percentage;
+                    } else if (priceType["type"] == "profit_percentage_selling_price") {
+                      this.redo_swap[value.product_id] = value.profit_percentage_selling_price;
+                      this.undo_swap[value.product_id] = value.profit_percentage_selling_price;
+                    } else if (priceType["type"] == "discount_on_gross_price") {
+                      this.redo_swap[value.product_id] = value.discount_on_gross_price;
+                      this.undo_swap[value.product_id] = value.discount_on_gross_price;
+                    }
+                    this.formProductData(value, priceType);
+                  } else if (priceType["update_type"] == "undo") {
+                    if (priceType["type"] == "selling_price") {
+                      this.redo_swap[value.product_id] = value.selling_price;
+                    } else if (priceType["type"] == "profit_percentage") {
+                      this.redo_swap[value.product_id] = value.profit_percentage;
+                    } else if (priceType["type"] == "profit_percentage_selling_price") {
+                      this.redo_swap[value.product_id] = value.profit_percentage_selling_price;
+                    } else if (priceType["type"] == "discount_on_gross_price") {
+                      this.redo_swap[value.product_id] = value.discount_on_gross_price;
+                    }
+                    this.formProductData(value, priceType);
+                  } else {
+                    if (priceType["type"] == "selling_price") {
+                      this.undo_swap[value.product_id] = value.selling_price;
+                    } else if (priceType["type"] == "profit_percentage") {
+                      this.undo_swap[value.product_id] = value.profit_percentage;
+                    } else if (priceType["type"] == "profit_percentage_selling_price") {
+                      this.undo_swap[value.product_id] = value.profit_percentage_selling_price;
+                    } else if (priceType["type"] == "discount_on_gross_price") {
+                      this.undo_swap[value.product_id] = value.discount_on_gross_price;
+                    }
+                    this.formProductData(value, priceType);
+                  }
+
+
                 }
               )
             }
           }
 
-          //console.log(this.updatedProducts); 
           this.saveUpdatedProducts(this.updatedProducts);
 
         }
       }
-
+      $('#btnundo').removeAttr("disabled");
+      $('#btnredo').removeAttr("disabled");
     });
+
+    $('#flexCheckDefault').prop('checked', true);
+
+    $('a>i.sim-tree-checkbox').each(function (index) {
+      $(this).addClass('checked');
+    });
+
   }
 
   ngOnDestroy() {
@@ -266,15 +514,36 @@ export class SetpricesComponent implements OnInit {
     let new_profit_percentage_selling_price = prodData.profit_percentage_selling_price;
     let new_discount_on_gross_price = prodData.discount_on_gross_price;
     let debField = "";
-
-    if (priceType["type"] == "selling_price") {
-      new_selling_price = (1 + (priceType["val"] / 100)) * prodData.selling_price;
-    } else if (priceType["type"] == "profit_percentage") {
-      new_profit_percentage = priceType["val"];
-    } else if (priceType["type"] == "profit_percentage_selling_price") {
-      new_profit_percentage_selling_price = priceType["val"];
-    } else if (priceType["type"] == "discount_on_gross_price") {
-      new_discount_on_gross_price = priceType["val"];
+    if (priceType["update_type"] == "update") {
+      if (priceType["type"] == "selling_price") {
+        new_selling_price = (1 + (priceType["val"] / 100)) * prodData.selling_price;
+      } else if (priceType["type"] == "profit_percentage") {
+        new_profit_percentage = priceType["val"];
+      } else if (priceType["type"] == "profit_percentage_selling_price") {
+        new_profit_percentage_selling_price = priceType["val"];
+      } else if (priceType["type"] == "discount_on_gross_price") {
+        new_discount_on_gross_price = priceType["val"];
+      }
+    } else if (priceType["update_type"] == "undo") {
+      if (priceType["type"] == "selling_price") {
+        new_selling_price = this.undo_swap[prodData.product_id];
+      } else if (priceType["type"] == "profit_percentage") {
+        new_profit_percentage = this.undo_swap[prodData.product_id];
+      } else if (priceType["type"] == "profit_percentage_selling_price") {
+        new_profit_percentage_selling_price = this.undo_swap[prodData.product_id];
+      } else if (priceType["type"] == "discount_on_gross_price") {
+        new_discount_on_gross_price = this.undo_swap[prodData.product_id];
+      }
+    } else {
+      if (priceType["type"] == "selling_price") {
+        new_selling_price = this.redo_swap[prodData.product_id];
+      } else if (priceType["type"] == "profit_percentage") {
+        new_profit_percentage = this.redo_swap[prodData.product_id];
+      } else if (priceType["type"] == "profit_percentage_selling_price") {
+        new_profit_percentage_selling_price = this.redo_swap[prodData.product_id];
+      } else if (priceType["type"] == "discount_on_gross_price") {
+        new_discount_on_gross_price = this.redo_swap[prodData.product_id];
+      }
     }
 
     var prepareProductData = [];
@@ -315,7 +584,6 @@ export class SetpricesComponent implements OnInit {
   }
 
 
-
   public sideBar: SideBarDef | string | string[] | boolean | null = {
     toolPanels: [
       {
@@ -328,7 +596,11 @@ export class SetpricesComponent implements OnInit {
           suppressRowGroups: true,
           suppressValues: true,
           suppressPivots: true,
-          suppressPivotMode: true
+          suppressPivotMode: true,
+          // prevents custom layout changing when columns are reordered in the grid
+          suppressSyncLayoutWithGrid: true,
+          // prevents columns being reordered from the columns tool panel
+          suppressColumnMove: true,
         }
       },
       {
@@ -377,7 +649,7 @@ export class SetpricesComponent implements OnInit {
     this.gridParams = params;
     this.columnApi = params.columnApi;
     this.loadAGGrid();
-
+    this.setCustomGroupLayout();
     this.getRowStyle = function (params) {
       if (typeof params.data != "undefined") {
         if (params.data.is_updated == 1 && params.data.is_updated_skwirrel == 1) {
@@ -388,15 +660,26 @@ export class SetpricesComponent implements OnInit {
       }
       return { background: '' };
     };
+
+    debterCheckboxes();
   }
 
   loadAGGrid() {
-    var datasource = createServerSideDatasource(this.gridParams, this.cats);
+    var cat_all_str = this.cats;
+    if ($('.show_deb_cols').find("input[type='checkbox']").is(':checked') && cat_all_str != '' && cat_all_str != '-1') {//means this is a group list
+      if (!$('#flexCheckDefault').is(':checked')) {
+        cat_all_str = '-1';
+      }
+    }
+    var datasource = createServerSideDatasource(this.gridParams, cat_all_str);
     this.api.setServerSideDatasource(datasource);
     this.fillHandleDirection = 'y';
   }
+
+
+
   onCellValueChanged(event: CellValueChangedEvent) {
-    console.log(event);
+
     var prepareProductData = [];
     var checkforDebtor: any = [];
     prepareProductData["field"] = event.colDef.field;
@@ -546,6 +829,7 @@ export class SetpricesComponent implements OnInit {
           updated["profit_percentage"] = value["profit_percentage"];
           updated["profit_percentage_selling_price"] = value["profit_percentage_selling_price"];
           updated["discount_on_gross_price"] = value["discount_on_gross_price"];
+          updated["percentage_increase"] = value["percentage_increase"];
           rowNode.setData(updated);
 
           /* rowNode.setDataValue('selling_price', value["selling_price"]);
@@ -568,10 +852,14 @@ export class SetpricesComponent implements OnInit {
             let finalPdata = this.updatedProducts;
             this.updatedProducts = [];
             this.saveRow(finalPdata);
+            this.updatePriceCompleted = false;
+
           } else if (this.isChkAllChecked == 1) {
             this.chkAllCount = "(" + (this.chkAllProducts["msg"]).length + " Products Updated Successfully)";
             this.updatedProducts = [];
             this.loadAGGrid();
+
+            this.updatePriceCompleted = false;
           }
         }
       });
@@ -591,7 +879,6 @@ export class SetpricesComponent implements OnInit {
           rowNode.setSelected(true)
         });
 
-
       });
     } else {
       this.chkAllCount = "";
@@ -605,8 +892,120 @@ export class SetpricesComponent implements OnInit {
     }
   }
 
+
+
+  onApplyDebterCategories() {
+    let selected_group = new Array();
+    let unique_group = new Array();
+    //$('.show_cols_dmbp, .show_cols_dmsp, .show_cols_ddgp, .show_cols_dsp').each(function (index) {
+    $('.show_deb_cols').each(function (index) {
+      var checkbox_group = "";
+      if ($(this).find("input[type='checkbox']").is(':checked')) {
+        checkbox_group = $(this).find("span.ag-column-select-column-label").text();
+        var myArray = checkbox_group.split("(");
+        var myArray_2 = myArray[1].split(")");
+        selected_group.push(myArray_2[0]);
+      }
+    });
+    unique_group = removeDuplicates(selected_group);
+    const toObject = Object.assign({}, unique_group);
+
+
+    this.http.post(environment.webservicebaseUrl + "/dbt-alias-cats", toObject)
+      .pipe(map(responseData => {
+        const category_ids: string[] = [];
+
+        responseData["rows"].forEach(function1);
+
+        function function1(currentValue, index) {
+          // console.log("Index in array is: " + index + " ::  Value is: " + currentValue.product_id);
+          category_ids.push(currentValue.category_ids);
+        }
+        let comma_sperated_ids = category_ids.toString();
+        return comma_sperated_ids;
+      }))
+      .subscribe(
+        responseData => {
+          $("#btnDebCategories").css("opacity", 0.5);
+          $("#btnDebCategories").find('span.loading-img-update').css({ "display": "inline-block" });
+          $("#btnDebCategories").attr('disabled', 'disabled');
+
+          var debter_cats = responseData;
+          $("#hdn_selectedcategories").val(debter_cats);
+          checkIt(false);
+          if (debter_cats != "") { // means status = checked
+            $('#flexCheckDefault').prop('checked', true);
+
+            var cat_id_arr = debter_cats.split(',');
+            $.each(cat_id_arr, function (key, value) {
+              var $li = $('li[data-id=' + value + ']');
+              checkGiven($li, true);
+            });
+            this.toggleCheckbox('none');
+          } else { // remove category filter
+            $("i.sim-tree-checkbox").parent('a').parent('li').addClass('disabled');
+            $("#flexCheckDefault").attr("disabled", "true");
+          }
+          $("#btnDebCategories").css("opacity", 1);
+          $("#btnDebCategories").find('span.loading-img-update').css({ "display": "none" });
+          $('#btnDebCategories').removeAttr('disabled');
+
+
+          this.cats = debter_cats;
+
+
+          this.loadAGGrid();
+        });
+
+
+
+  }//end onApplyDebterCategories()
+
+  setCustomGroupLayout() {
+
+    var columnToolPanel = this.api.getToolPanelInstance('columns');
+    columnToolPanel.setColumnLayout(this.customToolPanelColumnDefs);
+  }
+
+
+
+  toggleCheckbox(new_status) {
+    $('a>i.sim-tree-checkbox').each(function (index) {
+      $(this).parent('a').parent('li').removeClass('disabled');
+      if (!$(this).hasClass('checked')) {
+        if (new_status == 'none') {
+          $(this).parent('a').parent('li').addClass('disabled');
+        } else {
+          $(this).parent('a').parent('li').removeClass('disabled');
+        }
+      }
+    });
+  }
+
+  checkIfDebterProduct(product_id, current_group_name) {
+    var group_name_product = false;
+    var column_name: string = current_group_name;
+    var column_name_seperated = column_name.split('_');
+    this.debterProds.forEach((value, key) => {
+      if (column_name_seperated[1] in value) {
+        const x = value;
+        var debter_name_product_ids = value[column_name_seperated[1]];
+        if (debter_name_product_ids.indexOf(product_id) !== -1) {
+          group_name_product = true;
+        }
+      }
+
+    });
+    return group_name_product;
+  }
+
+
 }
 
+function removeDuplicates(arr: any[]) {
+  return arr.filter((item,
+    index) => arr.indexOf(item) === index);
+}
 
 
 function createServerSideDatasource(server: any, cats: any): IServerSideDatasource {
@@ -730,3 +1129,22 @@ function processUpdatedProduct(productData) {
   }
   return productData;
 }
+
+function debterCheckboxes() {
+
+  var count = 0;
+  $('div.show_deb_cols').on('click', function (e) {
+
+    if ($(this).find('.ag-column-select-checkbox').find('.ag-checkbox-input-wrapper').find("input[type='checkbox']").is(':checked')) {
+      count++;
+      if ($("label[for='btnDebCategories']").parent('div').css('display') != 'inline') {
+        $("label[for='btnDebCategories']").parent('div').css('display', 'inline');
+      }
+    } else {
+      count--;
+      if (count == 0) {
+        $("label[for='btnDebCategories']").parent('div').css('display', 'none');
+      }
+    };
+  });
+}//end debterCheckboxes()

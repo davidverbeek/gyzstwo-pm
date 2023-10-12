@@ -87,7 +87,7 @@
               "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
-              "namedChunks": true 
+              "namedChunks": true
             }
           },
           "defaultConfiguration": "localhost"
@@ -125,6 +125,7 @@
               "src/assets"
             ],
             "styles": [
+              "./node_modules/bootstrap/dist/css/bootstrap.min.css",
               "src/styles.css"
             ],
             "scripts": []

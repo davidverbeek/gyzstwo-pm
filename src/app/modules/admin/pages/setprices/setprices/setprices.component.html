@@ -12,6 +12,15 @@
 <div style="padding: 15px;">
   <div class="checkbox" style="float: left;">
     <label><input type="checkbox" value="chkall" (change)="getAllProducts($event)">Check All {{ chkAllCount }}</label>
+    <div style="display: none;padding-left: 20px;">
+      <label for="btnDebCategories">
+        <button class="btn btn-primary btn-sm no-modal col-7" type="button" id="btnDebCategories"
+          (click)="onApplyDebterCategories()">
+          <i class="fa fa-filter"></i>Apply Debter Categories
+          <span class="loading-img-update" style="display: none;"></span>
+        </button>
+      </label>
+    </div>
   </div>
   <div style="float: right;">
     <div class="checkbox">

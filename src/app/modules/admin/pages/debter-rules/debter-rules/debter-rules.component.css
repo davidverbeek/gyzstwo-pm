@@ -1,0 +1,12 @@
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.bg-primary {
+    background-color: #3a3d99 !important;
+}
+
+body {
+    font-size: 10px;
+    font-family: 'poppins-regular' !important;
+}

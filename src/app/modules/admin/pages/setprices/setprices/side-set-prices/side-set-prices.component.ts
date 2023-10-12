@@ -20,6 +20,12 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
   private params!: IToolPanelParams;
   getAllDebtors: any = "";
   currentDateTime: any;
+  allowUndoRedo = true;
+  showButton = true;
+  undoButton: string = "Undo Price";
+  redoButton: string = "Redo Price";
+  actionType: string = "";
+  storeForRedo: string = "";
 
   uploadValidationMessage: any = "Import Xlsx Only";
 
@@ -48,27 +54,55 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
     if (type == "SP") {
       this.textPlacehoder = "PM Vkpr";
       this.textButton = "Update PM Vkpr";
+      this.undoButton = "Undo PM Vkpr";
+      this.redoButton = "Redo PM Vkpr";
       this.priceType["type"] = "selling_price";
     } else if (type == "PBP") {
       this.textPlacehoder = "Marge Inkpr %";
       this.textButton = "Update Marge Inkpr %";
+      this.undoButton = "Undo Marge Inkpr %";
+      this.redoButton = "Redo Marge Inkpr %";
       this.priceType["type"] = "profit_percentage";
     } else if (type == "PSP") {
       this.textPlacehoder = "Marge Verkpr %";
       this.textButton = "Update Marge Verkpr %";
+      this.undoButton = "Undo Marge Verkpr %";
+      this.redoButton = "Redo Marge Verkpr %";
       this.priceType["type"] = "profit_percentage_selling_price";
     } else if (type == "DGP") {
       this.textPlacehoder = "Korting Brupr %";
       this.textButton = "Update Korting Brupr %";
+      this.undoButton = "Undo Korting Brupr %";
+      this.redoButton = "Redo Korting Brupr %";
       this.priceType["type"] = "discount_on_gross_price";
     }
   }
 
   btnSetPrice() {
+    this.actionType = "update";
+    this.storeForRedo = this.txtValue;
+    this.submitForm();
+  }
+
+  btnUndoPrice() {
+    this.actionType = "undo";
+    this.txtValue = "";
+    this.submitForm();
+  }
+
+  btnRedoPrice() {
+    this.actionType = "redo";
+    this.txtValue = this.storeForRedo;
+    this.submitForm();
+  }
+
+  submitForm() {
     this.priceType["val"] = this.txtValue;
     this.priceType["customer_group_selected"] = this.selCG;
+    this.priceType["update_type"] = this.actionType;
     this.sidebarService.btnClicked.next(this.priceType);
   }
+
   onCgSelected(selValue) {
     this.selCG = selValue;
   }
@@ -485,9 +519,9 @@ function columnMappings(allDebts: any) {
   columnMappings["Inkoopprijs (Inkpr per piece)"] = "buying_price," + columnMappings["Nieuwe Verkoopprijs (Niewe Vkpr per piece)"] + "," + allDebCols + "";
   columnMappings["Marge Inkpr %"] = columnMappings["Nieuwe Verkoopprijs (Niewe Vkpr per piece)"];
   columnMappings["Marge Verkpr %"] = columnMappings["Nieuwe Verkoopprijs (Niewe Vkpr per piece)"];
-
   return columnMappings;
 }
+
 function columnAlias(allDebts: any) {
   var columnAlias = Array();
   columnAlias["Artikelnummer (Artikel)"] = "sku";
@@ -564,5 +598,3 @@ function validXlsxHeader(allDebts: any) {
   return validHeader;
 
 }
-
-
