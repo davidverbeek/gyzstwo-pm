@@ -72,6 +72,7 @@ export class DebterRulesComponent implements OnInit {
     let check_old_is_removed: any = [];
     let old_cats_arr: any = [];
     var catId_new_arr = updated_cats;
+    let debtor_key_in_localStorage = '';
     if (old_cats != "") {
       old_cats_arr = old_cats.split(',');
       check_old_is_removed =
@@ -104,8 +105,8 @@ export class DebterRulesComponent implements OnInit {
         .subscribe(
           responseData => {
             let reset_product_ids = responseData;
-
             let debter_group = '';
+
             let debColString = localStorage.getItem("allDebts");
             let deb_columns_new = [];
             deb_columns_new = JSON.parse(debColString || '{}');
@@ -114,6 +115,7 @@ export class DebterRulesComponent implements OnInit {
               var magento_id = part.substring(0, 2);
               if (magento_id == selected_group) {
                 debter_group = key;
+                debtor_key_in_localStorage = key;
                 break;
               }
             }
@@ -123,6 +125,7 @@ export class DebterRulesComponent implements OnInit {
             }
           });
     }
+
 
     var filterProcessData = updated_cats.filter(function () { return true; });
     // this.categoryService.getProducts(filterProcessData);
@@ -156,6 +159,7 @@ export class DebterRulesComponent implements OnInit {
 
           this.http.post(environment.webservicebaseUrl + "/save-debter-rules", debterData).subscribe(responseData => {
             if (responseData["msg"] == "done") {
+              localStorage.setItem(debtor_key_in_localStorage, category_product_ids);
               //to show success message in the page
               $('<div class="alert alert-success" role="alert">Data is saved successfully!</div>').insertBefore("#data_filters1");
 
