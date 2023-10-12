@@ -159,6 +159,9 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
       var workbook = XLSX.read(fileReader.result, { type: 'binary' });
       var sheetNames = workbook.SheetNames;
       this.xlsxPrices = XLSX.utils.sheet_to_json(workbook.Sheets[sheetNames[0]], { header: 1 });
+
+
+
       if (this.xlsxPrices.length > 0) {
         let getXlsxCols = this.xlsxPrices[0]; //Header Cols
         var allValidHeaders = validXlsxHeader(this.getAllDebtors);
@@ -181,7 +184,7 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
         let maxXlsxColumns = this.xlsxPrices[0].length;
         let maxXlsxRows = this.xlsxPrices.length;
 
-        for (var xlsxRow = 0; xlsxRow < maxXlsxRows; xlsxRow++) {
+        /* for (var xlsxRow = 0; xlsxRow < maxXlsxRows; xlsxRow++) {
           for (var xlsxCol = 0; xlsxCol < maxXlsxColumns; xlsxCol++) {
             if (xlsxRow == 0) {
               continue;
@@ -197,7 +200,7 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
               return false;
             }
           }
-        }
+        } */
 
 
 
@@ -238,18 +241,23 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
           }
         }
 
+        //console.log(queryHead);
+        //console.log(this.xlsxPrices);
+        //console.log(queryFoot);
+        //return false;
+
         // Get All Xlsx Sku's
-        var allXlsxSkus = Array();
+        /* var allXlsxSkus = Array();
         for (var xlsxRow = 0; xlsxRow < maxXlsxRows; xlsxRow++) {
           if (xlsxRow == 0) {
             continue;
           }
           allXlsxSkus.push(this.xlsxPrices[xlsxRow][0]); // column 0 is always Artikelnummer (Artikel)
-        }
+        } */
 
-
+        //console.log(allXlsxSkus);
         // Get All Xlsx Sku's PM Data
-        this.http.post(environment.webservicebaseUrl + "/get-products-byskus", allXlsxSkus).subscribe(skuPMData => {
+        this.http.get(environment.webservicebaseUrl + "/get-products-byskus").subscribe(skuPMData => {
 
           var allExistingPmData = Array();
 
@@ -266,16 +274,20 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
           var processHistoryData: any = [];
           var sku = "";
 
+
           for (var xlsxRow = 0; xlsxRow < maxXlsxRows; xlsxRow++) {
+            if (xlsxRow == 0) {
+              continue;
+            }
             var eachItem = {};
             var eachHistoryItem = {};
             for (var xlsxCol = 0; xlsxCol < maxXlsxColumns; xlsxCol++) {
-              if (xlsxRow == 0) {
-                continue;
-              }
+
               if (this.xlsxPrices[0][xlsxCol] == "Artikelnummer (Artikel)") {
+                //console.log(xlsxRow + "===" + this.xlsxPrices[0][xlsxCol]);
                 eachItem["sku"] = this.xlsxPrices[xlsxRow][xlsxCol];
                 sku = this.xlsxPrices[xlsxRow][xlsxCol];
+
 
                 var bp = allExistingPmData[sku]["buying_price"];
                 var sp = allExistingPmData[sku]["selling_price"];
@@ -315,7 +327,7 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
                 }
                 eachItem["buying_price"] = bp.toFixed(4);
               } else if (this.xlsxPrices[0][xlsxCol] == "Nieuwe Verkoopprijs (Niewe Vkpr per piece)") {
-
+                //console.log(xlsxRow + "=" + this.xlsxPrices[0][xlsxCol]);
                 var buying_price_index = Object.keys(getXlsxCols).find(key => getXlsxCols[key] === "Inkoopprijs (Inkpr per piece)");
                 if (typeof buying_price_index != "undefined") {
                   bp = parseFloat(this.xlsxPrices[xlsxRow][buying_price_index]);
@@ -325,7 +337,7 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
                 }
                 bp = bp.toFixed(4);
 
-                if (typeof this.xlsxPrices[xlsxRow][xlsxCol] == "undefined") {
+                if ((typeof this.xlsxPrices[xlsxRow][xlsxCol] == "undefined")) {
                   var webincreasedAmount = ((bp * pp) / 100).toFixed(4);
                   sp = (parseFloat(bp) + parseFloat(webincreasedAmount));
                 } else {
@@ -345,14 +357,14 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
                 //console.log(groupName[1]);
                 var groupName = tempGroupName[0];
                 var magentoID = allExistingPmData[sku]["group_" + groupName + "_magento_id"];
-                if (magentoID === null && typeof this.xlsxPrices[xlsxRow][xlsxCol] == "undefined") {
+                if ((magentoID === null || magentoID == 0 || magentoID == "") && typeof this.xlsxPrices[xlsxRow][xlsxCol] == "undefined") {
                   eachItem["group_" + groupName + "_magento_id"] = null;
                   eachItem["group_" + groupName + "_debter_selling_price"] = null;
                   eachItem["group_" + groupName + "_margin_on_buying_price"] = null;
                   eachItem["group_" + groupName + "_margin_on_selling_price"] = null;
                   eachItem["group_" + groupName + "_discount_on_grossprice_b_on_deb_selling_price"] = null;
                 } else {
-                  if (magentoID === null) {
+                  if (magentoID === null || magentoID == 0 || magentoID == "") {
                     magentoID = tempGroupName[1];
                   }
                   eachItem["group_" + groupName + "_magento_id"] = magentoID;
@@ -363,7 +375,8 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
                       bp = bp * idealeverpakking;
                     }
                   }
-                  bp = bp.toFixed(4);
+
+                  bp = parseFloat(bp).toFixed(4);
                   var debsp: any = "";
                   if (typeof this.xlsxPrices[xlsxRow][xlsxCol] == "undefined") {
                     var debtorMarginOnBp = allExistingPmData[sku]["group_" + groupName + "_margin_on_buying_price"];
@@ -382,50 +395,51 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
                   eachItem["group_" + groupName + "_discount_on_grossprice_b_on_deb_selling_price"] = ((1 - (debsp / gup)) * 100).toFixed(4);
                 }
               }
-              eachItem["is_updated"] = 1;
-              eachItem["is_updated_skwirrel"] = 1;
-              processXlsxData[xlsxRow] = eachItem;
+            }
+            eachItem["is_updated"] = 1;
+            eachItem["is_updated_skwirrel"] = 1;
+            //console.log(eachItem);
 
-              var historyBP = eachItem["buying_price"];
-              if (typeof historyBP == "undefined") {
-                historyBP = allExistingPmData[eachItem["sku"]]["buying_price"];
+            processXlsxData[xlsxRow] = eachItem;
+            var historyBP = eachItem["buying_price"];
+            if (typeof historyBP == "undefined") {
+              historyBP = allExistingPmData[eachItem["sku"]]["buying_price"];
+            }
+
+            if ((historyBP != allExistingPmData[eachItem["sku"]]["buying_price"]) || (eachItem["selling_price"] != allExistingPmData[eachItem["sku"]]["selling_price"])) {
+
+              var fieldsChanged = Array();
+              var bpChanged = 0;
+
+              if (historyBP != allExistingPmData[eachItem["sku"]]["buying_price"]) {
+                fieldsChanged.push('new_buying_price');
+                bpChanged = 1;
               }
 
-              if ((historyBP != allExistingPmData[eachItem["sku"]]["buying_price"]) || (eachItem["selling_price"] != allExistingPmData[eachItem["sku"]]["selling_price"])) {
-
-                var fieldsChanged = Array();
-                var bpChanged = 0;
-
-                if (historyBP != allExistingPmData[eachItem["sku"]]["buying_price"]) {
-                  fieldsChanged.push('new_buying_price');
-                  bpChanged = 1;
-                }
-
-                if (eachItem["selling_price"] != allExistingPmData[eachItem["sku"]]["selling_price"]) {
-                  fieldsChanged.push('new_selling_price');
-                }
-
-                var pId = allExistingPmData[eachItem["sku"]]["product_id"];
-                eachHistoryItem["product_id"] = pId;
-                eachHistoryItem["old_net_unit_price"] = allExistingPmData[eachItem["sku"]]["webshop_net_unit_price"];
-                eachHistoryItem["old_gross_unit_price"] = allExistingPmData[eachItem["sku"]]["webshop_gross_unit_price"];
-                eachHistoryItem["old_idealeverpakking"] = allExistingPmData[eachItem["sku"]]["webshop_idealeverpakking"];
-                eachHistoryItem["old_afwijkenidealeverpakking"] = allExistingPmData[eachItem["sku"]]["webshop_afwijkenidealeverpakking"];
-                eachHistoryItem["old_buying_price"] = allExistingPmData[eachItem["sku"]]["webshop_buying_price"];
-                eachHistoryItem["old_selling_price"] = allExistingPmData[eachItem["sku"]]["webshop_selling_price"];
-                eachHistoryItem["new_net_unit_price"] = historyBP;
-                eachHistoryItem["new_gross_unit_price"] = allExistingPmData[eachItem["sku"]]["gross_unit_price"];
-                eachHistoryItem["new_idealeverpakking"] = allExistingPmData[eachItem["sku"]]["idealeverpakking"];
-                eachHistoryItem["new_afwijkenidealeverpakking"] = allExistingPmData[eachItem["sku"]]["afwijkenidealeverpakking"];
-                eachHistoryItem["new_buying_price"] = historyBP;
-                eachHistoryItem["new_selling_price"] = eachItem["selling_price"];
-                eachHistoryItem["updated_date_time"] = this.currentDateTime;
-                eachHistoryItem["updated_by"] = "Price Management";
-                eachHistoryItem["is_viewed"] = "No";
-                eachHistoryItem["fields_changed"] = JSON.stringify(fieldsChanged);
-                eachHistoryItem["buying_price_changed"] = bpChanged;
-                processHistoryData[xlsxRow] = eachHistoryItem;
+              if (eachItem["selling_price"] != allExistingPmData[eachItem["sku"]]["selling_price"]) {
+                fieldsChanged.push('new_selling_price');
               }
+
+              var pId = allExistingPmData[eachItem["sku"]]["product_id"];
+              eachHistoryItem["product_id"] = pId;
+              eachHistoryItem["old_net_unit_price"] = allExistingPmData[eachItem["sku"]]["webshop_net_unit_price"];
+              eachHistoryItem["old_gross_unit_price"] = allExistingPmData[eachItem["sku"]]["webshop_gross_unit_price"];
+              eachHistoryItem["old_idealeverpakking"] = allExistingPmData[eachItem["sku"]]["webshop_idealeverpakking"];
+              eachHistoryItem["old_afwijkenidealeverpakking"] = allExistingPmData[eachItem["sku"]]["webshop_afwijkenidealeverpakking"];
+              eachHistoryItem["old_buying_price"] = allExistingPmData[eachItem["sku"]]["webshop_buying_price"];
+              eachHistoryItem["old_selling_price"] = allExistingPmData[eachItem["sku"]]["webshop_selling_price"];
+              eachHistoryItem["new_net_unit_price"] = historyBP;
+              eachHistoryItem["new_gross_unit_price"] = allExistingPmData[eachItem["sku"]]["gross_unit_price"];
+              eachHistoryItem["new_idealeverpakking"] = allExistingPmData[eachItem["sku"]]["idealeverpakking"];
+              eachHistoryItem["new_afwijkenidealeverpakking"] = allExistingPmData[eachItem["sku"]]["afwijkenidealeverpakking"];
+              eachHistoryItem["new_buying_price"] = historyBP;
+              eachHistoryItem["new_selling_price"] = eachItem["selling_price"];
+              eachHistoryItem["updated_date_time"] = this.currentDateTime;
+              eachHistoryItem["updated_by"] = "Price Management";
+              eachHistoryItem["is_viewed"] = "No";
+              eachHistoryItem["fields_changed"] = JSON.stringify(fieldsChanged);
+              eachHistoryItem["buying_price_changed"] = bpChanged;
+              processHistoryData[xlsxRow] = eachHistoryItem;
             }
           }
 
@@ -447,7 +461,7 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
             uploadRequestData["3"] = filterProcessHistoryData;
 
             this.http.post(environment.webservicebaseUrl + "/upload-products", uploadRequestData).subscribe(responseData => {
-              this.uploadMessage = responseData["msg"].join("\n");
+              this.uploadMessage = responseData["msg"];
               this.uploadSpinner = false;
               this.sidebarService.loadAgGrid.next(1);
             });
@@ -456,11 +470,6 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
       }
     }
   }
-}
-
-function createHeaderSql() {
-  //"INSERT INTO price_management_data (sku,selling_price, profit_percentage, profit_percentage_selling_price, discount_on_gross_price, percentage_increase) VALUES "
-  //selling_price = VALUES(selling_price),profit_percentage = VALUES(profit_percentage),profit_percentage_selling_price = VALUES(profit_percentage_selling_price),discount_on_gross = VALUES(discount_on_gross), percentage_increase = VALUES(percentage_increase)
 }
 function columnMappings(allDebts: any) {
   var columnMappings = Array();
