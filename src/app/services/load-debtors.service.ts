@@ -107,14 +107,11 @@ export class LoadDebtorsService {
       var element = {};
       if (responseData["msg"]) {
         responseData["msg"].forEach((value, key) => {
-          element[value["customer_group_name"]] = value["product_ids"];
-
-          this.debterProds.push(element);
-
+          localStorage.setItem(value["customer_group_name"], value["product_ids"]);
         });
       }
-      let stringDeb_prods = JSON.stringify(this.debterProds);
-      localStorage.setItem("debtorProds", stringDeb_prods);
+
+
     });
   }
 
