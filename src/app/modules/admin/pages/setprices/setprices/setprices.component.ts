@@ -334,13 +334,18 @@ export class SetpricesComponent implements OnInit {
           err = 1;
         }
         if (err == 0) {
-
           if (this.isChkAllChecked == 0) {
 
             this.api.forEachNode((rowNode) => {
               if (idsToUpdate.indexOf(rowNode.data.product_id) >= 0) {
                 var updated = JSON.parse(JSON.stringify(rowNode.data));
 
+                console.log(priceType);
+                if (priceType["customer_group_selected"] != '') {
+                  if (checkProductAssignment(priceType["customer_group_selected"], updated.product_id)) {
+                    return;
+                  }
+                }
 
 
                 if (priceType["update_type"] == "update") {
@@ -389,8 +394,12 @@ export class SetpricesComponent implements OnInit {
               this.chkAllCount = "(Please Wait ...)";
               this.chkAllProducts["msg"].forEach(
                 (value, key) => {
-                  //console.log(key);
-                  //console.log(value.product_id);
+                  if (priceType["customer_group_selected"] != '') {
+                    if (checkProductAssignment(priceType["customer_group_selected"], value.product_id)) {
+                      return;
+                    }
+
+                  }
 
                   if (priceType["update_type"] == "update") {
                     if (priceType["type"] == "selling_price") {
@@ -441,8 +450,10 @@ export class SetpricesComponent implements OnInit {
 
         }
       }
-      $('#btnundo').removeAttr("disabled");
-      $('#btnredo').removeAttr("disabled");
+      if (this.updatedProducts.length > 0) {
+        $('#btnundo').removeAttr("disabled");
+        $('#btnredo').removeAttr("disabled");
+      }
     });
 
     $('#flexCheckDefault').prop('checked', true);
@@ -957,9 +968,6 @@ export class SetpricesComponent implements OnInit {
 
           this.loadAGGrid();
         });
-
-
-
   }//end onApplyDebterCategories()
 
   setCustomGroupLayout() {
@@ -1149,3 +1157,18 @@ function debterCheckboxes() {
     };
   });
 }//end debterCheckboxes()
+
+function checkProductAssignment(debter_selected, product_id) {
+  let number_magento_id = debter_selected.split('|||');
+  let selected_debtor_number = number_magento_id[0];
+  let assigned_products = localStorage.getItem(selected_debtor_number);
+  let assigned_products_arr = assigned_products?.split(',');
+
+  if (!assigned_products_arr?.includes(String(product_id))) {
+    console.log('not assigned');
+    return true;
+  } else {
+    return false;
+  }
+
+}
