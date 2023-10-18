@@ -1,7 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, ViewChild, OnInit } from '@angular/core';
 import { AgGridAngular } from 'ag-grid-angular';
-import { ColDef, GridReadyEvent, IServerSideDatasource, ServerSideStoreType, RowClassParams, CellValueChangedEvent, CellEditingStoppedEvent, DragStoppedEvent, FullWidthCellKeyDownEvent, GetRowIdFunc, GetRowIdParams, SideBarDef, PaginationChangedEvent } from 'ag-grid-community';
+import {
+  ColDef, GridReadyEvent, IServerSideDatasource, ServerSideStoreType, RowClassParams, CellValueChangedEvent, CellEditingStoppedEvent, DragStoppedEvent, FullWidthCellKeyDownEvent, GetRowIdFunc, GetRowIdParams, SideBarDef, PaginationChangedEvent
+} from 'ag-grid-community';
 import 'ag-grid-enterprise';
 import { environment } from 'src/environments/environment';
 import { PmCategoryService } from '../../../../../services/pm.category.service';
@@ -135,12 +137,30 @@ export class SetpricesComponent implements OnInit {
     { field: 'magento_status', headerName: 'Status', sortable: true, filter: 'number', hide: true },
     { field: 'webshop_selling_price', headerName: 'WS Vkpr', sortable: true, filter: 'number', hide: true },
     { field: 'is_updated', headerName: 'Is Updated', sortable: true, filter: 'number', hide: true },
-    { field: 'is_updated_skwirrel', headerName: 'Is Skwirrel Updated', sortable: true, filter: 'number', hide: true }
+    { field: 'is_updated_skwirrel', headerName: 'Is Skwirrel Updated', sortable: true, filter: 'number', hide: true },
+    {
+      field: 'lowest_price',
+      headerName: 'B.S. (L.P)',
+      sortable: true,
+      filter: 'agNumberColumnFilter',
+      hide: true
+    },
+    {
+      field: 'highest_price',
+      headerName: 'B.S. (H.P)',
+      filter: 'agNumberColumnFilter',
+      sortable: true,
+      hide: true
+    },
+    { field: 'lp_diff_percentage', headerName: 'B.S. (L.P %)', sortable: true, filter: 'agNumberColumnFilter', hide: false },
+    { field: 'hp_diff_percentage', headerName: 'B.S. (H.P %)', sortable: true, filter: 'agNumberColumnFilter', hide: false }
 
 
   ];
 
   public customToolPanelColumnDefs: any = [];
+
+
 
   constructor(private http: HttpClient, private categoryService: PmCategoryService, private sidebarService: PmSidebarService, private loaddebtorsService: LoadDebtorsService) {
 
@@ -210,6 +230,8 @@ export class SetpricesComponent implements OnInit {
 
 
         this.columnDefs.push(definition);
+
+
 
         let deb_fields: string = value["customer_group_name"];
         if (deb_fields.indexOf("_debter_selling_price") !== -1) {
@@ -593,6 +615,12 @@ export class SetpricesComponent implements OnInit {
     this.createProductData(prepareProductData);
   }
 
+  toggleSideBar() {
+    const isVisible = this.agGrid.api.isSideBarVisible(); // Check the current visibility state
+
+    // Toggle the side bar's visibility
+    this.agGrid.api.setSideBarVisible(!isVisible);
+  }
 
   public sideBar: SideBarDef | string | string[] | boolean | null = {
     toolPanels: [
@@ -653,6 +681,8 @@ export class SetpricesComponent implements OnInit {
   // For accessing the Grid's API
   @ViewChild(AgGridAngular) agGrid!: AgGridAngular;
 
+
+
   // Example load data from sever
   onGridReady(params: GridReadyEvent) {
     this.api = params.api;
@@ -661,6 +691,10 @@ export class SetpricesComponent implements OnInit {
     this.loadAGGrid();
 
     this.setCustomGroupLayout();
+
+    const isVisible = this.agGrid.api.isSideBarVisible();
+    this.agGrid.api.setSideBarVisible(!isVisible);
+
     this.getRowStyle = function (params) {
       if (typeof params.data != "undefined") {
         if (params.data.is_updated == 1 && params.data.is_updated_skwirrel == 1) {

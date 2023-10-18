@@ -23,7 +23,10 @@
     </div>
   </div>
   <div style="float: right;">
+
     <div class="checkbox">
+      <label style="padding-right: 10px;"><input type="checkbox" name="show_sideBar" (click)="toggleSideBar()">Show
+        SideBar&nbsp;&nbsp;&nbsp;|</label>
       <label style="padding-right: 10px;"><input type="checkbox" name="show_updated" (change)="showUpdated($event)">Show
         updated&nbsp;&nbsp;&nbsp;|</label>
       <label style="padding-right: 10px;"><input type="checkbox" name="show_negative"
@@ -32,7 +35,6 @@
       <a style="cursor: pointer; color: green;" (click)="activateUpdated()"><i class="fa fa-fw fa-check-square-o"></i>
         Activate Updated</a>&nbsp;&nbsp;&nbsp;|
       <a style="cursor: pointer;" (click)="resetFilters()"><i class="fa fa-fw fa-refresh"></i> Reset Filters</a>
-
     </div>
   </div>
   <div style="clear: both;"></div>
