@@ -657,6 +657,7 @@ export class SetpricesComponent implements OnInit {
       },
     ],
     defaultToolPanel: 'columns',
+    hiddenByDefault: true,
   };
 
 
@@ -691,9 +692,7 @@ export class SetpricesComponent implements OnInit {
     this.loadAGGrid();
 
     this.setCustomGroupLayout();
-
-    const isVisible = this.agGrid.api.isSideBarVisible();
-    this.agGrid.api.setSideBarVisible(!isVisible);
+    this.agGrid.api.setSideBarVisible(true);
 
     this.getRowStyle = function (params) {
       if (typeof params.data != "undefined") {
