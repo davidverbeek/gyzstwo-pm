@@ -615,13 +615,6 @@ export class SetpricesComponent implements OnInit {
     this.createProductData(prepareProductData);
   }
 
-  toggleSideBar() {
-    const isVisible = this.agGrid.api.isSideBarVisible(); // Check the current visibility state
-
-    // Toggle the side bar's visibility
-    this.agGrid.api.setSideBarVisible(!isVisible);
-  }
-
   public sideBar: SideBarDef | string | string[] | boolean | null = {
     toolPanels: [
       {

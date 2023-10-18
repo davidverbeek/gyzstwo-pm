@@ -25,8 +25,6 @@
   <div style="float: right;">
 
     <div class="checkbox">
-      <label style="padding-right: 10px;"><input type="checkbox" name="show_sideBar" (click)="toggleSideBar()">Show
-        SideBar&nbsp;&nbsp;&nbsp;|</label>
       <label style="padding-right: 10px;"><input type="checkbox" name="show_updated" (change)="showUpdated($event)">Show
         updated&nbsp;&nbsp;&nbsp;|</label>
       <label style="padding-right: 10px;"><input type="checkbox" name="show_negative"
@@ -38,6 +36,7 @@
     </div>
   </div>
   <div style="clear: both;"></div>
+
   <ag-grid-angular style="width: 100%; height:800px;" class="ag-theme-alpine" [rowData]="rowData" [getRowId]="getRowId"
     [columnDefs]="columnDefs" [defaultColDef]="defaultColDef" [rowModelType]="rowModelType" [rowStyle]="rowStyle"
     [getRowStyle]="getRowStyle" (gridReady)="onGridReady($event)" [pagination]="true"
