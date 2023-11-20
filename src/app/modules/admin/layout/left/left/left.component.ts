@@ -21,45 +21,8 @@ export class LeftComponent implements OnInit {
 
     @ViewChild('allSelectedCats') allSelectedCats: ElementRef;
 
-    /*list = [{
-      "id": '1',
-      "pid": '',
-      "name": "JavaScript",
-    },
-    {
-      "id": '11',
-      "pid": '1', // parent ID
-      "name": "Angular"
-    },
-    {
-      "id": '12',
-      "pid": '1',
-      "name": "React"
-    }, {
-      "id": '13',
-      "pid": '1',
-      "name": "Vuejs"
-    }, {
-      "id": '14',
-      "pid": '1',
-      "name": "jQueryScript.Net"
-    },
-    {
-      "id": '2',
-      "pid": '',
-      "name": "HTML5"
-    },
-    {
-      "id": '3',
-      "pid": '',
-      "name": "CSS3",
-      "disabled": true
-    }]; */
-
-
-
-
     ngOnInit() {
+
         this.http.get<any>(environment.webservicebaseUrl + "/all-categories").subscribe(data => {
             this.list = data.categories;
 
@@ -98,8 +61,20 @@ export class LeftComponent implements OnInit {
 
                     $('#hdn_selectedcategories').val(left_cats);
                     //$("#btnloadcats").trigger('click');
+
+
+
                 }
             });
+
+            var path = window.location.pathname;
+
+            if (path.split("/").pop() == "debter-rules") {
+                $('#flexCheckDefault').prop('checked', false);
+                $('a>i.sim-tree-checkbox').each(function (index) {
+                    $(this).removeClass('checked');
+                });
+            }
 
         });
 
@@ -131,15 +106,7 @@ export class LeftComponent implements OnInit {
 
         }, 3000);
 
-
-        //this.categoryService.categorySelected.subscribe((allselectedcats) => {
-
-        // this.cats = allselectedcats;
-        // });
-
     }
-
-
 
     btncats() {
         this.categoryService.categorySelected.next(this.allSelectedCats.nativeElement.value);
