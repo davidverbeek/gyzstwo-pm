@@ -65,8 +65,8 @@ export class VerifypricesComponent implements OnInit {
         $(".loader_txt").hide();
 
         alert(msg['msg']);
-        this.api.refreshServerSide([], false);
-        //this.loadAGGrid();
+        //this.api.refreshServerSide([], false);
+        this.loadAGGrid();
       })
   }
 
@@ -128,11 +128,8 @@ function createServerSideDatasource(server: any): IServerSideDatasource {
   return {
     getRows(params) {
 
-      //params.request["cats"] = cats;
-      if (params.request["sortModel"].length == 0) {
-        params.request["sortModel"] = [{ sort: 'desc', colId: 'mag_updated_product_cnt' }];
-      }
-      console.log(params.request);
+
+
 
       fetch(environment.webservicebaseUrl + "/verified-pmd-prices", {
         method: 'post',

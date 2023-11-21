@@ -27,6 +27,7 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
   actionType: string = "";
   storeForRedo: string = "";
   debter_dd: any = [];
+  debterAssignment: any = [];
 
   uploadValidationMessage: any = "Import Xlsx Only";
 
@@ -184,6 +185,19 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
     });
   }
   btnImportPrices(event: any) {
+
+    // Get Debtor Assignment
+    this.http.get(environment.webservicebaseUrl + "/all-debtor-product").subscribe(responseData => {
+      if (responseData["msg"]) {
+        responseData["msg"].forEach((value, key) => {
+          var element = {};
+          element[value["customer_group_name"]] = value["product_ids"];
+
+          this.debterAssignment.push(element);
+        });
+      }
+    });
+
     var file = event.target.files[0];
     var fileType = file.type;
 
@@ -420,7 +434,12 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
 
                   bp = parseFloat(bp).toFixed(4);
                   var debsp: any = "";
-                  if (typeof this.xlsxPrices[xlsxRow][xlsxCol] == "undefined") {
+                  var productExistInDebtor = checkIfProductExistsInDebtor(allExistingPmData[sku]["product_id"], "group_" + groupName + "_debter_selling_price", this.debterAssignment);
+                  //console.log(allExistingPmData[sku]["product_id"]);
+                  //console.log(productExistInDebtor);
+                  if (!productExistInDebtor) {
+                    debsp = allExistingPmData[sku]["group_" + groupName + "_debter_selling_price"];
+                  } else if (typeof this.xlsxPrices[xlsxRow][xlsxCol] == "undefined") {
                     var debtorMarginOnBp = allExistingPmData[sku]["group_" + groupName + "_margin_on_buying_price"];
                     var increasedAmount = ((bp * debtorMarginOnBp) / 100).toFixed(4);
                     debsp = (parseFloat(bp) + parseFloat(increasedAmount));
@@ -595,6 +614,8 @@ function isBuyingPriceExists(allDebts: any, xlsxPrices: any, maxXlsxRows: any, m
 function validXlsxHeader(allDebts: any) {
   var validHeader = Array();
   validHeader.push("Artikelnummer (Artikel)");
+  validHeader.push("Marge Inkpr %");
+  validHeader.push("Marge Verkpr %");
   validHeader.push("Inkoopprijs (Inkpr per piece)");
   validHeader.push("Nieuwe Verkoopprijs (Niewe Vkpr per piece)");
 
@@ -604,5 +625,22 @@ function validXlsxHeader(allDebts: any) {
     validHeader.push(idAlias[1]);
   }
   return validHeader;
+}
 
+function checkIfProductExistsInDebtor(product_id, current_group_name, debterProducts) {
+  var group_name_product = false;
+  var column_name: string = current_group_name;
+  var column_name_seperated = column_name.split('_');
+  debterProducts.forEach((value, key) => {
+    if (column_name_seperated[1] in value) {
+      const x = value;
+      var debter_name_product_ids = value[column_name_seperated[1]];
+
+      if (debter_name_product_ids.indexOf(product_id) !== -1) {
+        group_name_product = true;
+      }
+    }
+
+  });
+  return group_name_product;
 }

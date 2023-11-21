@@ -237,6 +237,12 @@ function createServerSideDatasource(server: any, historyPid: any): IServerSideDa
     getRows(params) {
 
       params.request["historyPid"] = historyPid;
+      console.log(params.request["sortModel"]);
+
+      if (params.request["sortModel"].length == 0 || params.request["sortModel"][0]["colId"] == "updated_date_time") {
+        params.request["sortModel"] = [{ sort: 'desc', colId: 'history_id' }];
+      }
+
       fetch(environment.webservicebaseUrl + "/pm-products-history", {
         method: 'post',
         body: JSON.stringify(params.request),

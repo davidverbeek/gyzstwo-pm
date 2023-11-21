@@ -216,8 +216,12 @@ export class DebterRulesComponent implements OnInit {
     this.http.post<Response>(environment.webservicebaseUrl + "/dbt-rules-cats", { debter_id: selected_group })
       .pipe(map(responseData => {
         let cat_ids = "";
+        if (responseData.debter_cats.length > 0) {
+          cat_ids = responseData.debter_cats[0]['category_ids'];
+        }
+
         //if (responseData.debter_cats.hasOwnProperty('category_ids')) {
-        cat_ids = responseData.debter_cats[0]['category_ids'];
+
         //}
 
         return cat_ids;
@@ -229,7 +233,7 @@ export class DebterRulesComponent implements OnInit {
         let category_ids = responseData;
         this.category_ids = category_ids;
 
-        if (category_ids) {
+        if (category_ids != "") {
 
 
           let cat_id_arr = category_ids?.split(',');

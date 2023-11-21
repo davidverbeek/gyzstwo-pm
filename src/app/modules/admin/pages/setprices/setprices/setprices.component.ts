@@ -620,6 +620,17 @@ export class SetpricesComponent implements OnInit {
     prepareProductData["discount_on_gross_price"] = new_discount_on_gross_price;
     prepareProductData["percentage_increase"] = prodData.percentage_increase;
     prepareProductData["gross_unit_price"] = prodData.gross_unit_price;
+
+
+    /* For History */
+    prepareProductData["idealeverpakking"] = prodData.idealeverpakking;
+    prepareProductData["afwijkenidealeverpakking"] = prodData.afwijkenidealeverpakking;
+
+    prepareProductData["webshop_net_unit_price"] = prodData.webshop_net_unit_price;
+    prepareProductData["webshop_gross_unit_price"] = prodData.webshop_gross_unit_price;
+    prepareProductData["webshop_idealeverpakking"] = prodData.webshop_idealeverpakking;
+    prepareProductData["webshop_afwijkenidealeverpakking"] = prodData.webshop_afwijkenidealeverpakking;
+    prepareProductData["webshop_buying_price"] = prodData.webshop_buying_price;
     prepareProductData["webshop_selling_price"] = prodData.webshop_selling_price;
 
 
@@ -660,18 +671,14 @@ export class SetpricesComponent implements OnInit {
           suppressValues: true,
           suppressPivots: true,
           suppressPivotMode: true,
+          suppressColumnFilter: true,
+          suppressColumnSelectAll: true,
+          suppressColumnExpandAll: true,
           // prevents custom layout changing when columns are reordered in the grid
           suppressSyncLayoutWithGrid: true,
           // prevents columns being reordered from the columns tool panel
           suppressColumnMove: true,
-        }
-      },
-      {
-        id: 'filters',
-        labelDefault: 'Filters',
-        labelKey: 'filters',
-        iconKey: 'filter',
-        toolPanel: 'agFiltersToolPanel',
+        },
       },
       {
         id: 'sideSetPrices',
@@ -1106,9 +1113,6 @@ function createServerSideDatasource(server: any, cats: any): IServerSideDatasour
       if (params.request["sortModel"].length == 0) {
         params.request["sortModel"] = [{ sort: 'desc', colId: 'mag_updated_product_cnt' }];
       }
-
-
-      console.log(params.request);
 
       fetch(environment.webservicebaseUrl + "/pm-products", {
         method: 'post',

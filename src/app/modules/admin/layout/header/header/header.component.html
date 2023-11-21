@@ -20,21 +20,27 @@
     <div class="navbar-custom-menu" style="float: left;">
       <ul class="nav navbar-nav">
 
-        <li class="dropdown messages-menu">
+        <li class="dropdown messages-menu" routerLinkActive="active">
           <a class="dropdown-toggle" [routerLink]="['/admin/setprices']">
             <i class="fa fa-eur"></i><span style="margin-left: 8px;">Manage Prices</span>
           </a>
         </li>
 
-        <li class="dropdown messages-menu">
+        <li class="dropdown messages-menu" routerLinkActive="active">
           <a class="dropdown-toggle" [routerLink]="['/admin/debter-rules']">
             <i class="fa fa-gavel"></i><span style="margin-left: 8px;">Debter Rules</span>
           </a>
         </li>
 
+        <li class="dropdown messages-menu" routerLinkActive="active">
+          <a class="dropdown-toggle" [routerLink]="['/admin','verifyprices']">
+            <i class="fa fa-calculator"></i><span style="margin-left: 8px;">Verify Prices</span>
+          </a>
+        </li>
+
 
         <!-- Messages: style can be found in dropdown.less-->
-        <li class="dropdown messages-menu">
+        <li class="dropdown messages-menu" routerLinkActive="active">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             <i class="fa fa-dashboard"></i><span style="margin-left: 8px;">Bol</span>
           </a>
@@ -63,7 +69,7 @@
           </ul>
         </li>
 
-        <li class="dropdown messages-menu">
+        <li class="dropdown messages-menu" routerLinkActive="active">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             <i class="fa fa-history"></i><span style="margin-left: 8px;">Logs</span>
           </a>
@@ -100,13 +106,13 @@
           </ul>
         </li>
 
-        <li class="dropdown messages-menu">
+        <li class="dropdown messages-menu" routerLinkActive="active">
           <a [routerLink]="['/admin/revenue']" class="dropdown-toggle">
             <i class="fa fa-eur"></i><span style="margin-left: 8px;">Revenue Report</span>
           </a>
         </li>
 
-        <li class="dropdown messages-menu">
+        <li class="dropdown messages-menu" routerLinkActive="active">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             <i class="fa fa-rss"></i><span style="margin-left: 8px;">Feeds</span>
           </a>
@@ -135,13 +141,13 @@
           </ul>
         </li>
 
-        <li class="dropdown messages-menu">
+        <li class="dropdown messages-menu" routerLinkActive="active">
           <a [routerLink]="['/admin/googleroas']" class="dropdown-toggle">
             <i class="fa fa-google"></i><span style="margin-left: 8px;">Google Roas</span>
           </a>
         </li>
 
-        <li class="dropdown messages-menu">
+        <li class="dropdown messages-menu" routerLinkActive="active">
           <a href="#" class="dropdown-toggle" [routerLink]="['/admin/settings']">
             <i class="fa fa-cog"></i><span style="margin-left: 8px;">Settings</span>
           </a>
