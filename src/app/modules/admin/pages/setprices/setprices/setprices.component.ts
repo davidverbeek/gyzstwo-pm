@@ -153,7 +153,42 @@ export class SetpricesComponent implements OnInit {
       hide: true
     },
     { field: 'lp_diff_percentage', headerName: 'B.S. (L.P %)', sortable: true, filter: 'agNumberColumnFilter', hide: true },
-    { field: 'hp_diff_percentage', headerName: 'B.S. (H.P %)', sortable: true, filter: 'agNumberColumnFilter', hide: true }
+    { field: 'hp_diff_percentage', headerName: 'B.S. (H.P %)', sortable: true, filter: 'agNumberColumnFilter', hide: true },
+    { field: 'price_competition_score', headerName: 'PCS', sortable: true, filter: 'agNumberColumnFilter', hide: true },
+    { field: 'position', headerName: 'Positie', sortable: true, filter: 'agNumberColumnFilter', hide: true },
+    { field: 'number_competitors', headerName: 'Aantal CC', sortable: true, filter: 'agNumberColumnFilter', hide: true },
+    {
+      field: 'productset_incl_dispatch', headerName: 'Productset', sortable: true,
+      filter: 'agSetColumnFilter',
+      filterParams: {
+        values: params => {
+          // async update simulated using setTimeout()
+          setTimeout(() => {
+            // fetch values from server
+            let values: any = [];
+            this.http.get(environment.webservicebaseUrl + "/get_productset_options")
+              .pipe(map(responseData => {
+                let product_ids: any = [];
+
+                responseData["msg"].forEach(function1);
+
+                function function1(currentValue, index) {
+                  product_ids.push(currentValue.productset)
+                }
+                return product_ids;
+              }))
+              .subscribe(
+                responseData => {
+                  values = responseData;
+                  params.success(responseData);
+                });
+          }, 3000);
+        },
+        // refreshValuesOnOpen: true
+      },
+      hide: true
+    },
+    { field: 'price_of_the_next_excl_shipping', headerName: 'Next price', sortable: true, filter: 'agNumberColumnFilter', hide: true }
 
 
   ];
@@ -268,6 +303,8 @@ export class SetpricesComponent implements OnInit {
       this.customToolPanelColumnDefs.push(...this.newArray);
 
 
+
+
       var newArray_2 = [
 
         {
@@ -290,9 +327,6 @@ export class SetpricesComponent implements OnInit {
       ];
 
       this.customToolPanelColumnDefs.push(...newArray_2);
-
-
-
 
     }
 
@@ -318,7 +352,6 @@ export class SetpricesComponent implements OnInit {
     this.context = {
       componentParent: this
     }
-
   }
 
 
@@ -483,7 +516,6 @@ export class SetpricesComponent implements OnInit {
     $('a>i.sim-tree-checkbox').each(function (index) {
       $(this).addClass('checked');
     });
-
   }
 
   ngOnDestroy() {
@@ -697,8 +729,6 @@ export class SetpricesComponent implements OnInit {
       }
       return { background: '' };
     };
-
-    debterCheckboxes();
   }
 
   loadAGGrid() {
@@ -717,7 +747,6 @@ export class SetpricesComponent implements OnInit {
 
 
   onCellValueChanged(event: CellValueChangedEvent) {
-
     var prepareProductData = [];
     var checkforDebtor: any = [];
     prepareProductData["field"] = event.colDef.field;
@@ -830,6 +859,39 @@ export class SetpricesComponent implements OnInit {
       /* this.saveRow(this.updatedProducts);
       this.updatedProducts = []; */
     }
+  }
+
+  onColumnVisible(e) {
+    //console.log('Event Column Visible', e);
+
+    // i will change visibility of debter cols
+    // if atlease one debter col is visible then to show button
+    //if none debter cols is visible then hide button
+    e.columns.forEach(column => {
+      if (column.colDef.toolPanelClass != undefined) {
+        if (column.visible) {
+          $("label[for='btnDebCategories']").parent('div').css('display', 'inline');
+        } else {
+          if ($('div.show_deb_cols .ag-column-select-checkbox .ag-checkbox-input-wrapper input:checked').length === 0) {
+            $("label[for='btnDebCategories']").parent('div').css('display', 'none');
+          } else {
+            if ($("label[for='btnDebCategories']").parent('div').css('display') != 'inline') {
+              $("label[for='btnDebCategories']").parent('div').css('display', 'inline');
+            }
+          }
+        }
+      }
+    });
+
+
+    /* const allZeros = cols_visible_state.every(element => element === 1);
+    if (allZeros) {
+      $("label[for='btnDebCategories']").parent('div').css('display', 'none');
+    } else {
+      if ($("label[for='btnDebCategories']").parent('div').css('display') != 'inline') {
+        $("label[for='btnDebCategories']").parent('div').css('display', 'inline');
+      }
+    } */
   }
 
   onBtnClicked() {
@@ -1000,6 +1062,9 @@ export class SetpricesComponent implements OnInit {
 
     var columnToolPanel = this.api.getToolPanelInstance('columns');
     columnToolPanel.setColumnLayout(this.customToolPanelColumnDefs);
+
+
+
   }
 
 
@@ -1164,25 +1229,6 @@ function processUpdatedProduct(productData) {
   }
   return productData;
 }
-
-function debterCheckboxes() {
-
-  var count = 0;
-  $('div.show_deb_cols').on('click', function (e) {
-
-    if ($(this).find('.ag-column-select-checkbox').find('.ag-checkbox-input-wrapper').find("input[type='checkbox']").is(':checked')) {
-      count++;
-      if ($("label[for='btnDebCategories']").parent('div').css('display') != 'inline') {
-        $("label[for='btnDebCategories']").parent('div').css('display', 'inline');
-      }
-    } else {
-      count--;
-      if (count == 0) {
-        $("label[for='btnDebCategories']").parent('div').css('display', 'none');
-      }
-    };
-  });
-}//end debterCheckboxes()
 
 function checkProductAssignment(debter_selected, product_id) {
   let number_magento_id = debter_selected.split('|||');
