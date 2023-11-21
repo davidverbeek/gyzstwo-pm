@@ -882,16 +882,6 @@ export class SetpricesComponent implements OnInit {
         }
       }
     });
-
-
-    /* const allZeros = cols_visible_state.every(element => element === 1);
-    if (allZeros) {
-      $("label[for='btnDebCategories']").parent('div').css('display', 'none');
-    } else {
-      if ($("label[for='btnDebCategories']").parent('div').css('display') != 'inline') {
-        $("label[for='btnDebCategories']").parent('div').css('display', 'inline');
-      }
-    } */
   }
 
   onBtnClicked() {
