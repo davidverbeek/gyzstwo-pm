@@ -50,9 +50,11 @@ export class LeftComponent implements OnInit {
                         $.each(item, function (key, value) {
                             selectedCategories.push(value["id"]);
                         });
-                        // if (selectedCategories.length > 0) {
-                        $("#hdn_selectedcategories").val(selectedCategories);
-                        // }
+                        if (selectedCategories.length > 0) {
+                            $("#hdn_selectedcategories").val(selectedCategories);
+                        } else {
+                            $("#hdn_selectedcategories").val('-1');
+                        }
 
                         $("#btnloadcats").trigger('click');
 
@@ -121,7 +123,6 @@ export class LeftComponent implements OnInit {
         cat_all_str = $("#hdn_selectedcategories").val();
 
         if ($('.show_deb_cols').find("input[type='checkbox']").is(':checked') && cat_all_str != '' && cat_all_str != '-1') {//means this is a group list
-
             let cat_all_arr = cat_all_str.split(',');
             if (current_status) { // check all hiddencategories
 
@@ -136,6 +137,7 @@ export class LeftComponent implements OnInit {
                     checkGiven($li, false);
                 });
             }
+
         } else if (cat_all_str == '-1') {
             this.toggleAllCategories(current_status);
             var left_cats = this.getTreeCategories();
