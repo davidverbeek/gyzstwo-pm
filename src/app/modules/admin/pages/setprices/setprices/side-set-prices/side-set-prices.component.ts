@@ -22,6 +22,7 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
   currentDateTime: any;
   allowUndoRedo = true;
   showButton = true;
+  showButton_redo = false;
   undoButton: string = "Undo Price";
   redoButton: string = "Redo Price";
   actionType: string = "";

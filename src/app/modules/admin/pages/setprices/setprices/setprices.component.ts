@@ -11,6 +11,8 @@ import { PmSidebarService } from '../../../../../services/pm-sidebar.service';
 import { SideSetPricesComponent } from 'src/app/modules/admin/pages/setprices/setprices/side-set-prices/side-set-prices.component';
 import { LoadDebtorsService } from 'src/app/services/load-debtors.service';
 import { PricehistoryComponent } from 'src/app/modules/admin/pages/setprices/pricehistory/pricehistory.component';
+import { SimtreeService } from '../../../../../services/simtree.service';
+
 declare function checkGiven(any, boolean): void;
 declare function checkIt(boolean): void;
 
@@ -197,7 +199,7 @@ export class SetpricesComponent implements OnInit {
 
 
 
-  constructor(private http: HttpClient, private categoryService: PmCategoryService, private sidebarService: PmSidebarService, private loaddebtorsService: LoadDebtorsService) {
+  constructor(private http: HttpClient, private categoryService: PmCategoryService, private sidebarService: PmSidebarService, private loaddebtorsService: LoadDebtorsService, private simtree_service: SimtreeService) {
 
     this.newArray = this.columnDefs.map((item) => ({
       headerName: item.headerName,
@@ -367,7 +369,7 @@ export class SetpricesComponent implements OnInit {
       if (isUploaded == 1) {
         this.loadAGGrid();
       }
-    })
+    });
 
     this.subbtnclicked = this.sidebarService.btnClicked.subscribe((priceType) => {
 
@@ -511,11 +513,14 @@ export class SetpricesComponent implements OnInit {
       }
     });
 
-    $('#flexCheckDefault').prop('checked', true);
+    /* 11/22/23 $('#flexCheckDefault').prop('checked', true);
 
     $('a>i.sim-tree-checkbox').each(function (index) {
       $(this).addClass('checked');
-    });
+    }); */
+
+
+
   }
 
   ngOnDestroy() {
@@ -881,6 +886,7 @@ export class SetpricesComponent implements OnInit {
         } else {
           if ($('div.show_deb_cols .ag-column-select-checkbox .ag-checkbox-input-wrapper input:checked').length === 0) {
             $("label[for='btnDebCategories']").parent('div').css('display', 'none');
+            $("#btnDebCategories").trigger("click");
           } else {
             if ($("label[for='btnDebCategories']").parent('div').css('display') != 'inline') {
               $("label[for='btnDebCategories']").parent('div').css('display', 'inline');
@@ -902,7 +908,17 @@ export class SetpricesComponent implements OnInit {
     //rowNode.updateData(newData);
   }
   //onRowClicked(event: any) {$("#imagemodal").modal("show");}
+  onRowSelected(event) {
+    /* window.alert(
+      'row ' + event.node.data.sku + ' selected = ' + event.node.isSelected()
+    ); */
+  }
 
+  onSelectionChanged(event) {
+    var rowCount = event.api.getSelectedNodes().length;
+    $('#btnundo').attr('disabled', 'disabled');
+    //window.alert('selection changed, ' + rowCount + ' rows selected');
+  }
 
   saveRow(updatedProducts) {
     updatedProducts.forEach(
@@ -1007,52 +1023,59 @@ export class SetpricesComponent implements OnInit {
     unique_group = removeDuplicates(selected_group);
     const toObject = Object.assign({}, unique_group);
 
+    if ($.isEmptyObject(selected_group)) {
+      $("#hdn_selectedcategories").val('');
+      checkIt(true);
+      $("i.sim-tree-checkbox").parent('a').parent('li').removeClass('disabled');
+      $("#flexCheckDefault").attr("disabled", "false");
+      $('#btnloadcats').trigger('click');
+    } else {
+      this.http.post(environment.webservicebaseUrl + "/dbt-alias-cats", toObject)
+        .pipe(map(responseData => {
+          const category_ids: string[] = [];
 
-    this.http.post(environment.webservicebaseUrl + "/dbt-alias-cats", toObject)
-      .pipe(map(responseData => {
-        const category_ids: string[] = [];
+          responseData["rows"].forEach(function1);
 
-        responseData["rows"].forEach(function1);
-
-        function function1(currentValue, index) {
-          // console.log("Index in array is: " + index + " ::  Value is: " + currentValue.product_id);
-          category_ids.push(currentValue.category_ids);
-        }
-        let comma_sperated_ids = category_ids.toString();
-        return comma_sperated_ids;
-      }))
-      .subscribe(
-        responseData => {
-          $("#btnDebCategories").css("opacity", 0.5);
-          $("#btnDebCategories").find('span.loading-img-update').css({ "display": "inline-block" });
-          $("#btnDebCategories").attr('disabled', 'disabled');
-
-          var debter_cats = responseData;
-          $("#hdn_selectedcategories").val(debter_cats);
-          checkIt(false);
-          if (debter_cats != "") { // means status = checked
-            $('#flexCheckDefault').prop('checked', true);
-
-            var cat_id_arr = debter_cats.split(',');
-            $.each(cat_id_arr, function (key, value) {
-              var $li = $('li[data-id=' + value + ']');
-              checkGiven($li, true);
-            });
-            this.toggleCheckbox('none');
-          } else { // remove category filter
-            $("i.sim-tree-checkbox").parent('a').parent('li').addClass('disabled');
-            $("#flexCheckDefault").attr("disabled", "true");
+          function function1(currentValue, index) {
+            // console.log("Index in array is: " + index + " ::  Value is: " + currentValue.product_id);
+            category_ids.push(currentValue.category_ids);
           }
-          $("#btnDebCategories").css("opacity", 1);
-          $("#btnDebCategories").find('span.loading-img-update').css({ "display": "none" });
-          $('#btnDebCategories').removeAttr('disabled');
+          let comma_sperated_ids = category_ids.toString();
+          return comma_sperated_ids;
+        }))
+        .subscribe(
+          responseData => {
+            $("#btnDebCategories").css("opacity", 0.5);
+            $("#btnDebCategories").find('span.loading-img-update').css({ "display": "inline-block" });
+            $("#btnDebCategories").attr('disabled', 'disabled');
+
+            var debter_cats = responseData;
+            $("#hdn_selectedcategories").val(debter_cats);
+            checkIt(false);
+            if (debter_cats != "") { // means status = checked
+              $('#flexCheckDefault').prop('checked', true);
+
+              var cat_id_arr = debter_cats.split(',');
+              $.each(cat_id_arr, function (key, value) {
+                var $li = $('li[data-id=' + value + ']');
+                checkGiven($li, true);
+              });
+              this.toggleCheckbox('none');
+            } else { // remove category filter
+              $("i.sim-tree-checkbox").parent('a').parent('li').addClass('disabled');
+              $("#flexCheckDefault").attr("disabled", "true");
+            }
+            $("#btnDebCategories").css("opacity", 1);
+            $("#btnDebCategories").find('span.loading-img-update').css({ "display": "none" });
+            $('#btnDebCategories').removeAttr('disabled');
 
 
-          this.cats = debter_cats;
+            this.cats = debter_cats;
+            this.loadAGGrid();
 
 
-          this.loadAGGrid();
-        });
+          });
+    }
   }//end onApplyDebterCategories()
 
   setCustomGroupLayout() {
@@ -1095,8 +1118,6 @@ export class SetpricesComponent implements OnInit {
     });
     return group_name_product;
   }
-
-
 }
 
 function removeDuplicates(arr: any[]) {
@@ -1238,3 +1259,4 @@ function checkProductAssignment(debter_selected, product_id) {
   }
 
 }
+

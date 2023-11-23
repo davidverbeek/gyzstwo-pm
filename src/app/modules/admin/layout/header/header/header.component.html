@@ -21,7 +21,7 @@
       <ul class="nav navbar-nav">
 
         <li class="dropdown messages-menu" routerLinkActive="active">
-          <a class="dropdown-toggle" [routerLink]="['/admin/setprices']">
+          <a class="dropdown-toggle" [routerLink]="['/admin/setprices']" (click)="onNavigate()">
             <i class="fa fa-eur"></i><span style="margin-left: 8px;">Manage Prices</span>
           </a>
         </li>

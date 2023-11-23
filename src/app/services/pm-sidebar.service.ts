@@ -11,4 +11,12 @@ export class PmSidebarService {
   btnClicked = new Subject<any>();
   loadAgGrid = new Subject<any>();
 
+  refreshSubject = new Subject<void>();
+
+  refresh$ = this.refreshSubject.asObservable();
+
+  triggerRefresh() {
+    this.refreshSubject.next();
+  }
+
 }
