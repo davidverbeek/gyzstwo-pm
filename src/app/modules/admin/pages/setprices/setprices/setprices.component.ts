@@ -1027,7 +1027,7 @@ export class SetpricesComponent implements OnInit {
       $("#hdn_selectedcategories").val('');
       checkIt(true);
       $("i.sim-tree-checkbox").parent('a').parent('li').removeClass('disabled');
-      $("#flexCheckDefault").attr("disabled", "false");
+      $("#flexCheckDefault").removeAttr("disabled");
       $('#btnloadcats').trigger('click');
     } else {
       this.http.post(environment.webservicebaseUrl + "/dbt-alias-cats", toObject)
