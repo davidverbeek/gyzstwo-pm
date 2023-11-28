@@ -191,8 +191,7 @@ export class SetpricesComponent implements OnInit {
       hide: true
     },
     { field: 'price_of_the_next_excl_shipping', headerName: 'Next price', sortable: true, filter: 'agNumberColumnFilter', hide: true }
-
-
+    { field: 'is_activated', headerName: 'Is Activated', sortable: true, filter: 'number', hide: true }
   ];
 
   public customToolPanelColumnDefs: any = [];
@@ -733,7 +732,7 @@ export class SetpricesComponent implements OnInit {
 
     this.getRowStyle = function (params) {
       if (typeof params.data != "undefined") {
-        if (params.data.is_updated == 1 && params.data.is_updated_skwirrel == 1) {
+        if (params.data.is_updated == 1 || params.data.is_updated_skwirrel == 1 || params.data.is_activated == 1) {
           return { background: '#bce0bc' };
         } else {
           return { background: '' };
