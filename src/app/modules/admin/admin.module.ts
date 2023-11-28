@@ -30,6 +30,7 @@ import { RoasModule } from './pages/roas/roas.module'
 import { CurrentroasComponent } from './pages/roas/currentroas/currentroas.component'
 import { GoogleroasComponent } from './pages/roas/googleroas/googleroas.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { VerifypricesComponent } from './pages/verifyprices/verifyprices/verifyprices.component';
 
 
 const gyzsroutes: Routes = [
@@ -47,6 +48,7 @@ const gyzsroutes: Routes = [
       { path: "settings", canActivate: [AuthGuard], component: SettingsComponent },
       { path: '', redirectTo: '/admin/dashboard', pathMatch: 'full' },
       { path: "debter-rules", canActivate: [AuthGuard], component: DebterRulesComponent },
+      { path: "verifyprices", canActivate: [AuthGuard], component: VerifypricesComponent },
     ],
   },
 ];
@@ -59,7 +61,8 @@ const gyzsroutes: Routes = [
     FooterComponent,
     ControlSidebarComponent,
     ModalsComponent,
-    DebterRulesComponent
+    DebterRulesComponent,
+    VerifypricesComponent
   ],
   imports: [
     CommonModule,

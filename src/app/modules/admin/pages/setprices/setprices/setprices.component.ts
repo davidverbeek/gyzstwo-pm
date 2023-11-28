@@ -1,7 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, ViewChild, OnInit } from '@angular/core';
 import { AgGridAngular } from 'ag-grid-angular';
-import { ColDef, GridReadyEvent, IServerSideDatasource, ServerSideStoreType, RowClassParams, CellValueChangedEvent, CellEditingStoppedEvent, DragStoppedEvent, FullWidthCellKeyDownEvent, GetRowIdFunc, GetRowIdParams, SideBarDef, PaginationChangedEvent } from 'ag-grid-community';
+import {
+  ColDef, GridReadyEvent, IServerSideDatasource, ServerSideStoreType, RowClassParams, CellValueChangedEvent, CellEditingStoppedEvent, DragStoppedEvent, FullWidthCellKeyDownEvent, GetRowIdFunc, GetRowIdParams, SideBarDef, PaginationChangedEvent
+} from 'ag-grid-community';
 import 'ag-grid-enterprise';
 import { environment } from 'src/environments/environment';
 import { PmCategoryService } from '../../../../../services/pm.category.service';
@@ -9,6 +11,8 @@ import { PmSidebarService } from '../../../../../services/pm-sidebar.service';
 import { SideSetPricesComponent } from 'src/app/modules/admin/pages/setprices/setprices/side-set-prices/side-set-prices.component';
 import { LoadDebtorsService } from 'src/app/services/load-debtors.service';
 import { PricehistoryComponent } from 'src/app/modules/admin/pages/setprices/pricehistory/pricehistory.component';
+import { SimtreeService } from '../../../../../services/simtree.service';
+
 declare function checkGiven(any, boolean): void;
 declare function checkIt(boolean): void;
 
@@ -136,13 +140,65 @@ export class SetpricesComponent implements OnInit {
     { field: 'webshop_selling_price', headerName: 'WS Vkpr', sortable: true, filter: 'number', hide: true },
     { field: 'is_updated', headerName: 'Is Updated', sortable: true, filter: 'number', hide: true },
     { field: 'is_updated_skwirrel', headerName: 'Is Skwirrel Updated', sortable: true, filter: 'number', hide: true },
-    { field: 'is_activated', headerName: 'Is Activated', sortable: true, filter: 'number', hide: true }
+    {
+      field: 'lowest_price',
+      headerName: 'B.S. (L.P)',
+      sortable: true,
+      filter: 'agNumberColumnFilter',
+      hide: true
+    },
+    {
+      field: 'highest_price',
+      headerName: 'B.S. (H.P)',
+      filter: 'agNumberColumnFilter',
+      sortable: true,
+      hide: true
+    },
+    { field: 'lp_diff_percentage', headerName: 'B.S. (L.P %)', sortable: true, filter: 'agNumberColumnFilter', hide: true },
+    { field: 'hp_diff_percentage', headerName: 'B.S. (H.P %)', sortable: true, filter: 'agNumberColumnFilter', hide: true },
+    { field: 'price_competition_score', headerName: 'PCS', sortable: true, filter: 'agNumberColumnFilter', hide: true },
+    { field: 'position', headerName: 'Positie', sortable: true, filter: 'agNumberColumnFilter', hide: true },
+    { field: 'number_competitors', headerName: 'Aantal CC', sortable: true, filter: 'agNumberColumnFilter', hide: true },
+    {
+      field: 'productset_incl_dispatch', headerName: 'Productset', sortable: true,
+      filter: 'agSetColumnFilter',
+      filterParams: {
+        values: params => {
+          // async update simulated using setTimeout()
+          setTimeout(() => {
+            // fetch values from server
+            let values: any = [];
+            this.http.get(environment.webservicebaseUrl + "/get_productset_options")
+              .pipe(map(responseData => {
+                let product_ids: any = [];
 
+                responseData["msg"].forEach(function1);
+
+                function function1(currentValue, index) {
+                  product_ids.push(currentValue.productset)
+                }
+                return product_ids;
+              }))
+              .subscribe(
+                responseData => {
+                  values = responseData;
+                  params.success(responseData);
+                });
+          }, 3000);
+        },
+        // refreshValuesOnOpen: true
+      },
+      hide: true
+    },
+    { field: 'price_of_the_next_excl_shipping', headerName: 'Next price', sortable: true, filter: 'agNumberColumnFilter', hide: true }
+    { field: 'is_activated', headerName: 'Is Activated', sortable: true, filter: 'number', hide: true }
   ];
 
   public customToolPanelColumnDefs: any = [];
 
-  constructor(private http: HttpClient, private categoryService: PmCategoryService, private sidebarService: PmSidebarService, private loaddebtorsService: LoadDebtorsService) {
+
+
+  constructor(private http: HttpClient, private categoryService: PmCategoryService, private sidebarService: PmSidebarService, private loaddebtorsService: LoadDebtorsService, private simtree_service: SimtreeService) {
 
     this.newArray = this.columnDefs.map((item) => ({
       headerName: item.headerName,
@@ -211,6 +267,8 @@ export class SetpricesComponent implements OnInit {
 
         this.columnDefs.push(definition);
 
+
+
         let deb_fields: string = value["customer_group_name"];
         if (deb_fields.indexOf("_debter_selling_price") !== -1) {
           const dynamicObject = {
@@ -246,6 +304,8 @@ export class SetpricesComponent implements OnInit {
       this.customToolPanelColumnDefs.push(...this.newArray);
 
 
+
+
       var newArray_2 = [
 
         {
@@ -268,9 +328,6 @@ export class SetpricesComponent implements OnInit {
       ];
 
       this.customToolPanelColumnDefs.push(...newArray_2);
-
-
-
 
     }
 
@@ -296,7 +353,6 @@ export class SetpricesComponent implements OnInit {
     this.context = {
       componentParent: this
     }
-
   }
 
 
@@ -312,7 +368,7 @@ export class SetpricesComponent implements OnInit {
       if (isUploaded == 1) {
         this.loadAGGrid();
       }
-    })
+    });
 
     this.subbtnclicked = this.sidebarService.btnClicked.subscribe((priceType) => {
 
@@ -334,13 +390,18 @@ export class SetpricesComponent implements OnInit {
           err = 1;
         }
         if (err == 0) {
-
           if (this.isChkAllChecked == 0) {
 
             this.api.forEachNode((rowNode) => {
               if (idsToUpdate.indexOf(rowNode.data.product_id) >= 0) {
                 var updated = JSON.parse(JSON.stringify(rowNode.data));
 
+                console.log(priceType);
+                if (priceType["customer_group_selected"] != '') {
+                  if (checkProductAssignment(priceType["customer_group_selected"], updated.product_id)) {
+                    return;
+                  }
+                }
 
 
                 if (priceType["update_type"] == "update") {
@@ -389,8 +450,12 @@ export class SetpricesComponent implements OnInit {
               this.chkAllCount = "(Please Wait ...)";
               this.chkAllProducts["msg"].forEach(
                 (value, key) => {
-                  //console.log(key);
-                  //console.log(value.product_id);
+                  if (priceType["customer_group_selected"] != '') {
+                    if (checkProductAssignment(priceType["customer_group_selected"], value.product_id)) {
+                      return;
+                    }
+
+                  }
 
                   if (priceType["update_type"] == "update") {
                     if (priceType["type"] == "selling_price") {
@@ -441,15 +506,19 @@ export class SetpricesComponent implements OnInit {
 
         }
       }
-      $('#btnundo').removeAttr("disabled");
-      $('#btnredo').removeAttr("disabled");
+      if (this.updatedProducts.length > 0) {
+        $('#btnundo').removeAttr("disabled");
+        $('#btnredo').removeAttr("disabled");
+      }
     });
 
-    $('#flexCheckDefault').prop('checked', true);
+    /* 11/22/23 $('#flexCheckDefault').prop('checked', true);
 
     $('a>i.sim-tree-checkbox').each(function (index) {
       $(this).addClass('checked');
-    });
+    }); */
+
+
 
   }
 
@@ -593,7 +662,6 @@ export class SetpricesComponent implements OnInit {
     this.createProductData(prepareProductData);
   }
 
-
   public sideBar: SideBarDef | string | string[] | boolean | null = {
     toolPanels: [
       {
@@ -625,6 +693,7 @@ export class SetpricesComponent implements OnInit {
       },
     ],
     defaultToolPanel: 'columns',
+    hiddenByDefault: true,
   };
 
 
@@ -649,6 +718,8 @@ export class SetpricesComponent implements OnInit {
   // For accessing the Grid's API
   @ViewChild(AgGridAngular) agGrid!: AgGridAngular;
 
+
+
   // Example load data from sever
   onGridReady(params: GridReadyEvent) {
     this.api = params.api;
@@ -657,6 +728,8 @@ export class SetpricesComponent implements OnInit {
     this.loadAGGrid();
 
     this.setCustomGroupLayout();
+    this.agGrid.api.setSideBarVisible(true);
+
     this.getRowStyle = function (params) {
       if (typeof params.data != "undefined") {
         if (params.data.is_updated == 1 || params.data.is_updated_skwirrel == 1 || params.data.is_activated == 1) {
@@ -667,8 +740,6 @@ export class SetpricesComponent implements OnInit {
       }
       return { background: '' };
     };
-
-    debterCheckboxes();
   }
 
   loadAGGrid() {
@@ -687,7 +758,6 @@ export class SetpricesComponent implements OnInit {
 
 
   onCellValueChanged(event: CellValueChangedEvent) {
-
     var prepareProductData = [];
     var checkforDebtor: any = [];
     prepareProductData["field"] = event.colDef.field;
@@ -802,6 +872,30 @@ export class SetpricesComponent implements OnInit {
     }
   }
 
+  onColumnVisible(e) {
+    //console.log('Event Column Visible', e);
+
+    // i will change visibility of debter cols
+    // if atlease one debter col is visible then to show button
+    //if none debter cols is visible then hide button
+    e.columns.forEach(column => {
+      if (column.colDef.toolPanelClass != undefined) {
+        if (column.visible) {
+          $("label[for='btnDebCategories']").parent('div').css('display', 'inline');
+        } else {
+          if ($('div.show_deb_cols .ag-column-select-checkbox .ag-checkbox-input-wrapper input:checked').length === 0) {
+            $("label[for='btnDebCategories']").parent('div').css('display', 'none');
+            $("#btnDebCategories").trigger("click");
+          } else {
+            if ($("label[for='btnDebCategories']").parent('div').css('display') != 'inline') {
+              $("label[for='btnDebCategories']").parent('div').css('display', 'inline');
+            }
+          }
+        }
+      }
+    });
+  }
+
   onBtnClicked() {
     var rowNode = this.api.getRowNode('13');
     //console.log(rowNode);
@@ -813,7 +907,17 @@ export class SetpricesComponent implements OnInit {
     //rowNode.updateData(newData);
   }
   //onRowClicked(event: any) {$("#imagemodal").modal("show");}
+  onRowSelected(event) {
+    /* window.alert(
+      'row ' + event.node.data.sku + ' selected = ' + event.node.isSelected()
+    ); */
+  }
 
+  onSelectionChanged(event) {
+    var rowCount = event.api.getSelectedNodes().length;
+    $('#btnundo').attr('disabled', 'disabled');
+    //window.alert('selection changed, ' + rowCount + ' rows selected');
+  }
 
   saveRow(updatedProducts) {
     updatedProducts.forEach(
@@ -918,61 +1022,68 @@ export class SetpricesComponent implements OnInit {
     unique_group = removeDuplicates(selected_group);
     const toObject = Object.assign({}, unique_group);
 
+    if ($.isEmptyObject(selected_group)) {
+      $("#hdn_selectedcategories").val('');
+      checkIt(true);
+      $("i.sim-tree-checkbox").parent('a').parent('li').removeClass('disabled');
+      $("#flexCheckDefault").removeAttr("disabled");
+      $('#btnloadcats').trigger('click');
+    } else {
+      this.http.post(environment.webservicebaseUrl + "/dbt-alias-cats", toObject)
+        .pipe(map(responseData => {
+          const category_ids: string[] = [];
 
-    this.http.post(environment.webservicebaseUrl + "/dbt-alias-cats", toObject)
-      .pipe(map(responseData => {
-        const category_ids: string[] = [];
+          responseData["rows"].forEach(function1);
 
-        responseData["rows"].forEach(function1);
-
-        function function1(currentValue, index) {
-          // console.log("Index in array is: " + index + " ::  Value is: " + currentValue.product_id);
-          category_ids.push(currentValue.category_ids);
-        }
-        let comma_sperated_ids = category_ids.toString();
-        return comma_sperated_ids;
-      }))
-      .subscribe(
-        responseData => {
-          $("#btnDebCategories").css("opacity", 0.5);
-          $("#btnDebCategories").find('span.loading-img-update').css({ "display": "inline-block" });
-          $("#btnDebCategories").attr('disabled', 'disabled');
-
-          var debter_cats = responseData;
-          $("#hdn_selectedcategories").val(debter_cats);
-          checkIt(false);
-          if (debter_cats != "") { // means status = checked
-            $('#flexCheckDefault').prop('checked', true);
-
-            var cat_id_arr = debter_cats.split(',');
-            $.each(cat_id_arr, function (key, value) {
-              var $li = $('li[data-id=' + value + ']');
-              checkGiven($li, true);
-            });
-            this.toggleCheckbox('none');
-          } else { // remove category filter
-            $("i.sim-tree-checkbox").parent('a').parent('li').addClass('disabled');
-            $("#flexCheckDefault").attr("disabled", "true");
+          function function1(currentValue, index) {
+            // console.log("Index in array is: " + index + " ::  Value is: " + currentValue.product_id);
+            category_ids.push(currentValue.category_ids);
           }
-          $("#btnDebCategories").css("opacity", 1);
-          $("#btnDebCategories").find('span.loading-img-update').css({ "display": "none" });
-          $('#btnDebCategories').removeAttr('disabled');
+          let comma_sperated_ids = category_ids.toString();
+          return comma_sperated_ids;
+        }))
+        .subscribe(
+          responseData => {
+            $("#btnDebCategories").css("opacity", 0.5);
+            $("#btnDebCategories").find('span.loading-img-update').css({ "display": "inline-block" });
+            $("#btnDebCategories").attr('disabled', 'disabled');
+
+            var debter_cats = responseData;
+            $("#hdn_selectedcategories").val(debter_cats);
+            checkIt(false);
+            if (debter_cats != "") { // means status = checked
+              $('#flexCheckDefault').prop('checked', true);
+
+              var cat_id_arr = debter_cats.split(',');
+              $.each(cat_id_arr, function (key, value) {
+                var $li = $('li[data-id=' + value + ']');
+                checkGiven($li, true);
+              });
+              this.toggleCheckbox('none');
+            } else { // remove category filter
+              $("i.sim-tree-checkbox").parent('a').parent('li').addClass('disabled');
+              $("#flexCheckDefault").attr("disabled", "true");
+            }
+            $("#btnDebCategories").css("opacity", 1);
+            $("#btnDebCategories").find('span.loading-img-update').css({ "display": "none" });
+            $('#btnDebCategories').removeAttr('disabled');
 
 
-          this.cats = debter_cats;
+            this.cats = debter_cats;
+            this.loadAGGrid();
 
 
-          this.loadAGGrid();
-        });
-
-
-
+          });
+    }
   }//end onApplyDebterCategories()
 
   setCustomGroupLayout() {
 
     var columnToolPanel = this.api.getToolPanelInstance('columns');
     columnToolPanel.setColumnLayout(this.customToolPanelColumnDefs);
+
+
+
   }
 
 
@@ -1006,8 +1117,6 @@ export class SetpricesComponent implements OnInit {
     });
     return group_name_product;
   }
-
-
 }
 
 function removeDuplicates(arr: any[]) {
@@ -1135,21 +1244,18 @@ function processUpdatedProduct(productData) {
   return productData;
 }
 
-function debterCheckboxes() {
+function checkProductAssignment(debter_selected, product_id) {
+  let number_magento_id = debter_selected.split('|||');
+  let selected_debtor_number = number_magento_id[0];
+  let assigned_products = localStorage.getItem(selected_debtor_number);
+  let assigned_products_arr = assigned_products?.split(',');
 
-  var count = 0;
-  $('div.show_deb_cols').on('click', function (e) {
+  if (!assigned_products_arr?.includes(String(product_id))) {
+    console.log('not assigned');
+    return true;
+  } else {
+    return false;
+  }
 
-    if ($(this).find('.ag-column-select-checkbox').find('.ag-checkbox-input-wrapper').find("input[type='checkbox']").is(':checked')) {
-      count++;
-      if ($("label[for='btnDebCategories']").parent('div').css('display') != 'inline') {
-        $("label[for='btnDebCategories']").parent('div').css('display', 'inline');
-      }
-    } else {
-      count--;
-      if (count == 0) {
-        $("label[for='btnDebCategories']").parent('div').css('display', 'none');
-      }
-    };
-  });
-}//end debterCheckboxes()
+}
+

@@ -22,10 +22,12 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
   currentDateTime: any;
   allowUndoRedo = true;
   showButton = true;
+  showButton_redo = false;
   undoButton: string = "Undo Price";
   redoButton: string = "Redo Price";
   actionType: string = "";
   storeForRedo: string = "";
+  debter_dd: any = [];
   debterAssignment: any = [];
 
   uploadValidationMessage: any = "Import Xlsx Only";
@@ -35,7 +37,14 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
     let alldebString = localStorage.getItem("allDebts");
     this.getAllDebtors = JSON.parse(alldebString || '{}');
     this.currentDateTime = this.datePipe.transform((new Date), 'yyyy-MM-dd hh:mm:ss');
-
+    for (const [key, value] of Object.entries(this.getAllDebtors)) {
+      let idAlias = this.getAllDebtors[key].split('|||');
+      var element = {};
+      let option_key = key + '|||' + idAlias[0];
+      element['op_key'] = option_key;
+      element['op_value'] = idAlias[1];
+      this.debter_dd.push(element);
+    }
   }
 
   agInit(params: IToolPanelParams): void { }

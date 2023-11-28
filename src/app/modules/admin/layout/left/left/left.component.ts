@@ -3,6 +3,7 @@ declare var simTree: any;
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { PmCategoryService } from '../../../../../services/pm.category.service';
+import { SimtreeService } from '../../../../../services/simtree.service';
 declare function checkGiven(any, boolean): void;
 declare function checkIt(boolean): void;
 
@@ -16,96 +17,99 @@ export class LeftComponent implements OnInit {
     list: string;
     cats: string = "";
     columnApi: any;
-    constructor(private http: HttpClient, private categoryService: PmCategoryService) {
+    constructor(private http: HttpClient, private categoryService: PmCategoryService, private simtreeService: SimtreeService) {
     }
 
     @ViewChild('allSelectedCats') allSelectedCats: ElementRef;
 
     ngOnInit() {
 
-        this.http.get<any>(environment.webservicebaseUrl + "/all-categories").subscribe(data => {
-            this.list = data.categories;
+        this.simtreeService.refresh$.subscribe(() => {
+            $('#tree').empty();
+            this.http.get<any>(environment.webservicebaseUrl + "/all-categories").subscribe(data => {
+                // this.simtreeService.refresh$.subscribe(() => {
+                this.list = data.categories;
 
-            var tree = simTree({
-                el: '#tree',
-                data: this.list,
-                check: true,
-                linkParent: true,
-                expand: 'expand',
-                checked: 'checked',
-
-
-                onClick: function (item) {
-                    //console.log(item);
-
-                },
-                onChange: (item) => {
+                var tree = simTree({
+                    el: '#tree',
+                    data: this.list,
+                    check: true,
+                    linkParent: true,
+                    expand: 'expand',
+                    checked: 'checked',
 
 
-                    var selectedCategories = new Array();
-                    $.each(item, function (key, value) {
-                        selectedCategories.push(value["id"]);
+                    onClick: function (item) {
+                        //console.log(item);
+
+                    },
+                    onChange: (item) => {
+
+
+                        var selectedCategories = new Array();
+                        $.each(item, function (key, value) {
+                            selectedCategories.push(value["id"]);
+                        });
+                        if (selectedCategories.length > 0) {
+                            $("#hdn_selectedcategories").val(selectedCategories);
+                        } else {
+                            $("#hdn_selectedcategories").val('-1');
+                        }
+
+                        $("#btnloadcats").trigger('click');
+
+                    },
+                    done: () => {
+                        $('#flexCheckDefault').prop('checked', true);
+                        this.toggleAllCategories(true);
+
+                        var left_cats = this.getTreeCategories();
+
+                        $('#hdn_selectedcategories').val(left_cats);
+                        //$("#btnloadcats").trigger('click');
+                    }
+                });
+
+                /*11/22/23 var path = window.location.pathname;
+                if (path.split("/").pop() == "debter-rules") {
+                    $('#flexCheckDefault').prop('checked', false);
+                    $('a>i.sim-tree-checkbox').each(function (index) {
+                        $(this).removeClass('checked');
                     });
-                    // if (selectedCategories.length > 0) {
-                    $("#hdn_selectedcategories").val(selectedCategories);
-                    // }
+                } */
+                setTimeout(function () {
+                    var simtmp = 0;
+                    $("ul.sim-tree ul").each(function () {
+                        if (simtmp < 2) {
+                            $(this).addClass("show");
+                        }
+                        simtmp++;
+                    });
 
-                    $("#btnloadcats").trigger('click');
+                    var simtreehideicontmp = 0;
+                    $(".sim-tree-spread").each(function () {
+                        if (simtreehideicontmp < 2) {
+                            $(this).hide();
+                        }
+                        simtreehideicontmp++;
+                    });
 
-                },
-                done: () => {
-                    $('#flexCheckDefault').prop('checked', true);
-                    this.toggleAllCategories(true);
+                    var simtreehidetexttmp = 0;
+                    $("a .sim-tree-checkbox").each(function () {
+                        if (simtreehidetexttmp < 2) {
+                            $(this).parent().html("");
+                            $(this).hide();
+                        }
+                        simtreehidetexttmp++;
+                    });
 
-                    var left_cats = this.getTreeCategories();
+                }, 3000);
 
-                    $('#hdn_selectedcategories').val(left_cats);
-                    //$("#btnloadcats").trigger('click');
-
-
-
-                }
             });
 
-            var path = window.location.pathname;
 
-            if (path.split("/").pop() == "debter-rules") {
-                $('#flexCheckDefault').prop('checked', false);
-                $('a>i.sim-tree-checkbox').each(function (index) {
-                    $(this).removeClass('checked');
-                });
-            }
 
         });
-
-        setTimeout(function () {
-            var simtmp = 0;
-            $("ul.sim-tree ul").each(function () {
-                if (simtmp < 2) {
-                    $(this).addClass("show");
-                }
-                simtmp++;
-            });
-
-            var simtreehideicontmp = 0;
-            $(".sim-tree-spread").each(function () {
-                if (simtreehideicontmp < 2) {
-                    $(this).hide();
-                }
-                simtreehideicontmp++;
-            });
-
-            var simtreehidetexttmp = 0;
-            $("a .sim-tree-checkbox").each(function () {
-                if (simtreehidetexttmp < 2) {
-                    $(this).parent().html("");
-                    $(this).hide();
-                }
-                simtreehidetexttmp++;
-            });
-
-        }, 3000);
-
     }
 
     btncats() {
@@ -119,7 +123,6 @@ export class LeftComponent implements OnInit {
         cat_all_str = $("#hdn_selectedcategories").val();
 
         if ($('.show_deb_cols').find("input[type='checkbox']").is(':checked') && cat_all_str != '' && cat_all_str != '-1') {//means this is a group list
-
             let cat_all_arr = cat_all_str.split(',');
             if (current_status) { // check all hiddencategories
 
@@ -134,6 +137,7 @@ export class LeftComponent implements OnInit {
                     checkGiven($li, false);
                 });
             }
+
         } else if (cat_all_str == '-1') {
             this.toggleAllCategories(current_status);
             var left_cats = this.getTreeCategories();
