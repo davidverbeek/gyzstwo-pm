@@ -135,8 +135,8 @@ export class SetpricesComponent implements OnInit {
     { field: 'magento_status', headerName: 'Status', sortable: true, filter: 'number', hide: true },
     { field: 'webshop_selling_price', headerName: 'WS Vkpr', sortable: true, filter: 'number', hide: true },
     { field: 'is_updated', headerName: 'Is Updated', sortable: true, filter: 'number', hide: true },
-    { field: 'is_updated_skwirrel', headerName: 'Is Skwirrel Updated', sortable: true, filter: 'number', hide: true }
-
+    { field: 'is_updated_skwirrel', headerName: 'Is Skwirrel Updated', sortable: true, filter: 'number', hide: true },
+    { field: 'is_activated', headerName: 'Is Activated', sortable: true, filter: 'number', hide: true }
 
   ];
 
@@ -659,7 +659,7 @@ export class SetpricesComponent implements OnInit {
     this.setCustomGroupLayout();
     this.getRowStyle = function (params) {
       if (typeof params.data != "undefined") {
-        if (params.data.is_updated == 1 && params.data.is_updated_skwirrel == 1) {
+        if (params.data.is_updated == 1 || params.data.is_updated_skwirrel == 1 || params.data.is_activated == 1) {
           return { background: '#bce0bc' };
         } else {
           return { background: '' };
