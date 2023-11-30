@@ -50,6 +50,7 @@ export class SetpricesComponent implements OnInit {
   product_supplier: any = [];
   redo_swap: any = [];
   undo_swap: any = [];
+  undo_swap_rowdata: Record<string, any> = {};
   context: any
   updatePriceCompleted: boolean = true;
   //public rowModelType: 'serverSide';
@@ -372,10 +373,25 @@ export class SetpricesComponent implements OnInit {
 
     this.subbtnclicked = this.sidebarService.btnClicked.subscribe((priceType) => {
 
-      console.log(priceType);
+      // console.log(priceType);
+
+      if (this.undo_swap.length > 0 && priceType["update_type"] == "undo") {
+        this.undo_swap.forEach((element: any) => {
+          //if (element.update_type == priceType['type']) {
+          this.formProductData(this.undo_swap_rowdata[element.product_id], priceType);
+          //}
+        });
+
+        this.undo_swap = [];
+        this.undo_swap_rowdata = [];
+      }
+
+
       var idsToUpdate = this.api.getSelectedNodes().map(function (node) {
         return node.data.product_id;
       });
+
+
 
       var err = 0;
       if (idsToUpdate.length == 0) {
@@ -396,7 +412,7 @@ export class SetpricesComponent implements OnInit {
               if (idsToUpdate.indexOf(rowNode.data.product_id) >= 0) {
                 var updated = JSON.parse(JSON.stringify(rowNode.data));
 
-                console.log(priceType);
+                // console.log(priceType);
                 if (priceType["customer_group_selected"] != '') {
                   if (checkProductAssignment(priceType["customer_group_selected"], updated.product_id)) {
                     return;
@@ -405,41 +421,26 @@ export class SetpricesComponent implements OnInit {
 
 
                 if (priceType["update_type"] == "update") {
+                  this.undo_swap_rowdata[rowNode.data.product_id] = updated;
+
                   if (priceType["type"] == "selling_price") {
                     this.redo_swap[rowNode.data.product_id] = rowNode.data.selling_price;
-                    this.undo_swap[rowNode.data.product_id] = rowNode.data.selling_price;
+                    const newData = { product_id: rowNode.data.product_id, 'before_price': rowNode.data.selling_price, 'update_type': priceType["type"] };
+                    this.undo_swap.push(newData);
                   } else if (priceType["type"] == "profit_percentage") {
                     this.redo_swap[rowNode.data.product_id] = rowNode.data.profit_percentage;
-                    this.undo_swap[rowNode.data.product_id] = rowNode.data.profit_percentage;
+                    const newData = { product_id: rowNode.data.product_id, 'before_price': rowNode.data.profit_percentage, 'update_type': priceType["type"] };
+                    this.undo_swap.push(newData);
                   } else if (priceType["type"] == "profit_percentage_selling_price") {
                     this.redo_swap[rowNode.data.product_id] = rowNode.data.profit_percentage_selling_price;
-                    this.undo_swap[rowNode.data.product_id] = rowNode.data.profit_percentage_selling_price;
+                    const newData = { product_id: rowNode.data.product_id, 'before_price': rowNode.data.profit_percentage_selling_price, 'update_type': priceType["type"] };
+                    this.undo_swap.push(newData);
                   } else if (priceType["type"] == "discount_on_gross_price") {
                     this.redo_swap[rowNode.data.product_id] = rowNode.data.discount_on_gross_price;
-                    this.undo_swap[rowNode.data.product_id] = rowNode.data.discount_on_gross_price;
+                    const newData = { product_id: rowNode.data.product_id, 'before_price': rowNode.data.discount_on_gross_price, 'update_type': priceType["type"] };
+                    this.undo_swap.push(newData);
                   }
-                  this.formProductData(updated, priceType);
-                } else if (priceType["update_type"] == "undo") {
-                  if (priceType["type"] == "selling_price") {
-                    this.redo_swap[rowNode.data.product_id] = rowNode.data.selling_price;
-                  } else if (priceType["type"] == "profit_percentage") {
-                    this.redo_swap[rowNode.data.product_id] = rowNode.data.profit_percentage;
-                  } else if (priceType["type"] == "profit_percentage_selling_price") {
-                    this.redo_swap[rowNode.data.product_id] = rowNode.data.profit_percentage_selling_price;
-                  } else if (priceType["type"] == "discount_on_gross_price") {
-                    this.redo_swap[rowNode.data.product_id] = rowNode.data.discount_on_gross_price;
-                  }
-                  this.formProductData(updated, priceType);
-                } else {
-                  if (priceType["type"] == "selling_price") {
-                    this.undo_swap[rowNode.data.product_id] = rowNode.data.selling_price;
-                  } else if (priceType["type"] == "profit_percentage") {
-                    this.undo_swap[rowNode.data.product_id] = rowNode.data.profit_percentage;
-                  } else if (priceType["type"] == "profit_percentage_selling_price") {
-                    this.undo_swap[rowNode.data.product_id] = rowNode.data.profit_percentage_selling_price;
-                  } else if (priceType["type"] == "discount_on_gross_price") {
-                    this.undo_swap[rowNode.data.product_id] = rowNode.data.discount_on_gross_price;
-                  }
+
                   this.formProductData(updated, priceType);
                 }
 
@@ -458,45 +459,23 @@ export class SetpricesComponent implements OnInit {
                   }
 
                   if (priceType["update_type"] == "update") {
-                    if (priceType["type"] == "selling_price") {
-                      this.redo_swap[value.product_id] = value.selling_price;
-                      this.undo_swap[value.product_id] = value.selling_price;
-                    } else if (priceType["type"] == "profit_percentage") {
-                      this.redo_swap[value.product_id] = value.profit_percentage;
-                      this.undo_swap[value.product_id] = value.profit_percentage;
-                    } else if (priceType["type"] == "profit_percentage_selling_price") {
-                      this.redo_swap[value.product_id] = value.profit_percentage_selling_price;
-                      this.undo_swap[value.product_id] = value.profit_percentage_selling_price;
-                    } else if (priceType["type"] == "discount_on_gross_price") {
-                      this.redo_swap[value.product_id] = value.discount_on_gross_price;
-                      this.undo_swap[value.product_id] = value.discount_on_gross_price;
-                    }
-                    this.formProductData(value, priceType);
-                  } else if (priceType["update_type"] == "undo") {
+                    this.undo_swap_rowdata[value.product_id] = value;
+
+                    this.undo_swap.push({ product_id: value.product_id });
                     if (priceType["type"] == "selling_price") {
                       this.redo_swap[value.product_id] = value.selling_price;
                     } else if (priceType["type"] == "profit_percentage") {
                       this.redo_swap[value.product_id] = value.profit_percentage;
+                      //this.undo_swap[value.product_id] = value.profit_percentage;
                     } else if (priceType["type"] == "profit_percentage_selling_price") {
                       this.redo_swap[value.product_id] = value.profit_percentage_selling_price;
+                      // this.undo_swap[value.product_id] = value.profit_percentage_selling_price;
                     } else if (priceType["type"] == "discount_on_gross_price") {
                       this.redo_swap[value.product_id] = value.discount_on_gross_price;
-                    }
-                    this.formProductData(value, priceType);
-                  } else {
-                    if (priceType["type"] == "selling_price") {
-                      this.undo_swap[value.product_id] = value.selling_price;
-                    } else if (priceType["type"] == "profit_percentage") {
-                      this.undo_swap[value.product_id] = value.profit_percentage;
-                    } else if (priceType["type"] == "profit_percentage_selling_price") {
-                      this.undo_swap[value.product_id] = value.profit_percentage_selling_price;
-                    } else if (priceType["type"] == "discount_on_gross_price") {
-                      this.undo_swap[value.product_id] = value.discount_on_gross_price;
+                      // this.undo_swap[value.product_id] = value.discount_on_gross_price;
                     }
                     this.formProductData(value, priceType);
                   }
-
-
                 }
               )
             }
@@ -513,7 +492,7 @@ export class SetpricesComponent implements OnInit {
     });
 
     /* 11/22/23 $('#flexCheckDefault').prop('checked', true);
-
+  
     $('a>i.sim-tree-checkbox').each(function (index) {
       $(this).addClass('checked');
     }); */
@@ -592,7 +571,7 @@ export class SetpricesComponent implements OnInit {
       } else if (priceType["type"] == "discount_on_gross_price") {
         new_discount_on_gross_price = priceType["val"];
       }
-    } else if (priceType["update_type"] == "undo") {
+    } /*else if (priceType["update_type"] == "undo") {
       if (priceType["type"] == "selling_price") {
         new_selling_price = this.undo_swap[prodData.product_id];
       } else if (priceType["type"] == "profit_percentage") {
@@ -602,7 +581,7 @@ export class SetpricesComponent implements OnInit {
       } else if (priceType["type"] == "discount_on_gross_price") {
         new_discount_on_gross_price = this.undo_swap[prodData.product_id];
       }
-    } else {
+    }   else {
       if (priceType["type"] == "selling_price") {
         new_selling_price = this.redo_swap[prodData.product_id];
       } else if (priceType["type"] == "profit_percentage") {
@@ -612,7 +591,7 @@ export class SetpricesComponent implements OnInit {
       } else if (priceType["type"] == "discount_on_gross_price") {
         new_discount_on_gross_price = this.redo_swap[prodData.product_id];
       }
-    }
+    } */
 
     var prepareProductData = [];
     prepareProductData["field"] = priceType["type"];
@@ -914,8 +893,10 @@ export class SetpricesComponent implements OnInit {
   }
 
   onSelectionChanged(event) {
-    var rowCount = event.api.getSelectedNodes().length;
-    $('#btnundo').attr('disabled', 'disabled');
+    // var rowCount = event.api.getSelectedNodes().length;
+    if (this.undo_swap.length == 0) {
+      $('#btnundo').attr('disabled', 'disabled');
+    }
     //window.alert('selection changed, ' + rowCount + ' rows selected');
   }
 
@@ -1241,6 +1222,7 @@ function processUpdatedProduct(productData) {
       }
       break;
   }
+
   return productData;
 }
 

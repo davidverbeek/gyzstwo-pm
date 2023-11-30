@@ -26,7 +26,7 @@
           </a>
         </li>
 
-        <li class="dropdown messages-menu" routerLinkActive="active">
+        <li class="dropdown messages-menu" routerLinkActive="active" (click)="onNavigate()">
           <a class="dropdown-toggle" [routerLink]="['/admin/debter-rules']">
             <i class="fa fa-gavel"></i><span style="margin-left: 8px;">Debter Rules</span>
           </a>
