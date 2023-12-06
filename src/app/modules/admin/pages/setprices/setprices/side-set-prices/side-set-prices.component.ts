@@ -50,7 +50,7 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
   }
 
   agInit(params: IToolPanelParams): void {
-    const socket = io(environment.nodeServerUrl);
+    const socket = io();
     socket.on("showUploadProgress", (res) => {
       this.progress = res;
     });
