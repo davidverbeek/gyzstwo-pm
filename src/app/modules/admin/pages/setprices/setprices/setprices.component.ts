@@ -141,6 +141,7 @@ export class SetpricesComponent implements OnInit {
     { field: 'webshop_selling_price', headerName: 'WS Vkpr', sortable: true, filter: 'number', hide: true },
     { field: 'is_updated', headerName: 'Is Updated', sortable: true, filter: 'number', hide: true },
     { field: 'is_updated_skwirrel', headerName: 'Is Skwirrel Updated', sortable: true, filter: 'number', hide: true },
+    /*
     {
       field: 'lowest_price',
       headerName: 'B.S. (L.P)',
@@ -155,7 +156,7 @@ export class SetpricesComponent implements OnInit {
       sortable: true,
       hide: true
     },
-    { field: 'lp_diff_percentage', headerName: 'B.S. (L.P %)', sortable: true, filter: 'agNumberColumnFilter', hide: true },
+     { field: 'lp_diff_percentage', headerName: 'B.S. (L.P %)', sortable: true, filter: 'agNumberColumnFilter', hide: true },
     { field: 'hp_diff_percentage', headerName: 'B.S. (H.P %)', sortable: true, filter: 'agNumberColumnFilter', hide: true },
     { field: 'price_competition_score', headerName: 'PCS', sortable: true, filter: 'agNumberColumnFilter', hide: true },
     { field: 'position', headerName: 'Positie', sortable: true, filter: 'agNumberColumnFilter', hide: true },
@@ -192,7 +193,7 @@ export class SetpricesComponent implements OnInit {
       hide: true
     },
     { field: 'price_of_the_next_excl_shipping', headerName: 'Next price', sortable: true, filter: 'agNumberColumnFilter', hide: true },
-    { field: 'is_activated', headerName: 'Is Activated', sortable: true, filter: 'number', hide: true }
+   */  { field: 'is_activated', headerName: 'Is Activated', sortable: true, filter: 'number', hide: true }
   ];
 
   public customToolPanelColumnDefs: any = [];
@@ -478,6 +479,7 @@ export class SetpricesComponent implements OnInit {
                   }
                 }
               )
+
             }
           }
 
