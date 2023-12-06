@@ -7,6 +7,7 @@ import { environment } from 'src/environments/environment';
 import * as XLSX from 'xlsx'
 import { DatePipe } from '@angular/common';
 import { writeFile } from 'xlsx';
+import io from 'socket.io-client';
 
 
 @Component({
@@ -29,6 +30,7 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
   storeForRedo: string = "";
   debter_dd: any = [];
   debterAssignment: any = [];
+  progress: number = 0;
 
   uploadValidationMessage: any = "Import Xlsx Only";
 
@@ -185,7 +187,18 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
       this.isDisabled = false;
     });
   }
+
+  showProgress() {
+    this.http.get(environment.webservicebaseUrl + "/progress").subscribe(responseData => {
+      //this.progress = responseData.progress;
+      console.log(responseData);
+    });
+
+  }
+
   btnImportPrices(event: any) {
+
+
 
     // Get Debtor Assignment
     this.http.get(environment.webservicebaseUrl + "/all-debtor-product").subscribe(responseData => {
@@ -266,6 +279,10 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
           return false;
         }
 
+        const socket = io(environment.webservicebaseUrl);
+        socket.on("showUploadProgress", (res) => {
+          this.progress = res;
+        });
 
         this.uploadSpinner = true;
         this.uploadMessage = "";
@@ -506,6 +523,9 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
           }
 
           if (processXlsxData.length > 0) {
+
+
+
             var filterProcessData = processXlsxData.filter(function () { return true; });
             var filterProcessHistoryData = processHistoryData.filter(function () { return true; });
 

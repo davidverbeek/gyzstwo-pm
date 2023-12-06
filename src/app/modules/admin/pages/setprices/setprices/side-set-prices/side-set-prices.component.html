@@ -85,7 +85,7 @@
 
     <div class="box box-success">
         <div class="box-header with-border">
-            <h3 class="box-title"><i class="fa fa-fw fa-cloud-upload"></i> Import123</h3>
+            <h3 class="box-title"><i class="fa fa-fw fa-cloud-upload"></i> Import</h3>
         </div>
         <div class="panel panel-default" style="padding: 5px;">
             <div class="panel-heading">
@@ -96,10 +96,17 @@
                     <input type="file" name="importfile" id="importfile" style="width: 100%;"
                         (change)="btnImportPrices($event)">
                     <p class="help-block">{{ uploadValidationMessage }}</p>
+
                     <p *ngIf="uploadSpinner"><i class="fa fa-refresh fa-spin"></i> Processing Please
                         Wait...</p>
 
-                    <p style="white-space: pre; width: 100%;">{{ uploadMessage }}</p>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar"
+                            aria-valuenow="progress" aria-valuemin="0" aria-valuemax="100" [style.width.%]="progress">
+                            {{progress}}%
+                        </div>
+                    </div>
+                    <!-- <p style="white-space: pre; width: 100%;">{{ uploadMessage }}</p> -->
                 </div>
             </div>
         </div>
