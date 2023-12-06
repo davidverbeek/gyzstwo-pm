@@ -279,7 +279,7 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
           return false;
         }
 
-        const socket = io(environment.nodeServerUrl);
+        const socket = io(environment.nodeServerUrl, { transports: ['websocket'] });
         socket.on("showUploadProgress", (res) => {
           this.progress = res;
         });
