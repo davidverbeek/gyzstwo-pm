@@ -49,7 +49,13 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
     }
   }
 
-  agInit(params: IToolPanelParams): void { }
+  agInit(params: IToolPanelParams): void {
+    const socket = io(environment.nodeServerUrl);
+    socket.on("showUploadProgress", (res) => {
+      this.progress = res;
+    });
+
+  }
 
   textPlacehoder: string = "";
   textButton: string = "Update Price";
@@ -278,11 +284,6 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
         if (!confirm("Are you sure you want to add/update prices? Once the prices are updated they will not be reverted back")) {
           return false;
         }
-
-        const socket = io(environment.nodeServerUrl);
-        socket.on("showUploadProgress", (res) => {
-          this.progress = res;
-        });
 
         this.uploadSpinner = true;
         this.uploadMessage = "";
