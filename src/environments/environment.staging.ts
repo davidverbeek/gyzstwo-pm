@@ -7,5 +7,5 @@ export const environment = {
   roasUrl: "https://gyzs.gyzsdevm2.hypernode.io/pm_getdata/get_roas.php",
   roasCalUrl: "https://gyzs.gyzsdevm2.hypernode.io/pm_getdata/debug_roas.php",
   nodebasePath: "https://gyzs.gyzsdevm2.hypernode.io/gyzstwo-pm-ws",
-  nodeServerUrl: "http://localhost:3200"
+  nodeServerUrl: "https://gyzs.gyzsdevm2.hypernode.io:3200"
 };
