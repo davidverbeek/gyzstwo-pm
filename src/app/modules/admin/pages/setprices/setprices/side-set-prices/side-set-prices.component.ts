@@ -59,6 +59,7 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
   uploadSpinner: any = false;
   spinner: any = false;
   isDisabled: any = false;
+  bsUpdateSubmit: any = [];
 
   selectedOption(type: string) {
     if (type == "SP") {
@@ -532,7 +533,40 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
       }
     }
   }
+
+  bsUpdate() {
+    var expression: any = Array();
+    if (validateModal()) {
+      expression = makeExpression();
+    } else {
+      return false;
+    }
+    var bs_price_option = $("input[name=fav_BS]:checked").val();
+
+    if (bs_price_option == "between_bs" || bs_price_option == "lowest_price" || bs_price_option == "highest_price" || bs_price_option == "percentage_bs") {
+      this.bsUpdateSubmit["bs_update_type"] = 'bulk_bs_update_selling_price';
+      this.bsUpdateSubmit["expression_selected"] = expression;
+      this.bsUpdateSubmit["bs_update_option"] = bs_price_option;
+      this.sidebarService.btnBsUpdate.next(this.bsUpdateSubmit);
+
+    } else if (bs_price_option == 'equal_to_next_price') {
+      //btnNextPrice('equal_to_next_price');
+    } else if (bs_price_option == 'percent_next_price') {
+      if ($('#bs_np_percent_text').val() == '') {
+        alert("Next price percentage textbox is blank..");
+        $('#bs_np_percent_text').focus();
+        return false;
+      }
+      // btnNextPrice('percent_next_price');
+    }
+
+  }
+
+
+
+  bsViceVersaUpdate() { }
 }
+
 function columnMappings(allDebts: any) {
   var columnMappings = Array();
   columnMappings["Nieuwe Verkoopprijs (Niewe Vkpr per piece)"] = "selling_price,profit_percentage,profit_percentage_selling_price,discount_on_gross_price,percentage_increase";
@@ -645,3 +679,46 @@ function checkIfProductExistsInDebtor(product_id, current_group_name, debterProd
   });
   return group_name_product;
 }
+
+
+function validateModal() {
+  var bs_price_option = $("input[name=fav_BS]:checked").val();
+  var expression = Array();
+  if (!$("input[name=fav_BS]:checked").val()) {
+    alert("Please select BS option!!");
+    return false;
+  } else if (bs_price_option == "percentage_bs") {
+    if ($('#bs_percent_text').val() == '') {
+      alert("Percentage textbox is blank..");
+      $('#bs_percent_text').focus();
+      return false;
+    }
+
+  } else if (bs_price_option == "percent_next_price") {
+    if ($('#bs_np_percent_text').val() == '') {
+      alert("Percentage textbox is blank..");
+      $('#bs_np_percent_text').focus();
+      return false;
+    }
+
+  } else {
+    return true;
+  }
+
+}
+
+function makeExpression() {
+  var bs_price_option = $("input[name=fav_BS]:checked").val();
+  var expression = Array();
+  if (bs_price_option == "percentage_bs") {
+    expression[0] = $('#bs_percent_text').val();
+    expression[1] = $('#bs_percent_type').val();
+    expression[2] = $('#bs_percent_price_type').val();
+  } else if (bs_price_option == "percent_next_price") {
+    expression[0] = $('#bs_np_percent_text').val();
+    expression[1] = $('#bs_np_percent_type').val();
+    expression[2] = 'next_price';
+  }
+  return expression;
+}
+

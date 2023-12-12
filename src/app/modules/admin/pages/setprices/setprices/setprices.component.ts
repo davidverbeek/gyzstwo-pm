@@ -34,6 +34,7 @@ export class SetpricesComponent implements OnInit {
   updatedProducts: any = [];
   subcat: any;
   subbtnclicked: any;
+  subbtn_bs_clicked: any;
   chkAllCount: string;
   chkAllProducts: any;
   isChkAllChecked: number = 0;
@@ -499,7 +500,50 @@ export class SetpricesComponent implements OnInit {
       $(this).addClass('checked');
     }); */
 
+    this.subbtn_bs_clicked = this.sidebarService.btnBsUpdate.subscribe((bsOption) => {
+      var idsToUpdate = this.api.getSelectedNodes().map(function (node) {
+        return node.data.product_id;
+      });
 
+
+
+      var err = 0;
+      if (idsToUpdate.length == 0) {
+        alert("Please select record first!!");
+      } else {
+        if (this.isChkAllChecked == 0) {
+          var sellingPrices = Array();
+
+          this.api.forEachNode((rowNode) => {
+            if (idsToUpdate.indexOf(rowNode.data.product_id) >= 0) {
+              var updated = JSON.parse(JSON.stringify(rowNode.data));
+
+              //alert(bsOption['bs_update_option']);
+
+              /*  sellingPrices[key] = {
+                 "product_id": updated.product_id,
+                 "sku": updated.sku,
+                 "webshop_supplier_buying_price": value[column_index["webshop_supplier_buying_price"]],
+                 "webshop_supplier_gross_price": value[column_index["webshop_supplier_gross_price"]],
+                 "webshop_idealeverpakking": value[column_index["webshop_idealeverpakking"]],
+                 "webshop_afwijkenidealeverpakking": value[column_index["webshop_afwijkenidealeverpakking"]],
+                 "gyzs_selling_price": value[column_index["gyzs_selling_price"]],
+                 "buying_price": value[column_index["buying_price"]],
+                 "supplier_gross_price": value[column_index["supplier_gross_price"]],
+                 "idealeverpakking": value[column_index["idealeverpakking"]],
+                 "afwijkenidealeverpakking": value[column_index["afwijkenidealeverpakking"]],
+                 "bigshopper_highest_price": value[column_index["bigshopper_highest_price"]],
+                 "bigshopper_lowest_price": value[column_index["bigshopper_lowest_price"]],
+                 "selling_price": value[column_index["selling_price"]]
+               } */
+
+            }
+
+          });
+        }
+
+      }
+    });
 
   }
 
@@ -1100,6 +1144,10 @@ export class SetpricesComponent implements OnInit {
     });
     return group_name_product;
   }
+
+
+
+
 }
 
 function removeDuplicates(arr: any[]) {

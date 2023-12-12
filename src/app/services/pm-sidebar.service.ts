@@ -10,6 +10,8 @@ export class PmSidebarService {
 
   btnClicked = new Subject<any>();
   loadAgGrid = new Subject<any>();
+  btnBsUpdate = new Subject<any>();
+
 
   refreshSubject = new Subject<void>();
 

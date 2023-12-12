@@ -11,7 +11,7 @@
                 <h3 class="box-title"><i class="fa fa-fw fa-euro"></i> Set Prices</h3>
             </div>
 
-            <div class="panel panel-default" style="padding: 5px;;">
+            <div class="panel panel-default" style="padding: 5px;">
                 <div class="panel-heading">
                     <label class="radio-inline"><input type="radio" name="opsetprice"
                             (click)="selectedOption('SP')">SP</label>
@@ -45,41 +45,80 @@
                 </div>
             </div>
 
-            <!-- <div class="panel panel-default">
-                <div class="panel-heading">
-
+            <div class="panel panel-default">
+                <div class="panel-heading">Bulk Update Selling Price to B.S. Price</div>
+                <div class="panel-body">
                     <div class="radio">
-                        <label><input type="radio" name="opsetprice" checked value="highest_price"
-                                (click)="selectedOption('SP')">B.S (H.P)</label>
+                        <label><input type="radio" name="fav_BS" value="highest_price">B.S (H.P)</label>
                     </div>
                     <div class="radio">
-                        <label><input type="radio" name="opsetprice" value="lowest_price"
-                                (click)="selectedOption('SP')">B.S (L.P)</label>
+                        <label><input type="radio" name="fav_BS" value="lowest_price">B.S
+                            (L.P)</label>
                     </div>
-                    <div class="radio disabled">
-                        <label><input type="radio" name="opsetprice" disabled value="between_bs"
-                                (click)="selectedOption('SP')">Between LP and
+                    <div class="radio">
+                        <label><input type="radio" name="fav_BS" value="between_bs">Between LP and
                             HP</label>
                     </div>
-                    <div class="radio disabled">
-                        <label><input type="radio" name="opsetprice" disabled percentage_bs value="percentage_bs"
-                                (click)="selectedOption('SP')">Option
-                            3</label>
+                    <div class="radio">
+                        <label><input type="radio" name="fav_BS" value="percentage_bs">
+                            <div class="bs_expression">
+
+                                <div class="form-group">
+                                    <input type="number" class="form-control input-sm" id="bs_percent_text"
+                                        name="bs_percent_text" style="width: 100px;">
+                                    <label for="bs_percent_text">%</label>
+
+                                    <select class="form-control input-sm" id="bs_percent_type">
+                                        <option value="more">More</option>
+                                        <option value="less">Less</option>
+                                    </select>
+
+                                    <label for="bs_percent_price_type">than</label>
+                                    <select class="form-control input-sm" id="bs_percent_price_type">
+                                        <option value="bs_percent_lp">LP</option>
+                                        <option value="bs_percent_hp">HP</option>
+                                    </select>
+                                </div>
+
+
+                            </div>
+
+                        </label>
                     </div>
-                    <div class="radio disabled">
-                        <label><input type="radio" name="opsetprice" disabled value="equal_to_next_price"
-                                (click)="selectedOption('SP')">Next
+                    <div class="radio">
+                        <label><input type="radio" name="fav_BS" value="equal_to_next_price">Next
                             Price</label>
                     </div>
-                    <div class="radio disabled">
-                        <label><input type="radio" name="opsetprice" disabled value="percent_next_price"
-                                (click)="selectedOption('SP')">Option
-                            3</label>
+                    <div class="radio">
+                        <label><input type="radio" name="fav_BS" value="percent_next_price"
+                                (click)="selectedOption('SP')">
+                            <div class="form-group">
+                                <input type="number" class="form-control input-sm" id="bs_np_percent_text"
+                                    name="bs_np_percent_text" style="width: 100px;">
+                                <label for="bs_np_percent_text">%</label>
+
+                                <select class="form-control input-sm" id="bs_np_percent_type">
+                                    <option value="more">More</option>
+                                    <option value="less">Less</option>
+                                </select>
+
+                                <label for="bs_np_percent_type">than</label>
+                                Next Price
+                            </div>
+                        </label>
                     </div>
                 </div>
-                <div class="panel-body">Panel Content</div>
-            </div> -->
+                <div class="panel-footer">
+                    <button type="button" class="btn btn-primary add-bottom-pad" id="update-btn-ss"
+                        (click)="bsUpdate()">Update
+                        Selected</button>
+                    <button type="button" class="btn btn-success" id="updatevv-btn-ss"
+                        (click)="bsViceVersaUpdate()">Update
+                        UnSelected</button>
+                </div>
+            </div>
 
+            <input type="hidden" name="is_update_vice_versa" id="is_update_vice_versa" value='0' />
         </div>
     </div>
 
