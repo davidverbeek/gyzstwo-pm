@@ -7,7 +7,7 @@ import { environment } from 'src/environments/environment';
 import * as XLSX from 'xlsx'
 import { DatePipe } from '@angular/common';
 import { writeFile } from 'xlsx';
-import io from 'socket.io-client';
+//import io from 'socket.io-client';
 
 
 @Component({
@@ -31,6 +31,7 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
   debter_dd: any = [];
   debterAssignment: any = [];
   progress: number = 0;
+  uploadProgressId: any;
 
   uploadValidationMessage: any = "Import Xlsx Only";
 
@@ -50,11 +51,10 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
   }
 
   agInit(params: IToolPanelParams): void {
-    const socket = io(environment.nodeServerUrl);
+    /* const socket = io(environment.nodeServerUrl);
     socket.on("showUploadProgress", (res) => {
       this.progress = res;
-    });
-
+    }); */
   }
 
   textPlacehoder: string = "";
@@ -177,7 +177,8 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
           } else {
             debPrice = responseData["msg"][i][debSellingPriceCol];
           }
-          exportItem[idAlias[1]] = (debPrice == "" ? 0 : debPrice);
+          //exportItem[idAlias[1]] = (debPrice == "" ? 0 : debPrice);
+          exportItem[idAlias[1]] = debPrice;
           exportItem["Marge Inkpr % (" + idAlias[1] + ")"] = responseData["msg"][i][debMarginOnBuyingPriceCol];
           exportItem["Marge Verkpr % (" + idAlias[1] + ")"] = responseData["msg"][i][debMarginOnSellingPriceCol];
         }
@@ -194,17 +195,7 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
     });
   }
 
-  showProgress() {
-    this.http.get(environment.webservicebaseUrl + "/progress").subscribe(responseData => {
-      //this.progress = responseData.progress;
-      console.log(responseData);
-    });
-
-  }
-
   btnImportPrices(event: any) {
-
-
 
     // Get Debtor Assignment
     this.http.get(environment.webservicebaseUrl + "/all-debtor-product").subscribe(responseData => {
@@ -260,23 +251,79 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
         let maxXlsxColumns = this.xlsxPrices[0].length;
         let maxXlsxRows = this.xlsxPrices.length;
 
-        /* for (var xlsxRow = 0; xlsxRow < maxXlsxRows; xlsxRow++) {
-          for (var xlsxCol = 0; xlsxCol < maxXlsxColumns; xlsxCol++) {
+
+        var validate_buying_price = Object.keys(getXlsxCols).find(key => getXlsxCols[key] === "Inkoopprijs (Inkpr per piece)");
+        var validate_selling_price = Object.keys(getXlsxCols).find(key => getXlsxCols[key] === "Nieuwe Verkoopprijs (Niewe Vkpr per piece)");
+        var validate_margin_bp = Object.keys(getXlsxCols).find(key => getXlsxCols[key] === "Marge Inkpr %");
+        var validate_margin_sp = Object.keys(getXlsxCols).find(key => getXlsxCols[key] === "Marge Verkpr %");
+
+        if (typeof validate_buying_price != "undefined" || typeof validate_selling_price != "undefined" || typeof validate_margin_bp != "undefined" || typeof validate_margin_sp != "undefined") {
+          for (var xlsxRow = 0; xlsxRow < maxXlsxRows; xlsxRow++) {
+            //for (var xlsxCol = 0; xlsxCol < maxXlsxColumns; xlsxCol++) {
             if (xlsxRow == 0) {
               continue;
             }
-            if (this.xlsxPrices[xlsxRow][xlsxCol] == 0) {
-              this.uploadValidationMessage = "Row:" + (xlsxRow + 1) + " Column:" + (xlsxCol + 1) + " Value: 0";
+
+            if (this.xlsxPrices[xlsxRow][0] == 0) {
+              this.uploadValidationMessage = "Row:" + (xlsxRow + 1) + " Column:0 Value: 0";
               this.uploadMessage = "";
               return false;
             }
-            if (typeof this.xlsxPrices[xlsxRow][xlsxCol] == "undefined") {
-              this.uploadValidationMessage = "Row:" + (xlsxRow + 1) + " Column:" + (xlsxCol + 1) + " Value: Empty";
+
+            if (typeof validate_buying_price != "undefined" && this.xlsxPrices[xlsxRow][validate_buying_price] == 0) {
+              this.uploadValidationMessage = "Row:" + (xlsxRow + 1) + " Column:" + (parseInt(validate_buying_price) + 1) + " Value: 0";
               this.uploadMessage = "";
               return false;
             }
+
+            if (typeof validate_selling_price != "undefined" && this.xlsxPrices[xlsxRow][validate_selling_price] == 0) {
+              this.uploadValidationMessage = "Row:" + (xlsxRow + 1) + " Column:" + (parseInt(validate_selling_price) + 1) + " Value: 0";
+              this.uploadMessage = "";
+              return false;
+            }
+
+            if (typeof validate_margin_bp != "undefined" && this.xlsxPrices[xlsxRow][validate_margin_bp] == 0) {
+              this.uploadValidationMessage = "Row:" + (xlsxRow + 1) + " Column:" + (parseInt(validate_margin_bp) + 1) + " Value: 0";
+              this.uploadMessage = "";
+              return false;
+            }
+
+            if (typeof validate_margin_sp != "undefined" && this.xlsxPrices[xlsxRow][validate_margin_sp] == 0) {
+              this.uploadValidationMessage = "Row:" + (xlsxRow + 1) + " Column:" + (parseInt(validate_margin_sp) + 1) + " Value: 0";
+              this.uploadMessage = "";
+              return false;
+            }
+
+
+            if (typeof this.xlsxPrices[xlsxRow][0] == "undefined") {
+              this.uploadValidationMessage = "Row:" + (xlsxRow + 1) + " Column:0 Value: Empty";
+              this.uploadMessage = "";
+              return false;
+            }
+
+            if (typeof validate_buying_price != "undefined" && typeof this.xlsxPrices[xlsxRow][validate_buying_price] == "undefined") {
+              this.uploadValidationMessage = "Row:" + (xlsxRow + 1) + " Column:" + (parseInt(validate_buying_price) + 1) + " Value: Empty";
+              this.uploadMessage = "";
+              return false;
+            }
+            if (typeof validate_selling_price != "undefined" && typeof this.xlsxPrices[xlsxRow][validate_selling_price] == "undefined") {
+              this.uploadValidationMessage = "Row:" + (xlsxRow + 1) + " Column:" + (parseInt(validate_selling_price) + 1) + " Value: Empty";
+              this.uploadMessage = "";
+              return false;
+            }
+            if (typeof validate_margin_bp != "undefined" && typeof this.xlsxPrices[xlsxRow][validate_margin_bp] == "undefined") {
+              this.uploadValidationMessage = "Row:" + (xlsxRow + 1) + " Column:" + (parseInt(validate_margin_bp) + 1) + " Value: Empty";
+              this.uploadMessage = "";
+              return false;
+            }
+            if (typeof validate_margin_sp != "undefined" && typeof this.xlsxPrices[xlsxRow][validate_margin_sp] == "undefined") {
+              this.uploadValidationMessage = "Row:" + (xlsxRow + 1) + " Column:" + (parseInt(validate_margin_sp) + 1) + " Value: Empty";
+              this.uploadMessage = "";
+              return false;
+            }
+            //}
           }
-        } */
+        }
 
 
 
@@ -354,16 +401,23 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
             if (xlsxRow == 0) {
               continue;
             }
+            sku = this.xlsxPrices[xlsxRow][0]; //Artikelnummer (Artikel) will always be on 0 th column
+            if (!(sku in allExistingPmData)) {
+              this.uploadValidationMessage = "Row:" + (xlsxRow + 1) + " Sku does not exist";
+              this.uploadMessage = "";
+              this.uploadSpinner = false;
+              return false;
+            }
+
             var eachItem = {};
             var eachHistoryItem = {};
             for (var xlsxCol = 0; xlsxCol < maxXlsxColumns; xlsxCol++) {
 
+
               if (this.xlsxPrices[0][xlsxCol] == "Artikelnummer (Artikel)") {
                 //console.log(xlsxRow + "===" + this.xlsxPrices[0][xlsxCol]);
-                eachItem["sku"] = this.xlsxPrices[xlsxRow][xlsxCol];
                 sku = this.xlsxPrices[xlsxRow][xlsxCol];
-
-
+                eachItem["sku"] = this.xlsxPrices[xlsxRow][xlsxCol];
                 var bp = allExistingPmData[sku]["buying_price"];
                 var sp = allExistingPmData[sku]["selling_price"];
                 var pp = allExistingPmData[sku]["profit_percentage"];
@@ -428,11 +482,15 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
                 eachItem["discount_on_gross_price"] = ((1 - (sp / gup)) * 100).toFixed(4);
                 eachItem["percentage_increase"] = (((sp - wsp) / wsp) * 100).toFixed(4);
               } else {
+
+                // cell is blank -- then magentoid will be 0 and cell values will be 0
+                // cell is 0 -- then magentoid will be added and cell values will be 0
+
                 var tempGroupName = colAlias[this.xlsxPrices[0][xlsxCol]].split("|||");
                 //console.log(groupName[1]);
                 var groupName = tempGroupName[0];
                 var magentoID = allExistingPmData[sku]["group_" + groupName + "_magento_id"];
-                if ((magentoID === null || magentoID == 0 || magentoID == "") && typeof this.xlsxPrices[xlsxRow][xlsxCol] == "undefined") {
+                if ((magentoID === null || magentoID == 0 || magentoID == "") && (typeof this.xlsxPrices[xlsxRow][xlsxCol] == "undefined" || this.xlsxPrices[xlsxRow][xlsxCol] == "")) {
                   eachItem["group_" + groupName + "_magento_id"] = null;
                   eachItem["group_" + groupName + "_debter_selling_price"] = null;
                   eachItem["group_" + groupName + "_margin_on_buying_price"] = null;
@@ -457,7 +515,7 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
                   //console.log(allExistingPmData[sku]["product_id"]);
                   //console.log(productExistInDebtor);
                   if (!productExistInDebtor) {
-                    debsp = allExistingPmData[sku]["group_" + groupName + "_debter_selling_price"];
+                    debsp = parseFloat(allExistingPmData[sku]["group_" + groupName + "_debter_selling_price"]);
                   } else if (typeof this.xlsxPrices[xlsxRow][xlsxCol] == "undefined") {
                     var debtorMarginOnBp = allExistingPmData[sku]["group_" + groupName + "_margin_on_buying_price"];
                     var increasedAmount = ((bp * debtorMarginOnBp) / 100).toFixed(4);
@@ -486,41 +544,45 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
               historyBP = allExistingPmData[eachItem["sku"]]["buying_price"];
             }
 
-            if ((historyBP != allExistingPmData[eachItem["sku"]]["buying_price"]) || (eachItem["selling_price"] != allExistingPmData[eachItem["sku"]]["selling_price"])) {
+            if (typeof eachItem["selling_price"] != "undefined") { // eachItem["selling_price"] == "undefined" will happen only in case if the xlsx file has only debtors, for all the other cases the selling price will be upadated
 
-              var fieldsChanged = Array();
-              var bpChanged = 0;
+              if ((historyBP != allExistingPmData[eachItem["sku"]]["buying_price"]) || (eachItem["selling_price"] != allExistingPmData[eachItem["sku"]]["selling_price"])) {
 
-              if (historyBP != allExistingPmData[eachItem["sku"]]["buying_price"]) {
-                fieldsChanged.push('new_buying_price');
-                bpChanged = 1;
+                var fieldsChanged = Array();
+                var bpChanged = 0;
+
+                if (historyBP != allExistingPmData[eachItem["sku"]]["buying_price"]) {
+                  fieldsChanged.push('new_buying_price');
+                  bpChanged = 1;
+                }
+
+                if (eachItem["selling_price"] != allExistingPmData[eachItem["sku"]]["selling_price"]) {
+                  fieldsChanged.push('new_selling_price');
+                }
+
+                var pId = allExistingPmData[eachItem["sku"]]["product_id"];
+                eachHistoryItem["product_id"] = pId;
+                eachHistoryItem["old_net_unit_price"] = allExistingPmData[eachItem["sku"]]["webshop_net_unit_price"];
+                eachHistoryItem["old_gross_unit_price"] = allExistingPmData[eachItem["sku"]]["webshop_gross_unit_price"];
+                eachHistoryItem["old_idealeverpakking"] = allExistingPmData[eachItem["sku"]]["webshop_idealeverpakking"];
+                eachHistoryItem["old_afwijkenidealeverpakking"] = allExistingPmData[eachItem["sku"]]["webshop_afwijkenidealeverpakking"];
+                eachHistoryItem["old_buying_price"] = allExistingPmData[eachItem["sku"]]["webshop_buying_price"];
+                eachHistoryItem["old_selling_price"] = allExistingPmData[eachItem["sku"]]["webshop_selling_price"];
+                eachHistoryItem["new_net_unit_price"] = historyBP;
+                eachHistoryItem["new_gross_unit_price"] = allExistingPmData[eachItem["sku"]]["gross_unit_price"];
+                eachHistoryItem["new_idealeverpakking"] = allExistingPmData[eachItem["sku"]]["idealeverpakking"];
+                eachHistoryItem["new_afwijkenidealeverpakking"] = allExistingPmData[eachItem["sku"]]["afwijkenidealeverpakking"];
+                eachHistoryItem["new_buying_price"] = historyBP;
+                eachHistoryItem["new_selling_price"] = eachItem["selling_price"];
+                eachHistoryItem["updated_date_time"] = this.currentDateTime;
+                eachHistoryItem["updated_by"] = "Price Management";
+                eachHistoryItem["is_viewed"] = "No";
+                eachHistoryItem["fields_changed"] = JSON.stringify(fieldsChanged);
+                eachHistoryItem["buying_price_changed"] = bpChanged;
+                processHistoryData[xlsxRow] = eachHistoryItem;
               }
-
-              if (eachItem["selling_price"] != allExistingPmData[eachItem["sku"]]["selling_price"]) {
-                fieldsChanged.push('new_selling_price');
-              }
-
-              var pId = allExistingPmData[eachItem["sku"]]["product_id"];
-              eachHistoryItem["product_id"] = pId;
-              eachHistoryItem["old_net_unit_price"] = allExistingPmData[eachItem["sku"]]["webshop_net_unit_price"];
-              eachHistoryItem["old_gross_unit_price"] = allExistingPmData[eachItem["sku"]]["webshop_gross_unit_price"];
-              eachHistoryItem["old_idealeverpakking"] = allExistingPmData[eachItem["sku"]]["webshop_idealeverpakking"];
-              eachHistoryItem["old_afwijkenidealeverpakking"] = allExistingPmData[eachItem["sku"]]["webshop_afwijkenidealeverpakking"];
-              eachHistoryItem["old_buying_price"] = allExistingPmData[eachItem["sku"]]["webshop_buying_price"];
-              eachHistoryItem["old_selling_price"] = allExistingPmData[eachItem["sku"]]["webshop_selling_price"];
-              eachHistoryItem["new_net_unit_price"] = historyBP;
-              eachHistoryItem["new_gross_unit_price"] = allExistingPmData[eachItem["sku"]]["gross_unit_price"];
-              eachHistoryItem["new_idealeverpakking"] = allExistingPmData[eachItem["sku"]]["idealeverpakking"];
-              eachHistoryItem["new_afwijkenidealeverpakking"] = allExistingPmData[eachItem["sku"]]["afwijkenidealeverpakking"];
-              eachHistoryItem["new_buying_price"] = historyBP;
-              eachHistoryItem["new_selling_price"] = eachItem["selling_price"];
-              eachHistoryItem["updated_date_time"] = this.currentDateTime;
-              eachHistoryItem["updated_by"] = "Price Management";
-              eachHistoryItem["is_viewed"] = "No";
-              eachHistoryItem["fields_changed"] = JSON.stringify(fieldsChanged);
-              eachHistoryItem["buying_price_changed"] = bpChanged;
-              processHistoryData[xlsxRow] = eachHistoryItem;
             }
+
           }
 
           if (processXlsxData.length > 0) {
@@ -542,6 +604,21 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
             uploadRequestData["1"] = filterProcessData;
             uploadRequestData["2"] = queryFoot.toString();
             uploadRequestData["3"] = filterProcessHistoryData;
+
+            this.uploadProgressId = setInterval(() => {
+              this.http.get(environment.agserverUrl + '/progress.txt?q=' + Math.random() + '', { responseType: 'json' }).subscribe((data) => {
+                if (typeof data["cnt"] != "undefined") {
+                  if (this.progress == 0 && data["cnt"] == 100) {
+                    this.progress = 0;
+                  } else {
+                    this.progress = data["cnt"];
+                  }
+                }
+                //if(this.progress == 101) {
+                // clearInterval(this.uploadProgressId);
+                // }
+              });
+            }, 1000);
 
             this.http.post(environment.webservicebaseUrl + "/upload-products", uploadRequestData).subscribe(responseData => {
               this.uploadMessage = responseData["msg"];

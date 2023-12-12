@@ -11,7 +11,8 @@ export const environment = {
   roasUrl: "http://localsymfony.com/nodewsrevenue/get_roas.php",
   roasCalUrl: "http://localsymfony.com/nodewsrevenue/debug_roas.php",
   nodebasePath: "http://agws.com",
-  nodeServerUrl: "http://localhost:3200"
+  nodeServerUrl: "http://localhost:3200",
+  agserverUrl: "http://localsymfony.com"
 };
 
 /*
