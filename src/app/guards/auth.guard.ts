@@ -23,22 +23,22 @@ export class AuthGuard implements CanActivate {
         let currentUrl = (state.url).split("/");
         this.userPageAccess = this.authUserDetails["page_access"].split(",");
 
-                if ((this.userPageAccess).includes(currentUrl[2])) {
-                    if (localStorage.getItem("debtorCols") == null) {
-                        this.loaddebtorsService.setDebtorColumns();
-                        this.loaddebtorsService.setDebtorProds();
+        if ((this.userPageAccess).includes(currentUrl[2])) {
+          if (localStorage.getItem("debtorCols") == null) {
+            this.loaddebtorsService.setDebtorColumns();
+            //this.loaddebtorsService.setDebtorProds();
 
-                    }
-                    return true;
-                } else {
-                    this.router.navigate(["/admin/dashboard"]);
-                    return false;
-                }
-            },
-            error => {
-                window.location.href = "" + environment.agbaseUrl + "";
-            }
-        )
-        return true;
-    }
+          }
+          return true;
+        } else {
+          this.router.navigate(["/admin/dashboard"]);
+          return false;
+        }
+      },
+      error => {
+        window.location.href = "" + environment.agbaseUrl + "";
+      }
+    )
+    return true;
+  }
 }

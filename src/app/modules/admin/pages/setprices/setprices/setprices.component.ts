@@ -411,15 +411,16 @@ export class SetpricesComponent implements OnInit {
 
             this.api.forEachNode((rowNode) => {
               if (idsToUpdate.indexOf(rowNode.data.product_id) >= 0) {
-                var updated = JSON.parse(JSON.stringify(rowNode.data));
 
-                // console.log(priceType);
                 if (priceType["customer_group_selected"] != '') {
-                  if (checkProductAssignment(priceType["customer_group_selected"], updated.product_id)) {
+                  let deb_grp = priceType["customer_group_selected"].split('|||');
+
+                  if (!this.checkIfDebterProduct(rowNode.data.product_id, "debgrp_" + deb_grp[0] + "")) {
                     return;
                   }
                 }
 
+                var updated = JSON.parse(JSON.stringify(rowNode.data));
 
                 if (priceType["update_type"] == "update") {
                   this.undo_swap_rowdata[rowNode.data.product_id] = updated;
@@ -444,7 +445,6 @@ export class SetpricesComponent implements OnInit {
 
                   this.formProductData(updated, priceType);
                 }
-
               }
             });
           } else if (this.isChkAllChecked == 1) {
@@ -453,10 +453,11 @@ export class SetpricesComponent implements OnInit {
               this.chkAllProducts["msg"].forEach(
                 (value, key) => {
                   if (priceType["customer_group_selected"] != '') {
-                    if (checkProductAssignment(priceType["customer_group_selected"], value.product_id)) {
+                    let deb_grp = priceType["customer_group_selected"].split('|||');
+
+                    if (!this.checkIfDebterProduct(value.product_id, "debgrp_" + deb_grp[0] + "")) {
                       return;
                     }
-
                   }
 
                   if (priceType["update_type"] == "update") {
@@ -1065,11 +1066,7 @@ export class SetpricesComponent implements OnInit {
     var columnToolPanel = this.api.getToolPanelInstance('columns');
     columnToolPanel.setColumnLayout(this.customToolPanelColumnDefs);
 
-
-
   }
-
-
 
   toggleCheckbox(new_status) {
     $('a>i.sim-tree-checkbox').each(function (index) {
@@ -1226,20 +1223,5 @@ function processUpdatedProduct(productData) {
   }
 
   return productData;
-}
-
-function checkProductAssignment(debter_selected, product_id) {
-  let number_magento_id = debter_selected.split('|||');
-  let selected_debtor_number = number_magento_id[0];
-  let assigned_products = localStorage.getItem(selected_debtor_number);
-  let assigned_products_arr = assigned_products?.split(',');
-
-  if (!assigned_products_arr?.includes(String(product_id))) {
-    console.log('not assigned');
-    return true;
-  } else {
-    return false;
-  }
-
 }
 

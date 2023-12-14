@@ -610,9 +610,9 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
                     this.progress = data["cnt"];
                   }
                 }
-                //if(this.progress == 101) {
-                // clearInterval(this.uploadProgressId);
-                // }
+                if (this.progress == 100) {
+                  clearInterval(this.uploadProgressId);
+                }
               });
             }, 1000);
 
