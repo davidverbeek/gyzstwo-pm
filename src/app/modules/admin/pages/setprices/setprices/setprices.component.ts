@@ -623,6 +623,44 @@ export class SetpricesComponent implements OnInit {
     if (priceType["customer_group_selected"] != "") {
       let selCgData = (priceType["customer_group_selected"]).split("|||");
 
+      if (priceType["update_type"] == "update") {
+        if (priceType["type"] == "selling_price") {
+          debField = "group_" + selCgData[0] + "_debter_selling_price";
+          new_selling_price = (1 + (priceType["val"] / 100)) * prodData[debField];
+        } else if (priceType["type"] == "profit_percentage") {
+          debField = "group_" + selCgData[0] + "_margin_on_buying_price";
+        } else if (priceType["type"] == "profit_percentage_selling_price") {
+          debField = "group_" + selCgData[0] + "_margin_on_selling_price";
+        } else if (priceType["type"] == "discount_on_gross_price") {
+          debField = "group_" + selCgData[0] + "_discount_on_grossprice_b_on_deb_selling_price";
+        }
+      } else {//undo
+        if (priceType["type"] == "selling_price") {
+          debField = "group_" + selCgData[0] + "_debter_selling_price";
+          new_selling_price = prodData[debField];
+        } else if (priceType["type"] == "profit_percentage") {
+          debField = "group_" + selCgData[0] + "_margin_on_buying_price";
+          new_profit_percentage = prodData[debField];
+        } else if (priceType["type"] == "profit_percentage_selling_price") {
+          debField = "group_" + selCgData[0] + "_margin_on_selling_price";
+          new_profit_percentage_selling_price = prodData[debField];
+        } else if (priceType["type"] == "discount_on_gross_price") {
+          debField = "group_" + selCgData[0] + "_discount_on_grossprice_b_on_deb_selling_price";
+          new_discount_on_gross_price = prodData[debField];
+        }
+
+      }
+
+
+      prepareProductData["field"] = debField;
+      prepareProductData["debtor"] = selCgData[0];
+      prepareProductData["debtor_id"] = selCgData[1];
+      prepareProductData["group_" + selCgData[0] + "_debter_selling_price"] = new_selling_price;
+      prepareProductData["group_" + selCgData[0] + "_margin_on_buying_price"] = new_profit_percentage;
+      prepareProductData["group_" + selCgData[0] + "_margin_on_selling_price"] = new_profit_percentage_selling_price;
+      prepareProductData["group_" + selCgData[0] + "_discount_on_grossprice_b_on_deb_selling_price"] = new_discount_on_gross_price;
+    } else if (priceType["customer_group_selected"] != "") {
+      let selCgData = (priceType["customer_group_selected"]).split("|||");
       if (priceType["type"] == "selling_price") {
         debField = "group_" + selCgData[0] + "_debter_selling_price";
         new_selling_price = (1 + (priceType["val"] / 100)) * prodData[debField];
@@ -633,13 +671,6 @@ export class SetpricesComponent implements OnInit {
       } else if (priceType["type"] == "discount_on_gross_price") {
         debField = "group_" + selCgData[0] + "_discount_on_grossprice_b_on_deb_selling_price";
       }
-      prepareProductData["field"] = debField;
-      prepareProductData["debtor"] = selCgData[0];
-      prepareProductData["debtor_id"] = selCgData[1];
-      prepareProductData["group_" + selCgData[0] + "_debter_selling_price"] = new_selling_price;
-      prepareProductData["group_" + selCgData[0] + "_margin_on_buying_price"] = new_profit_percentage;
-      prepareProductData["group_" + selCgData[0] + "_margin_on_selling_price"] = new_profit_percentage_selling_price;
-      prepareProductData["group_" + selCgData[0] + "_discount_on_grossprice_b_on_deb_selling_price"] = new_discount_on_gross_price;
     }
     this.createProductData(prepareProductData);
   }
