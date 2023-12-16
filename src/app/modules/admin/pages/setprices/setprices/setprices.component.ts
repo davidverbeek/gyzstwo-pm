@@ -848,8 +848,8 @@ export class SetpricesComponent implements OnInit {
   }
 
   onCellEditingStopped(event: CellEditingStoppedEvent) {
-    const columnName_1 = event.column.getColId();
-    if (isNaN(Number(event.newValue)) || event.newValue == '') {
+    if (isNaN(Number(event.newValue)) || !(event.newValue.trim())) {
+      const columnName_1 = event.column.getColId();
       alert('Please enter numeric value');
       event.node.setDataValue(columnName_1, event.oldValue);
       return false;
