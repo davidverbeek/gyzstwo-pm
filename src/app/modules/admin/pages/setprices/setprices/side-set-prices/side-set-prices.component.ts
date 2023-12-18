@@ -603,7 +603,7 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
 
             this.uploadProgressId = setInterval(() => {
               this.http.get(environment.agserverUrl + '/progress.txt?q=' + Math.random() + '', { responseType: 'json' }).subscribe((data) => {
-                if (typeof data["cnt"] != "undefined") {
+                if (data) {
                   if (this.progress == 0 && data["cnt"] == 100) {
                     this.progress = 0;
                   } else {
