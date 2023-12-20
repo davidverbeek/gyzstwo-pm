@@ -728,10 +728,9 @@ function checkIfProductExistsInDebtor(product_id, current_group_name, debterProd
   var column_name_seperated = column_name.split('_');
   debterProducts.forEach((value, key) => {
     if (column_name_seperated[1] in value) {
-      const x = value;
       var debter_name_product_ids = value[column_name_seperated[1]];
-
-      if (debter_name_product_ids.indexOf(product_id) !== -1) {
+      var split_debtors = debter_name_product_ids.split(",");
+      if (split_debtors.indexOf(String(product_id)) !== -1) {
         group_name_product = true;
       }
     }

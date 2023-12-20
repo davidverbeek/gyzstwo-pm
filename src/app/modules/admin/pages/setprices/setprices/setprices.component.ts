@@ -239,26 +239,11 @@ export class SetpricesComponent implements OnInit {
         let definition: ColDef = {
           headerName: value["group_alias"], field: value["customer_group_name"], sortable: true, filter: 'number',
           editable: (params) => {
-
-            var group_name_product = false;
-            var column_name: string = value["customer_group_name"];
-            var column_name_seperated = column_name.split('_');
-            this.debterProds.forEach((value, key) => {
-              if (column_name_seperated[1] in value) {
-                const x = value;
-                var debter_name_product_ids = value[column_name_seperated[1]];
-                if (debter_name_product_ids.indexOf(params.data.product_id) !== -1) {
-                  group_name_product = true;
-                }
-              }
-
-            });
-            return group_name_product;
+            return this.checkIfDebterProduct(params.data.product_id, value["customer_group_name"]);
           }, hide: true,
           cellStyle: params => {
             var status_of_debter_product = this.checkIfDebterProduct(params.data.product_id, value["customer_group_name"]);
             if (status_of_debter_product) {
-              //mark police cells as red
               return { backgroundColor: debcellbg_color };
             } else {
               return { backgroundColor: "#808080" };//grey
@@ -1114,9 +1099,9 @@ export class SetpricesComponent implements OnInit {
     var column_name_seperated = column_name.split('_');
     this.debterProds.forEach((value, key) => {
       if (column_name_seperated[1] in value) {
-        const x = value;
         var debter_name_product_ids = value[column_name_seperated[1]];
-        if (debter_name_product_ids.indexOf(product_id) !== -1) {
+        var split_debtors = debter_name_product_ids.split(",");
+        if (split_debtors.indexOf(String(product_id)) !== -1) {
           group_name_product = true;
         }
       }
