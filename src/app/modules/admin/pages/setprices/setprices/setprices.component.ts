@@ -30,6 +30,7 @@ export class SetpricesComponent implements OnInit {
   gridParams: any;
   columnApi: any;
   cats: String = "";
+  flag_of_cat_change: Number = 0;
   categoryChanged: String = "0";
   updatedProducts: any = [];
   subcat: any;
@@ -361,7 +362,9 @@ export class SetpricesComponent implements OnInit {
 
   ngOnInit() {
     this.subcat = this.categoryService.categorySelected.subscribe((allselectedcats) => {
-      this.cats = allselectedcats;
+      // this.cats = allselectedcats;
+      this.cats = allselectedcats['hdn_selectedcats'];
+      this.flag_of_cat_change = allselectedcats['flag'];
       this.updatedProducts = [];
       this.loadAGGrid();
     });
@@ -744,12 +747,36 @@ export class SetpricesComponent implements OnInit {
   }
 
   loadAGGrid() {
-    var cat_all_str = this.cats;
-    if ($('.show_deb_cols').find("input[type='checkbox']").is(':checked') && cat_all_str != '' && cat_all_str != '-1') {//means this is a group list
-      if (!$('#flexCheckDefault').is(':checked')) {
-        cat_all_str = '-1';
+    let selected_categories: String = '-1';
+    var is_debter_checked = 0;
+    $('.show_cols_dmbp, .show_cols_dmsp, .show_cols_ddgp, .show_cols_dsp').each(function (index) {
+      if ($(this).is(':checked') && is_debter_checked == 0) {
+        is_debter_checked = 1;
       }
+    });
+    if (this.flag_of_cat_change == 0) {
+      if ($('a>i.sim-tree-checkbox').hasClass('checked')) {
+        let updated_cats = new Array();
+        //let collect_category_ids = new Array();
+        $.each($('.sim-tree-checkbox'), function (index, value) {
+          if ($(this).hasClass('checked')) {
+            updated_cats.push($(this).parent('a').parent('li').attr('data-id'));
+          }
+        });
+        selected_categories = updated_cats.toString();
+      }
+    } else if (is_debter_checked == 1) {
+      selected_categories = this.cats;
+    } else {//this is loading case
+      selected_categories = this.cats;
     }
+
+    var cat_all_str = selected_categories;
+    /*  if ($('.show_deb_cols').find("input[type='checkbox']").is(':checked') && cat_all_str != '' && cat_all_str != '-1') {//means this is a group list
+       if (!$('#flexCheckDefault').is(':checked')) {
+         cat_all_str = '-1';
+       }
+     } */
     var datasource = createServerSideDatasource(this.gridParams, cat_all_str);
     this.api.setServerSideDatasource(datasource);
     this.fillHandleDirection = 'y';
@@ -759,41 +786,49 @@ export class SetpricesComponent implements OnInit {
 
 
   onCellValueChanged(event: CellValueChangedEvent) {
-    var prepareProductData = [];
-    var checkforDebtor: any = [];
-    prepareProductData["field"] = event.colDef.field;
-    prepareProductData["product_id"] = event.data.product_id;
-    prepareProductData["buying_price"] = event.data.buying_price;
-    prepareProductData["selling_price"] = event.data.selling_price;
-    prepareProductData["profit_percentage"] = event.data.profit_percentage;
-    prepareProductData["profit_percentage_selling_price"] = event.data.profit_percentage_selling_price;
-    prepareProductData["discount_on_gross_price"] = event.data.discount_on_gross_price;
-    prepareProductData["percentage_increase"] = event.data.percentage_increase;
-    prepareProductData["gross_unit_price"] = event.data.gross_unit_price;
+    const newValue = event.newValue;
+    if (isNaN(Number(event.newValue)) || (typeof newValue === 'string' && !(newValue.trim()))) {
+      const columnName_1 = event.column.getColId();
+      alert('Please enter numeric value');
+      event.node.setDataValue(columnName_1, event.oldValue);
+      //return false;
+    } else {
+      var prepareProductData = [];
+      var checkforDebtor: any = [];
+      prepareProductData["field"] = event.colDef.field;
+      prepareProductData["product_id"] = event.data.product_id;
+      prepareProductData["buying_price"] = event.data.buying_price;
+      prepareProductData["selling_price"] = event.data.selling_price;
+      prepareProductData["profit_percentage"] = event.data.profit_percentage;
+      prepareProductData["profit_percentage_selling_price"] = event.data.profit_percentage_selling_price;
+      prepareProductData["discount_on_gross_price"] = event.data.discount_on_gross_price;
+      prepareProductData["percentage_increase"] = event.data.percentage_increase;
+      prepareProductData["gross_unit_price"] = event.data.gross_unit_price;
 
-    /* For History */
-    prepareProductData["idealeverpakking"] = event.data.idealeverpakking;
-    prepareProductData["afwijkenidealeverpakking"] = event.data.afwijkenidealeverpakking;
+      /* For History */
+      prepareProductData["idealeverpakking"] = event.data.idealeverpakking;
+      prepareProductData["afwijkenidealeverpakking"] = event.data.afwijkenidealeverpakking;
 
-    prepareProductData["webshop_net_unit_price"] = event.data.webshop_net_unit_price;
-    prepareProductData["webshop_gross_unit_price"] = event.data.webshop_gross_unit_price;
-    prepareProductData["webshop_idealeverpakking"] = event.data.webshop_idealeverpakking;
-    prepareProductData["webshop_afwijkenidealeverpakking"] = event.data.webshop_afwijkenidealeverpakking;
-    prepareProductData["webshop_buying_price"] = event.data.webshop_buying_price;
-    prepareProductData["webshop_selling_price"] = event.data.webshop_selling_price;
+      prepareProductData["webshop_net_unit_price"] = event.data.webshop_net_unit_price;
+      prepareProductData["webshop_gross_unit_price"] = event.data.webshop_gross_unit_price;
+      prepareProductData["webshop_idealeverpakking"] = event.data.webshop_idealeverpakking;
+      prepareProductData["webshop_afwijkenidealeverpakking"] = event.data.webshop_afwijkenidealeverpakking;
+      prepareProductData["webshop_buying_price"] = event.data.webshop_buying_price;
+      prepareProductData["webshop_selling_price"] = event.data.webshop_selling_price;
 
-    checkforDebtor = (event.colDef.field)?.split("_");
-    if (checkforDebtor[0] == "group") {
-      prepareProductData["debtor"] = checkforDebtor[1];
-      let debData = (this.all_debtors[checkforDebtor[1]]).split("|||");
-      prepareProductData["debtor_id"] = debData[0];
-      prepareProductData["group_" + checkforDebtor[1] + "_debter_selling_price"] = event.data["group_" + checkforDebtor[1] + "_debter_selling_price"];
-      prepareProductData["group_" + checkforDebtor[1] + "_margin_on_buying_price"] = event.data["group_" + checkforDebtor[1] + "_margin_on_buying_price"];
-      prepareProductData["group_" + checkforDebtor[1] + "_margin_on_selling_price"] = event.data["group_" + checkforDebtor[1] + "_margin_on_selling_price"];
-      prepareProductData["group_" + checkforDebtor[1] + "_discount_on_grossprice_b_on_deb_selling_price"] = event.data["group_" + checkforDebtor[1] + "_discount_on_grossprice_b_on_deb_selling_price"];
+      checkforDebtor = (event.colDef.field)?.split("_");
+      if (checkforDebtor[0] == "group") {
+        prepareProductData["debtor"] = checkforDebtor[1];
+        let debData = (this.all_debtors[checkforDebtor[1]]).split("|||");
+        prepareProductData["debtor_id"] = debData[0];
+        prepareProductData["group_" + checkforDebtor[1] + "_debter_selling_price"] = event.data["group_" + checkforDebtor[1] + "_debter_selling_price"];
+        prepareProductData["group_" + checkforDebtor[1] + "_margin_on_buying_price"] = event.data["group_" + checkforDebtor[1] + "_margin_on_buying_price"];
+        prepareProductData["group_" + checkforDebtor[1] + "_margin_on_selling_price"] = event.data["group_" + checkforDebtor[1] + "_margin_on_selling_price"];
+        prepareProductData["group_" + checkforDebtor[1] + "_discount_on_grossprice_b_on_deb_selling_price"] = event.data["group_" + checkforDebtor[1] + "_discount_on_grossprice_b_on_deb_selling_price"];
+      }
+      this.createProductData(prepareProductData);
+      //console.log(event.colDef.field);
     }
-    this.createProductData(prepareProductData);
-    //console.log(event.colDef.field);
   }
 
   onPaginationChanged(event: PaginationChangedEvent) {
@@ -848,12 +883,12 @@ export class SetpricesComponent implements OnInit {
   }
 
   onCellEditingStopped(event: CellEditingStoppedEvent) {
-    if (isNaN(Number(event.newValue)) || !(event.newValue.trim())) {
-      const columnName_1 = event.column.getColId();
-      alert('Please enter numeric value');
-      event.node.setDataValue(columnName_1, event.oldValue);
-      return false;
-    }
+    /*  if (isNaN(Number(event.newValue)) || !(event.newValue.trim())) {
+       const columnName_1 = event.column.getColId();
+       alert('Please enter numeric value');
+       event.node.setDataValue(columnName_1, event.oldValue);
+       return false;
+     } */
 
 
     //console.log(this.updatedProducts);
@@ -890,7 +925,11 @@ export class SetpricesComponent implements OnInit {
     e.columns.forEach(column => {
       if (column.colDef.toolPanelClass != undefined) {
         if (column.visible) {
-          $("label[for='btnDebCategories']").parent('div').css('display', 'inline');
+          if ($("label[for='btnDebCategories']").parent('div').css('display') != 'inline') {
+            $("label[for='btnDebCategories']").parent('div').css('display', 'inline');
+          }
+          $("#btnDebCategories").css("opacity", 1);
+          $('#btnDebCategories').removeAttr('disabled');
         } else {
           if ($('div.show_deb_cols .ag-column-select-checkbox .ag-checkbox-input-wrapper input:checked').length === 0) {
             $("label[for='btnDebCategories']").parent('div').css('display', 'none');
@@ -899,6 +938,8 @@ export class SetpricesComponent implements OnInit {
             if ($("label[for='btnDebCategories']").parent('div').css('display') != 'inline') {
               $("label[for='btnDebCategories']").parent('div').css('display', 'inline');
             }
+            $("#btnDebCategories").css("opacity", 1);
+            $('#btnDebCategories').removeAttr('disabled');
           }
         }
       }
@@ -976,12 +1017,10 @@ export class SetpricesComponent implements OnInit {
             this.updatedProducts = [];
             this.saveRow(finalPdata);
             this.updatePriceCompleted = false;
-
           } else if (this.isChkAllChecked == 1) {
             this.chkAllCount = "(" + (this.chkAllProducts["msg"]).length + " Products Updated Successfully)";
             this.updatedProducts = [];
             this.loadAGGrid();
-
             this.updatePriceCompleted = false;
           }
         }
@@ -1055,7 +1094,7 @@ export class SetpricesComponent implements OnInit {
         }))
         .subscribe(
           responseData => {
-            $("#btnDebCategories").css("opacity", 0.5);
+            //$("#btnDebCategories").css("opacity", 0.5);
             $("#btnDebCategories").find('span.loading-img-update').css({ "display": "inline-block" });
             $("#btnDebCategories").attr('disabled', 'disabled');
 
@@ -1075,10 +1114,8 @@ export class SetpricesComponent implements OnInit {
               $("i.sim-tree-checkbox").parent('a').parent('li').addClass('disabled');
               $("#flexCheckDefault").attr("disabled", "true");
             }
-            $("#btnDebCategories").css("opacity", 1);
+            $("#btnDebCategories").css("opacity", 0.5);
             $("#btnDebCategories").find('span.loading-img-update').css({ "display": "none" });
-            $('#btnDebCategories').removeAttr('disabled');
-
 
             this.cats = debter_cats;
             this.loadAGGrid();
