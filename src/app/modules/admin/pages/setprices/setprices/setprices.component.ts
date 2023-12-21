@@ -933,7 +933,7 @@ export class SetpricesComponent implements OnInit {
         } else {
           if ($('div.show_deb_cols .ag-column-select-checkbox .ag-checkbox-input-wrapper input:checked').length === 0) {
             $("label[for='btnDebCategories']").parent('div').css('display', 'none');
-            $("#btnDebCategories").trigger("click");
+            this.onApplyDebterCategories();
           } else {
             if ($("label[for='btnDebCategories']").parent('div').css('display') != 'inline') {
               $("label[for='btnDebCategories']").parent('div').css('display', 'inline');
@@ -1077,7 +1077,8 @@ export class SetpricesComponent implements OnInit {
       checkIt(true);
       $("i.sim-tree-checkbox").parent('a').parent('li').removeClass('disabled');
       $("#flexCheckDefault").removeAttr("disabled");
-      $('#btnloadcats').trigger('click');
+      this.cats = '';
+      this.loadAGGrid();
     } else {
       this.http.post(environment.webservicebaseUrl + "/dbt-alias-cats", toObject)
         .pipe(map(responseData => {
