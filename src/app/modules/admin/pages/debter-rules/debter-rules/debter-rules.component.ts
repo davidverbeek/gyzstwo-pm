@@ -112,8 +112,8 @@ export class DebterRulesComponent implements OnInit {
             deb_columns_new = JSON.parse(debColString || '{}');
             for (const [key, value] of Object.entries(deb_columns_new)) {
               let part: string = value;
-              var magento_id = part.substring(0, 2);
-              if (magento_id == selected_group) {
+              const resultArray: string[] = part.split('|||');
+              if (resultArray[0] == selected_group) {
                 debter_group = key;
                 debtor_key_in_localStorage = key;
                 break;
