@@ -44,7 +44,7 @@ export class SetpricesComponent implements OnInit {
   public fillHandleDirection: 'x' | 'y' | 'xy' = 'x';
   all_debtors: any = [];
   deb_products: any = [];
-  debterProds: any = [];
+  debterProds: any[][] = [];
   debter_product_data = "";
   product_brands: any = [];
   product_supplier: any = [];
@@ -239,15 +239,33 @@ export class SetpricesComponent implements OnInit {
         let definition: ColDef = {
           headerName: value["group_alias"], field: value["customer_group_name"], sortable: true, filter: 'number',
           editable: (params) => {
-            return this.checkIfDebterProduct(params.data.product_id, value["customer_group_name"]);
+            //return this.checkIfDebterProduct(params.data.product_id, value["customer_group_name"]);
+            var getGroup: string = value["customer_group_name"];
+            var column_name_seperated = getGroup.split('_');
+            if (typeof this.debterProds[column_name_seperated[1]][params.data.product_id] == "undefined") {
+              return false;
+            } else {
+              return true;
+            }
+
           }, hide: true,
           cellStyle: params => {
-            var status_of_debter_product = this.checkIfDebterProduct(params.data.product_id, value["customer_group_name"]);
+
+            var getGroup: string = value["customer_group_name"];
+            var column_name_seperated = getGroup.split('_');
+            if (typeof this.debterProds[column_name_seperated[1]][params.data.product_id] == "undefined") {
+              return { backgroundColor: "#808080" };//grey
+            } else {
+              return { backgroundColor: debcellbg_color };
+            }
+            /* var status_of_debter_product = this.checkIfDebterProduct(params.data.product_id, value["customer_group_name"]);
             if (status_of_debter_product) {
               return { backgroundColor: debcellbg_color };
             } else {
               return { backgroundColor: "#808080" };//grey
             }
+            */
+
           }, toolPanelClass: 'show_deb_cols ' + checkbox_class
         };
 
@@ -328,10 +346,16 @@ export class SetpricesComponent implements OnInit {
 
       if (responseData["msg"]) {
         responseData["msg"].forEach((value, key) => {
-          var element = {};
+          /* var element = {};
           element[value["customer_group_name"]] = value["product_ids"];
+          this.debterProds.push(element); */
 
-          this.debterProds.push(element);
+          var splitProducts = value["product_ids"].split(",");
+          this.debterProds[value['customer_group_name']] = [];
+          splitProducts.forEach((pids) => {
+            this.debterProds[value['customer_group_name']][pids] = 1;
+          });
+
         });
       }
 
@@ -400,9 +424,14 @@ export class SetpricesComponent implements OnInit {
                 if (priceType["customer_group_selected"] != '') {
                   let deb_grp = priceType["customer_group_selected"].split('|||');
 
-                  if (!this.checkIfDebterProduct(rowNode.data.product_id, "debgrp_" + deb_grp[0] + "")) {
+                  /* if (!this.checkIfDebterProduct(rowNode.data.product_id, "debgrp_" + deb_grp[0] + "")) {
+                    return;
+                  } */
+
+                  if (typeof this.debterProds[deb_grp[0]][rowNode.data.product_id] == "undefined") {
                     return;
                   }
+
                 }
 
                 var updated = JSON.parse(JSON.stringify(rowNode.data));
@@ -440,9 +469,13 @@ export class SetpricesComponent implements OnInit {
                   if (priceType["customer_group_selected"] != '') {
                     let deb_grp = priceType["customer_group_selected"].split('|||');
 
-                    if (!this.checkIfDebterProduct(value.product_id, "debgrp_" + deb_grp[0] + "")) {
+                    /* if (!this.checkIfDebterProduct(value.product_id, "debgrp_" + deb_grp[0] + "")) {
+                      return;
+                    } */
+                    if (typeof this.debterProds[deb_grp[0]][value.product_id] == "undefined") {
                       return;
                     }
+
                   }
 
                   if (priceType["update_type"] == "update") {
@@ -1093,7 +1126,7 @@ export class SetpricesComponent implements OnInit {
     });
   }
 
-  checkIfDebterProduct(product_id, current_group_name) {
+  /* checkIfDebterProduct(product_id, current_group_name) {
     var group_name_product = false;
     var column_name: string = current_group_name;
     var column_name_seperated = column_name.split('_');
@@ -1108,7 +1141,8 @@ export class SetpricesComponent implements OnInit {
 
     });
     return group_name_product;
-  }
+  } */
+
 }
 
 function removeDuplicates(arr: any[]) {
