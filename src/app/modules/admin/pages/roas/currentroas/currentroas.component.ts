@@ -292,6 +292,8 @@ export class CurrentroasComponent implements OnInit {
     date_range[1] = this.roasEndDate;
     if (typeof date_range[0] == "undefined" || typeof date_range[1] == "undefined") {
       alert("Please select from and to date");
+      this.setroasSpinner = false;
+      this.isSetRoasDisabled = false;
       return false;
     }
 
