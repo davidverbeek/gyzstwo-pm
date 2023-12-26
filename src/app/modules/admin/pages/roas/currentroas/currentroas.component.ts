@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import * as XLSX from 'xlsx'
 import { writeFile } from 'xlsx';
 import { RoascalculationComponent } from '../roascalculation/roascalculation.component';
+import { PmCategoryService } from '../../../../../services/pm.category.service';
 
 
 @Component({
@@ -30,6 +31,9 @@ export class CurrentroasComponent implements OnInit {
   roasEndDate: any;
   roasSetDate: any;
   roasLiveDate: any;
+  subcat: any;
+  cats: String = "";
+  product_brands: any = [];
 
   @ViewChild('datepicker1') datepicker1: MatDatepicker<Date>;
   @ViewChild('datepicker2') datepicker2: MatDatepicker<Date>;
@@ -46,7 +50,7 @@ export class CurrentroasComponent implements OnInit {
   exportroasSpinner: any = false;
   isExportRoasDisabled: any = false;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private categoryService: PmCategoryService) { }
 
   ngOnInit(): void {
     this.http.get(environment.webservicebaseUrl + "/get-roasdate").subscribe(roasDate => {
@@ -54,6 +58,14 @@ export class CurrentroasComponent implements OnInit {
       this.roasLiveDate = roasDate["message"][0]["live_roas_feed_from_date"] + " To " + roasDate["message"][0]["live_roas_feed_to_date"];
     }
     );
+    this.subcat = this.categoryService.categorySelected.subscribe((allselectedcats) => {
+      this.cats = allselectedcats;
+      this.loadAGGrid();
+    });
+  }
+
+  ngOnDestroy() {
+    this.subcat.unsubscribe();
   }
 
   public columnDefs = [
@@ -61,7 +73,19 @@ export class CurrentroasComponent implements OnInit {
       field: 'sku', headerName: 'Sku', sortable: true, filter: 'text'
     },
     { field: 'name', headerName: 'Name', sortable: true, filter: 'text' },
-    { field: 'merk', headerName: 'Brand', sortable: true, filter: 'text' },
+    {
+      field: 'merk', headerName: 'Brand', sortable: true, filter: 'agSetColumnFilter', filterParams: {
+        values: params => {
+          this.product_brands = this.categoryService.product_brand_arr;
+
+          // simulating async delay
+          setTimeout(() => params.success(this.product_brands), 500);
+        },
+        refreshValuesOnOpen: true
+      }
+    },
+
+
     { field: 'total_quantity', headerName: 'Total Quantity', sortable: true, filter: 'number' },
     { field: 'total_orders', headerName: 'Total Orders', sortable: true, filter: 'number' },
 
@@ -172,8 +196,9 @@ export class CurrentroasComponent implements OnInit {
 
   loadAGGrid() {
 
-    var datasource = createServerSideDatasource(this.gridParams);
+    var datasource = createServerSideDatasource(this.gridParams, this.cats);
     this.api.setServerSideDatasource(datasource);
+    this.product_brands = this.categoryService.setCategoryBrands(this.cats);
   }
 
   getStartDate(event: any) {
@@ -314,10 +339,11 @@ export class CurrentroasComponent implements OnInit {
   }
 }
 
-function createServerSideDatasource(server: any): IServerSideDatasource {
+function createServerSideDatasource(server: any, cats: any): IServerSideDatasource {
   return {
     getRows(params) {
 
+      params.request["cats"] = cats;
       fetch(environment.webservicebaseUrl + "/currentroas", {
         method: 'post',
         body: JSON.stringify(params.request),
