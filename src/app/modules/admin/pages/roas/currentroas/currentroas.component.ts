@@ -84,6 +84,7 @@ export class CurrentroasComponent implements OnInit {
         refreshValuesOnOpen: true
       }
     },
+    { field: 'categories', headerName: 'categories', sortable: true, filter: 'text' },
 
 
     { field: 'total_quantity', headerName: 'Total Quantity', sortable: true, filter: 'number' },
