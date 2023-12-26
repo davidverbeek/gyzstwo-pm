@@ -346,7 +346,6 @@ export class SetpricesComponent implements OnInit {
         responseData["msg"].forEach((value, key) => {
           var element = {};
           element[value["customer_group_name"]] = value["product_ids"];
-
           this.debterProds.push(element);
         });
       }
@@ -361,13 +360,7 @@ export class SetpricesComponent implements OnInit {
 
 
   ngOnInit() {
-    this.subcat = this.categoryService.categorySelected.subscribe((allselectedcats) => {
-      // this.cats = allselectedcats;
-      this.cats = allselectedcats['hdn_selectedcats'];
-      this.flag_of_cat_change = allselectedcats['flag'];
-      this.updatedProducts = [];
-      this.loadAGGrid();
-    });
+
 
     this.fileUploadDone = this.sidebarService.loadAgGrid.subscribe((isUploaded) => {
       if (isUploaded == 1) {
@@ -496,6 +489,8 @@ export class SetpricesComponent implements OnInit {
         $('#btnredo').removeAttr("disabled");
       }
     });
+
+
 
     /* 11/22/23 $('#flexCheckDefault').prop('checked', true);
   
@@ -726,7 +721,17 @@ export class SetpricesComponent implements OnInit {
 
   // Example load data from sever
   onGridReady(params: GridReadyEvent) {
+
+    this.subcat = this.categoryService.categorySelected.subscribe((allselectedcats) => {
+      // this.cats = allselectedcats;
+      this.cats = allselectedcats['hdn_selectedcats'];
+      this.flag_of_cat_change = allselectedcats['flag'];
+      this.updatedProducts = [];
+      this.loadAGGrid();
+    });
+
     this.api = params.api;
+
     this.gridParams = params;
     this.columnApi = params.columnApi;
     this.loadAGGrid();
@@ -772,11 +777,6 @@ export class SetpricesComponent implements OnInit {
     }
 
     var cat_all_str = selected_categories;
-    /*  if ($('.show_deb_cols').find("input[type='checkbox']").is(':checked') && cat_all_str != '' && cat_all_str != '-1') {//means this is a group list
-       if (!$('#flexCheckDefault').is(':checked')) {
-         cat_all_str = '-1';
-       }
-     } */
     var datasource = createServerSideDatasource(this.gridParams, cat_all_str);
     this.api.setServerSideDatasource(datasource);
     this.fillHandleDirection = 'y';
