@@ -268,27 +268,27 @@ export class CurrentroasComponent implements OnInit {
     cats_brands[1] = "";
 
     this.http.post(environment.roasAvgUrl, cats_brands).subscribe(responseData => {
-      if(responseData["msg"]["avg_all_roas"]) {
+      if (responseData["msg"]["avg_all_roas"]) {
         this.avg_roas = responseData["msg"]["avg_all_roas"]
-        this.helpavgroasall = responseData["msg"]["avg_all_roas"]+" ("+responseData["msg"]["avg_all_roas_help"]+")";
+        this.helpavgroasall = responseData["msg"]["avg_all_roas"] + " (" + responseData["msg"]["avg_all_roas_help"] + ")";
       }
 
-      if(responseData["msg"]["avg_all_end_roas"]) {
+      if (responseData["msg"]["avg_all_end_roas"]) {
         this.avg_end_roas = responseData["msg"]["avg_all_end_roas"];
-        this.helpavgendroasall = responseData["msg"]["avg_all_end_roas"]+" ("+responseData["msg"]["avg_all_end_roas_help"]+")";
+        this.helpavgendroasall = responseData["msg"]["avg_all_end_roas"] + " (" + responseData["msg"]["avg_all_end_roas_help"] + ")";
       }
 
-      if(responseData["msg"]["avg_all_roas_with_google_kosten"]) {
+      if (responseData["msg"]["avg_all_roas_with_google_kosten"]) {
         this.avg_roas_with_google_kosten = responseData["msg"]["avg_all_roas_with_google_kosten"];
-        this.helpavgroasadwords = responseData["msg"]["avg_all_roas_with_google_kosten"]+" ("+responseData["msg"]["avg_all_roas_with_google_kosten_help"]+")";
+        this.helpavgroasadwords = responseData["msg"]["avg_all_roas_with_google_kosten"] + " (" + responseData["msg"]["avg_all_roas_with_google_kosten_help"] + ")";
       }
 
-      if(responseData["msg"]["avg_all_end_roas_with_google_kosten"]) {
+      if (responseData["msg"]["avg_all_end_roas_with_google_kosten"]) {
         this.avg_end_roas_with_google_kosten = responseData["msg"]["avg_all_end_roas_with_google_kosten"]
-        this.helpavgendroasadwords = responseData["msg"]["avg_all_end_roas_with_google_kosten"]+" ("+responseData["msg"]["avg_all_end_roas_with_google_kosten_help"]+")";
+        this.helpavgendroasadwords = responseData["msg"]["avg_all_end_roas_with_google_kosten"] + " (" + responseData["msg"]["avg_all_end_roas_with_google_kosten_help"] + ")";
       }
-   
-      if(responseData["msg"]["avg_google_roas"]) {
+
+      if (responseData["msg"]["avg_google_roas"]) {
         this.avg_roas_google = responseData["msg"]["avg_google_roas"];
         this.helpavgroasgoogle = responseData["msg"]["avg_google_roas"];
       }

@@ -12,20 +12,15 @@ import { SideSetPricesComponent } from 'src/app/modules/admin/pages/setprices/se
 import { LoadDebtorsService } from 'src/app/services/load-debtors.service';
 import { PricehistoryComponent } from 'src/app/modules/admin/pages/setprices/pricehistory/pricehistory.component';
 import { SimtreeService } from '../../../../../services/simtree.service';
-
 declare function checkGiven(any, boolean): void;
 declare function checkIt(boolean): void;
-
-//import { PmDebterService } from '../../../../../services/load-debtors.service';
 import { map } from 'rxjs/operators';
-
 @Component({
   selector: 'app-setprices',
   templateUrl: './setprices.component.html',
   styleUrls: ['./setprices.component.css']
 })
 export class SetpricesComponent implements OnInit {
-
   api: any;
   gridParams: any;
   columnApi: any;
@@ -39,7 +34,6 @@ export class SetpricesComponent implements OnInit {
   chkAllProducts: any;
   isChkAllChecked: number = 0;
   fileUploadDone: any;
-
   public rowModelType: 'serverSide' = 'serverSide';
   public serverSideStoreType: ServerSideStoreType = 'partial';
   public fillHandleDirection: 'x' | 'y' | 'xy' = 'x';
@@ -54,13 +48,10 @@ export class SetpricesComponent implements OnInit {
   undo_swap_rowdata: Record<string, any> = {};
   context: any
   updatePriceCompleted: boolean = true;
-  //public rowModelType: 'serverSide';
-
   public paginationPageSize = 500;
   public cacheBlockSize = 500;
   rowStyle = { background: '' };
   newArray: any[] = [];
-
   getRowStyle = (params: RowClassParams) => this.rowStyle;
 
   // Each Column Definition results in one Column.
@@ -70,8 +61,6 @@ export class SetpricesComponent implements OnInit {
       field: 'supplier_type', headerName: 'Leverancier', sortable: true, filter: 'agSetColumnFilter', filterParams: {
         values: params => {
           this.product_supplier = this.categoryService.product_supplier_arr;
-
-          // simulating async delay
           setTimeout(() => params.success(this.product_supplier), 500);
 
         },
@@ -98,8 +87,6 @@ export class SetpricesComponent implements OnInit {
       field: 'merk', headerName: 'Merk', sortable: true, filter: 'agSetColumnFilter', filterParams: {
         values: params => {
           this.product_brands = this.categoryService.product_brand_arr;
-
-          // simulating async delay
           setTimeout(() => params.success(this.product_brands), 500);
         },
         refreshValuesOnOpen: true
@@ -198,11 +185,7 @@ export class SetpricesComponent implements OnInit {
   ];
 
   public customToolPanelColumnDefs: any = [];
-
-
-
   constructor(private http: HttpClient, private categoryService: PmCategoryService, private sidebarService: PmSidebarService, private loaddebtorsService: LoadDebtorsService, private simtree_service: SimtreeService) {
-
     this.newArray = this.columnDefs.map((item) => ({
       headerName: item.headerName,
       field: item.field,
@@ -211,7 +194,6 @@ export class SetpricesComponent implements OnInit {
     if (localStorage.getItem("debtorCols") != null) {
 
       let debColString = localStorage.getItem("debtorCols");
-
       let deb_columns = [];
       deb_columns = JSON.parse(debColString || '{}');
       let arrayOfObjects: any = [];
@@ -219,7 +201,6 @@ export class SetpricesComponent implements OnInit {
       let arrayOfObjects_msp: any = [];
       let arrayOfObjects_dgp: any = [];
       for (const [key, value] of Object.entries(deb_columns)) {
-
         let debcellbg_color = "";
         let checkbox_class = "";
         if (value["type"] == "debsp") {
@@ -235,15 +216,13 @@ export class SetpricesComponent implements OnInit {
           debcellbg_color = "#fc6b6b";
           checkbox_class = "show_cols_ddgp";
         }
-        //'.show_cols_dmbp, .show_cols_dmsp, .show_cols_ddgp, .show_cols_dsp'
-
         let definition: ColDef = {
           headerName: value["group_alias"], field: value["customer_group_name"], sortable: true, filter: 'number',
           editable: (params) => {
             //return this.checkIfDebterProduct(params.data.product_id, value["customer_group_name"]);
             var getGroup: string = value["customer_group_name"];
             var column_name_seperated = getGroup.split('_');
-            if (typeof this.debterProds[column_name_seperated[1]][params.data.product_id] == "undefined") {
+            if (typeof this.debterProds[column_name_seperated[1]] == "undefined" || typeof this.debterProds[column_name_seperated[1]][params.data.product_id] == "undefined") {
               return false;
             } else {
               return true;
@@ -254,7 +233,7 @@ export class SetpricesComponent implements OnInit {
 
             var getGroup: string = value["customer_group_name"];
             var column_name_seperated = getGroup.split('_');
-            if (typeof this.debterProds[column_name_seperated[1]][params.data.product_id] == "undefined") {
+            if (typeof this.debterProds[column_name_seperated[1]] == "undefined" || typeof this.debterProds[column_name_seperated[1]][params.data.product_id] == "undefined") {
               return { backgroundColor: "#808080" };//grey
             } else {
               return { backgroundColor: debcellbg_color };
@@ -266,15 +245,9 @@ export class SetpricesComponent implements OnInit {
               return { backgroundColor: "#808080" };//grey
             }
             */
-
           }, toolPanelClass: 'show_deb_cols ' + checkbox_class
         };
-
-
         this.columnDefs.push(definition);
-
-
-
         let deb_fields: string = value["customer_group_name"];
         if (deb_fields.indexOf("_debter_selling_price") !== -1) {
           const dynamicObject = {
@@ -301,19 +274,9 @@ export class SetpricesComponent implements OnInit {
           };
           arrayOfObjects_dgp.push(dynamicObject_dgp);
         }
-
-
       };
-
-
-
       this.customToolPanelColumnDefs.push(...this.newArray);
-
-
-
-
       var newArray_2 = [
-
         {
           headerName: 'All SP',
           children: arrayOfObjects,
@@ -332,25 +295,19 @@ export class SetpricesComponent implements OnInit {
         },
 
       ];
-
       this.customToolPanelColumnDefs.push(...newArray_2);
-
     }
 
     if (localStorage.getItem("allDebts") != null) {
       let alldebString = localStorage.getItem("allDebts");
       this.all_debtors = JSON.parse(alldebString || '{}');
     }
-
-
     this.http.get(environment.webservicebaseUrl + "/all-debtor-product").subscribe(responseData => {
-
       if (responseData["msg"]) {
         responseData["msg"].forEach((value, key) => {
           /* var element = {};
           element[value["customer_group_name"]] = value["product_ids"];
           this.debterProds.push(element); */
-
           var splitProducts = value["product_ids"].split(",");
           this.debterProds[value['customer_group_name']] = [];
           splitProducts.forEach((pids) => {
@@ -358,19 +315,12 @@ export class SetpricesComponent implements OnInit {
           });
         });
       }
-
     });
-
     this.context = {
       componentParent: this
     }
   }
-
-
-
   ngOnInit() {
-
-
     this.fileUploadDone = this.sidebarService.loadAgGrid.subscribe((isUploaded) => {
       if (isUploaded == 1) {
         this.loadAGGrid();
@@ -379,26 +329,16 @@ export class SetpricesComponent implements OnInit {
 
     this.subbtnclicked = this.sidebarService.btnClicked.subscribe((priceType) => {
 
-      // console.log(priceType);
-
       if (this.undo_swap.length > 0 && priceType["update_type"] == "undo") {
         this.undo_swap.forEach((element: any) => {
-          //if (element.update_type == priceType['type']) {
           this.formProductData(this.undo_swap_rowdata[element.product_id], priceType);
-          //}
         });
-
         this.undo_swap = [];
         this.undo_swap_rowdata = [];
       }
-
-
       var idsToUpdate = this.api.getSelectedNodes().map(function (node) {
         return node.data.product_id;
       });
-
-
-
       var err = 0;
       if (idsToUpdate.length == 0) {
         alert("Please select record first!!");
@@ -434,7 +374,6 @@ export class SetpricesComponent implements OnInit {
 
                 if (priceType["update_type"] == "update") {
                   this.undo_swap_rowdata[rowNode.data.product_id] = updated;
-
                   if (priceType["type"] == "selling_price") {
                     this.redo_swap[rowNode.data.product_id] = rowNode.data.selling_price;
                     const newData = { product_id: rowNode.data.product_id, 'before_price': rowNode.data.selling_price, 'update_type': priceType["type"] };
@@ -452,7 +391,6 @@ export class SetpricesComponent implements OnInit {
                     const newData = { product_id: rowNode.data.product_id, 'before_price': rowNode.data.discount_on_gross_price, 'update_type': priceType["type"] };
                     this.undo_swap.push(newData);
                   }
-
                   this.formProductData(updated, priceType);
                 }
               }
@@ -473,7 +411,6 @@ export class SetpricesComponent implements OnInit {
                     }
 
                   }
-
                   if (priceType["update_type"] == "update") {
                     this.undo_swap_rowdata[value.product_id] = value;
 
@@ -494,12 +431,9 @@ export class SetpricesComponent implements OnInit {
                   }
                 }
               )
-
             }
           }
-
           this.saveUpdatedProducts(this.updatedProducts);
-
         }
       }
       if (this.updatedProducts.length > 0) {
@@ -507,16 +441,6 @@ export class SetpricesComponent implements OnInit {
         $('#btnredo').removeAttr("disabled");
       }
     });
-
-
-
-    /* 11/22/23 $('#flexCheckDefault').prop('checked', true);
-  
-    $('a>i.sim-tree-checkbox').each(function (index) {
-      $(this).addClass('checked');
-    }); */
-
-
 
   }
 
@@ -553,13 +477,6 @@ export class SetpricesComponent implements OnInit {
       type: "lessThan",
       filter: filter_val
     });
-    /*
-    let filterComponent1 = this.api.getFilterInstance('group_4027100_margin_on_buying_price');
-    filterComponent1.setModel({
-      type: "lessThan",
-      filter: 0
-    });
-    */
 
     this.api.onFilterChanged();
   }
@@ -809,44 +726,44 @@ export class SetpricesComponent implements OnInit {
       const columnName_1 = event.column.getColId();
       alert('Please enter numeric value');
       event.node.setDataValue(columnName_1, event.oldValue);
-      //return false;
-    } else {
-      var prepareProductData = [];
-      var checkforDebtor: any = [];
-      prepareProductData["field"] = event.colDef.field;
-      prepareProductData["product_id"] = event.data.product_id;
-      prepareProductData["buying_price"] = event.data.buying_price;
-      prepareProductData["selling_price"] = event.data.selling_price;
-      prepareProductData["profit_percentage"] = event.data.profit_percentage;
-      prepareProductData["profit_percentage_selling_price"] = event.data.profit_percentage_selling_price;
-      prepareProductData["discount_on_gross_price"] = event.data.discount_on_gross_price;
-      prepareProductData["percentage_increase"] = event.data.percentage_increase;
-      prepareProductData["gross_unit_price"] = event.data.gross_unit_price;
-
-      /* For History */
-      prepareProductData["idealeverpakking"] = event.data.idealeverpakking;
-      prepareProductData["afwijkenidealeverpakking"] = event.data.afwijkenidealeverpakking;
-
-      prepareProductData["webshop_net_unit_price"] = event.data.webshop_net_unit_price;
-      prepareProductData["webshop_gross_unit_price"] = event.data.webshop_gross_unit_price;
-      prepareProductData["webshop_idealeverpakking"] = event.data.webshop_idealeverpakking;
-      prepareProductData["webshop_afwijkenidealeverpakking"] = event.data.webshop_afwijkenidealeverpakking;
-      prepareProductData["webshop_buying_price"] = event.data.webshop_buying_price;
-      prepareProductData["webshop_selling_price"] = event.data.webshop_selling_price;
-
-      checkforDebtor = (event.colDef.field)?.split("_");
-      if (checkforDebtor[0] == "group") {
-        prepareProductData["debtor"] = checkforDebtor[1];
-        let debData = (this.all_debtors[checkforDebtor[1]]).split("|||");
-        prepareProductData["debtor_id"] = debData[0];
-        prepareProductData["group_" + checkforDebtor[1] + "_debter_selling_price"] = event.data["group_" + checkforDebtor[1] + "_debter_selling_price"];
-        prepareProductData["group_" + checkforDebtor[1] + "_margin_on_buying_price"] = event.data["group_" + checkforDebtor[1] + "_margin_on_buying_price"];
-        prepareProductData["group_" + checkforDebtor[1] + "_margin_on_selling_price"] = event.data["group_" + checkforDebtor[1] + "_margin_on_selling_price"];
-        prepareProductData["group_" + checkforDebtor[1] + "_discount_on_grossprice_b_on_deb_selling_price"] = event.data["group_" + checkforDebtor[1] + "_discount_on_grossprice_b_on_deb_selling_price"];
-      }
-      this.createProductData(prepareProductData);
-      //console.log(event.colDef.field);
+      return false;
     }
+
+    var prepareProductData = [];
+    var checkforDebtor: any = [];
+    prepareProductData["field"] = event.colDef.field;
+    prepareProductData["product_id"] = event.data.product_id;
+    prepareProductData["buying_price"] = event.data.buying_price;
+    prepareProductData["selling_price"] = event.data.selling_price;
+    prepareProductData["profit_percentage"] = event.data.profit_percentage;
+    prepareProductData["profit_percentage_selling_price"] = event.data.profit_percentage_selling_price;
+    prepareProductData["discount_on_gross_price"] = event.data.discount_on_gross_price;
+    prepareProductData["percentage_increase"] = event.data.percentage_increase;
+    prepareProductData["gross_unit_price"] = event.data.gross_unit_price;
+
+    /* For History */
+    prepareProductData["idealeverpakking"] = event.data.idealeverpakking;
+    prepareProductData["afwijkenidealeverpakking"] = event.data.afwijkenidealeverpakking;
+
+    prepareProductData["webshop_net_unit_price"] = event.data.webshop_net_unit_price;
+    prepareProductData["webshop_gross_unit_price"] = event.data.webshop_gross_unit_price;
+    prepareProductData["webshop_idealeverpakking"] = event.data.webshop_idealeverpakking;
+    prepareProductData["webshop_afwijkenidealeverpakking"] = event.data.webshop_afwijkenidealeverpakking;
+    prepareProductData["webshop_buying_price"] = event.data.webshop_buying_price;
+    prepareProductData["webshop_selling_price"] = event.data.webshop_selling_price;
+
+    checkforDebtor = (event.colDef.field)?.split("_");
+    if (checkforDebtor[0] == "group") {
+      prepareProductData["debtor"] = checkforDebtor[1];
+      let debData = (this.all_debtors[checkforDebtor[1]]).split("|||");
+      prepareProductData["debtor_id"] = debData[0];
+      prepareProductData["group_" + checkforDebtor[1] + "_debter_selling_price"] = event.data["group_" + checkforDebtor[1] + "_debter_selling_price"];
+      prepareProductData["group_" + checkforDebtor[1] + "_margin_on_buying_price"] = event.data["group_" + checkforDebtor[1] + "_margin_on_buying_price"];
+      prepareProductData["group_" + checkforDebtor[1] + "_margin_on_selling_price"] = event.data["group_" + checkforDebtor[1] + "_margin_on_selling_price"];
+      prepareProductData["group_" + checkforDebtor[1] + "_discount_on_grossprice_b_on_deb_selling_price"] = event.data["group_" + checkforDebtor[1] + "_discount_on_grossprice_b_on_deb_selling_price"];
+    }
+    this.createProductData(prepareProductData);
+    //console.log(event.colDef.field);
   }
 
   onPaginationChanged(event: PaginationChangedEvent) {
@@ -901,45 +818,18 @@ export class SetpricesComponent implements OnInit {
   }
 
   onCellEditingStopped(event: CellEditingStoppedEvent) {
-    /*  if (isNaN(Number(event.newValue)) || !(event.newValue.trim())) {
-       const columnName_1 = event.column.getColId();
-       alert('Please enter numeric value');
-       event.node.setDataValue(columnName_1, event.oldValue);
-       return false;
-     } */
-
-
-    //console.log(this.updatedProducts);
     this.saveUpdatedProducts(this.updatedProducts);
-    /* this.saveRow(this.updatedProducts); 
-    setTimeout(()=>{                          
-      this.updatedProducts = [];
-      console.log(this.updatedProducts);
-    }, 3000);
-    */
   }
   onDragStopped(event: DragStoppedEvent) {
-    //console.log(this.updatedProducts);
     this.saveUpdatedProducts(this.updatedProducts);
-    /* this.saveRow(this.updatedProducts);
-    this.updatedProducts = []; */
   }
   onCellKeyDown(e: FullWidthCellKeyDownEvent) {
     var keyPressed = (e.event as KeyboardEvent).key;
     if (keyPressed == "z") {
-      //console.log(this.updatedProducts);
       this.saveUpdatedProducts(this.updatedProducts);
-      /* this.saveRow(this.updatedProducts);
-      this.updatedProducts = []; */
     }
   }
-
   onColumnVisible(e) {
-    //console.log('Event Column Visible', e);
-
-    // i will change visibility of debter cols
-    // if atlease one debter col is visible then to show button
-    //if none debter cols is visible then hide button
     e.columns.forEach(column => {
       if (column.colDef.toolPanelClass != undefined) {
         if (column.visible) {
