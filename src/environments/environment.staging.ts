@@ -8,5 +8,6 @@ export const environment = {
   roasCalUrl: "https://gyzs.gyzsdevm2.hypernode.io/pm_getdata/debug_roas.php",
   nodebasePath: "https://gyzs.gyzsdevm2.hypernode.io",
   nodeServerUrl: "http://127.0.0.1:3200/",
-  agserverUrl: "https://gyzs.gyzsdevm2.hypernode.io"
+  agserverUrl: "https://gyzs.gyzsdevm2.hypernode.io",
+  roasAvgUrl: "https://gyzs.gyzsdevm2.hypernode.io/pm_getdata/get_averages.php",
 };
