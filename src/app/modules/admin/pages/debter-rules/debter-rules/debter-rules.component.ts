@@ -112,8 +112,8 @@ export class DebterRulesComponent implements OnInit {
             deb_columns_new = JSON.parse(debColString || '{}');
             for (const [key, value] of Object.entries(deb_columns_new)) {
               let part: string = value;
-              var magento_id = part.substring(0, 2);
-              if (magento_id == selected_group) {
+              const resultArray: string[] = part.split('|||');
+              if (resultArray[0] == selected_group) {
                 debter_group = key;
                 debtor_key_in_localStorage = key;
                 break;
@@ -158,7 +158,7 @@ export class DebterRulesComponent implements OnInit {
           debterData = processedData;
 
           this.http.post(environment.webservicebaseUrl + "/save-debter-rules", debterData).subscribe(responseData => {
-            if (responseData["msg"] == "done") {
+            if (responseData["msg"] == "saved successfully") {
               localStorage.setItem(debtor_key_in_localStorage, category_product_ids);
               //to show success message in the page
               $('<div class="alert alert-success" role="alert">Data is saved successfully!</div>').insertBefore("#data_filters1");
@@ -169,7 +169,11 @@ export class DebterRulesComponent implements OnInit {
                 });
               }, 4000);
               $('.ddfields').val("");
-              $(".sim-tree-checkbox").removeClass('checked');
+              //know: i.sim-tree-checkbox should be there not only .sim-tree-checkbox
+              $("i.sim-tree-checkbox").removeClass('checked');
+              $("i.sim-tree-checkbox").removeClass('sim-tree-semi');
+              $("i.sim-icon-d").trigger('click');
+
               $('a#linkCategories').css('display', 'none');
               $("#flexCheckDefault").prop('checked', false);
               this.toggleCheckbox('');
@@ -212,6 +216,9 @@ export class DebterRulesComponent implements OnInit {
 
     $("#hdn_existingcategories").val('');
     this.toggleCheckbox('');
+
+    $("#showloader").addClass("loader");
+    $(".loader_txt").show();
     // this.debterRulesService.getDebtorCategories(selected_group);
     this.http.post<Response>(environment.webservicebaseUrl + "/dbt-rules-cats", { debter_id: selected_group })
       .pipe(map(responseData => {
@@ -227,6 +234,8 @@ export class DebterRulesComponent implements OnInit {
         return cat_ids;
       }))
       .subscribe(responseData => {
+        $("#showloader").removeClass("loader");
+        $(".loader_txt").hide();
         //localStorage.setItem("debterCats", responseData);
 
         //let category_ids = localStorage.getItem("debterCats");
@@ -251,6 +260,8 @@ export class DebterRulesComponent implements OnInit {
 
         this.toggleCheckbox('none');//add disabled
         $("#flexCheckDefault").prop('checked', false);
+
+
       });
   };
 
@@ -295,7 +306,7 @@ export class DebterRulesComponent implements OnInit {
       return false;
     } else if (confirm("Existing products of TO DEBTER will be unassinged and their prices will be set to ZERO. Are you sure you want to continue?")) {
 
-      this.http.post<any>(environment.webservicebaseUrl + "/copy-groups", { source_group_id: source_group_id, destination_group_id: child_group_id }).subscribe(responseData => {
+      this.http.post<any>(environment.webservicebaseUrl + "/copy-debters", { source_group_id: source_group_id, destination_group_id: child_group_id }).subscribe(responseData => {
         // var res = jQuery.parseJSON(data);
         //showDivMessage(res["msg"]);
         if (responseData["msg"]) {

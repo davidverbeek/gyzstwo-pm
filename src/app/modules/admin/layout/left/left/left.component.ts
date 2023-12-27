@@ -17,6 +17,7 @@ export class LeftComponent implements OnInit {
     list: string;
     cats: string = "";
     columnApi: any;
+    flag_hdn: any = [];
     constructor(private http: HttpClient, private categoryService: PmCategoryService, private simtreeService: SimtreeService) {
     }
 
@@ -44,29 +45,17 @@ export class LeftComponent implements OnInit {
 
                     },
                     onChange: (item) => {
-
-
-                        var selectedCategories = new Array();
-                        $.each(item, function (key, value) {
-                            selectedCategories.push(value["id"]);
-                        });
-                        if (selectedCategories.length > 0) {
-                            $("#hdn_selectedcategories").val(selectedCategories);
-                        } else {
-                            $("#hdn_selectedcategories").val('-1');
-                        }
-
+                        $("#chkall").prop('checked', false);
+                        this.flag_hdn['flag'] = 0;
+                        this.flag_hdn['hdn_selectedcats'] = $("#hdn_selectedcategories").val();
                         $("#btnloadcats").trigger('click');
-
                     },
                     done: () => {
                         $('#flexCheckDefault').prop('checked', true);
                         this.toggleAllCategories(true);
-
-                        var left_cats = this.getTreeCategories();
-
-                        $('#hdn_selectedcategories').val(left_cats);
-                        //$("#btnloadcats").trigger('click');
+                        this.flag_hdn['flag'] = 0;
+                        this.flag_hdn['hdn_selectedcats'] = $("#hdn_selectedcategories").val();
+                        $("#btnloadcats").trigger('click');
                     }
                 });
 
@@ -113,7 +102,8 @@ export class LeftComponent implements OnInit {
     }
 
     btncats() {
-        this.categoryService.categorySelected.next(this.allSelectedCats.nativeElement.value);
+        //this.categoryService.categorySelected.next(this.allSelectedCats.nativeElement.value);
+        this.categoryService.categorySelected.next(this.flag_hdn);
     }
 
 
@@ -124,30 +114,22 @@ export class LeftComponent implements OnInit {
 
         if ($('.show_deb_cols').find("input[type='checkbox']").is(':checked') && cat_all_str != '' && cat_all_str != '-1') {//means this is a group list
             let cat_all_arr = cat_all_str.split(',');
-            if (current_status) { // check all hiddencategories
-
+            if (current_status) {
                 $.each(cat_all_arr, function (key, value) {
                     var $li = $('li[data-id=' + value + ']');
                     checkGiven($li, true);
                 });
-
             } else { //uncheck all hiddencategories
                 $.each(cat_all_arr, function (key, value) {
                     var $li = $('li[data-id=' + value + ']');
                     checkGiven($li, false);
                 });
             }
-
         } else if (cat_all_str == '-1') {
             this.toggleAllCategories(current_status);
-            var left_cats = this.getTreeCategories();
-            $('#hdn_selectedcategories').val(left_cats);
         } else {
             this.toggleAllCategories(current_status);
-            var left_cats = this.getTreeCategories();
-            $('#hdn_selectedcategories').val(left_cats);
         }
-
         $('#btnloadcats').trigger('click');
     }
 
