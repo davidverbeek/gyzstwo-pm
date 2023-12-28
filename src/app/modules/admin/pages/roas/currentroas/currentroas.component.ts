@@ -266,6 +266,7 @@ export class CurrentroasComponent implements OnInit {
     var cats_brands = Array();
     cats_brands[0] = "";
     cats_brands[1] = "";
+    cats_brands[2] = "roascurrent";
 
     this.http.post(environment.roasAvgUrl, cats_brands).subscribe(responseData => {
       if (responseData["msg"]["avg_all_roas"]) {

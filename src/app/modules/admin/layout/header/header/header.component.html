@@ -120,8 +120,8 @@
             <li>
               <!-- inner menu: contains the actual data -->
               <ul class="menu">
-                <li><!-- start message -->
-                  <a href="#">
+                <li (click)="onNavigate()"><!-- start message -->
+                  <a [routerLink]="['/admin/liveroas']">
                     <h4>
                       <i class="fa fa-file"></i><span style="margin-left: 8px;">Roas</span>
                     </h4>

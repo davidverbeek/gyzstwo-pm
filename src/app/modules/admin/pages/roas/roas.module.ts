@@ -9,6 +9,7 @@ import { RoascalculationComponent } from './roascalculation/roascalculation.comp
 import { GoogleroasComponent } from './googleroas/googleroas.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ActivategoogleroasComponent } from './activategoogleroas/activategoogleroas.component';
+import { LiveroasComponent } from './liveroas/liveroas.component';
 
 
 
@@ -17,7 +18,8 @@ import { ActivategoogleroasComponent } from './activategoogleroas/activategoogle
     CurrentroasComponent,
     RoascalculationComponent,
     GoogleroasComponent,
-    ActivategoogleroasComponent
+    ActivategoogleroasComponent,
+    LiveroasComponent
   ],
   imports: [
     CommonModule,

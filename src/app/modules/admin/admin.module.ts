@@ -31,6 +31,7 @@ import { CurrentroasComponent } from './pages/roas/currentroas/currentroas.compo
 import { GoogleroasComponent } from './pages/roas/googleroas/googleroas.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { VerifypricesComponent } from './pages/verifyprices/verifyprices/verifyprices.component';
+import { LiveroasComponent } from './pages/roas/liveroas/liveroas.component';
 
 
 const gyzsroutes: Routes = [
@@ -44,6 +45,7 @@ const gyzsroutes: Routes = [
       { path: "bolminimum", canActivate: [AuthGuard], component: BolminimumComponent },
       { path: "revenue", canActivate: [AuthGuard], component: RevenueComponent },
       { path: "currentroas", canActivate: [AuthGuard], component: CurrentroasComponent },
+      { path: "liveroas", canActivate: [AuthGuard], component: LiveroasComponent },
       { path: "googleroas", canActivate: [AuthGuard], component: GoogleroasComponent },
       { path: "settings", canActivate: [AuthGuard], component: SettingsComponent },
       { path: '', redirectTo: '/admin/dashboard', pathMatch: 'full' },
