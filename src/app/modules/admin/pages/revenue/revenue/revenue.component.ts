@@ -47,27 +47,7 @@ export class RevenueComponent implements OnInit {
 
   constructor(private http: HttpClient) { }
 
-  ngOnInit(): void {
-    var skuVericaleSom: any;
-
-    this.http.get(environment.webservicebaseUrl + "/get-pm-revenue").subscribe(currentRevenueData => {
-      this.sumRows.push({ "sku_vericale_som": currentRevenueData["revenueData"][0]["sku_vericale_som"] });
-      this.sumRows.push({ "sku_vericale_som_bp": currentRevenueData["revenueData"][0]["sku_vericale_som_bp"] });
-      skuVericaleSom = currentRevenueData["revenueData"][0]["sku_vericale_som"];
-      this.selectedDate = currentRevenueData["revenueData"][0]["reportdate"];
-    }
-    );
-
-    this.http.get(environment.webservicebaseUrl + "/get-pm-revenue-sum").subscribe(currentRevenueSumData => {
-      this.sumRows.push({ "sku_abs_margin": currentRevenueSumData["revenueSumData"][0]["tot_abs_margin"] });
-      this.sumRows.push({ "sku_refund_revenue_amount": currentRevenueSumData["revenueSumData"][0]["tot_refund_amount"] });
-      this.sumRows.push({ "sku_margin_sp": (currentRevenueSumData["revenueSumData"][0]["tot_abs_margin"] / skuVericaleSom).toFixed(2) });
-
-      var rows = createData(this.sumRows);
-      this.api.setPinnedBottomRowData(rows);
-    }
-    );
-  }
+  ngOnInit(): void { }
   // Each Column Definition results in one Column.
   public columnDefs = [
     {
@@ -196,6 +176,7 @@ export class RevenueComponent implements OnInit {
   loadAGGrid() {
     var datasource = createServerSideDatasource(this.gridParams);
     this.api.setServerSideDatasource(datasource);
+    this.createBottomRow();
   }
 
   // Handle date selection for Datepicker 1
@@ -225,7 +206,9 @@ export class RevenueComponent implements OnInit {
       if (responseData["err"] == "error") {
         alert("Something Went wrong. Please try again with different date range")
       } else {
-        var sumRows = Array();
+        this.selectedDate = responseData["date_selected"];
+        this.loadAGGrid();
+        /*var sumRows = Array();
         sumRows.push({ "sku_vericale_som": responseData["total_revenue"] });
         sumRows.push({ "sku_vericale_som_bp": responseData["total_bp"] });
         sumRows.push({ "sku_refund_revenue_amount": responseData["tot_refund_amount"] });
@@ -234,7 +217,7 @@ export class RevenueComponent implements OnInit {
         this.selectedDate = responseData["date_selected"];
         this.loadAGGrid();
         var rows = createData(sumRows);
-        this.api.setPinnedBottomRowData(rows);
+        this.api.setPinnedBottomRowData(rows); */
       }
       this.dataSpinner = false;
       this.isDataDisabled = false;
@@ -293,6 +276,29 @@ export class RevenueComponent implements OnInit {
       this.isSyncDisabled = false;
     });
   }
+
+  createBottomRow() {
+    var skuVericaleSom: any;
+
+    this.http.get(environment.webservicebaseUrl + "/get-pm-revenue").subscribe(currentRevenueData => {
+      this.sumRows.push({ "sku_vericale_som": currentRevenueData["revenueData"][0]["sku_vericale_som"] });
+      this.sumRows.push({ "sku_vericale_som_bp": currentRevenueData["revenueData"][0]["sku_vericale_som_bp"] });
+      skuVericaleSom = currentRevenueData["revenueData"][0]["sku_vericale_som"];
+      this.selectedDate = currentRevenueData["revenueData"][0]["reportdate"];
+    }
+    );
+
+    this.http.get(environment.webservicebaseUrl + "/get-pm-revenue-sum").subscribe(currentRevenueSumData => {
+      this.sumRows.push({ "sku_abs_margin": currentRevenueSumData["revenueSumData"][0]["tot_abs_margin"] });
+      this.sumRows.push({ "sku_refund_revenue_amount": currentRevenueSumData["revenueSumData"][0]["tot_refund_amount"] });
+      this.sumRows.push({ "sku_margin_sp": (currentRevenueSumData["revenueSumData"][0]["tot_abs_margin"] / skuVericaleSom).toFixed(2) });
+
+      var rows = createData(this.sumRows);
+      this.api.setPinnedBottomRowData(rows);
+    }
+    );
+  }
+
 }
 
 
