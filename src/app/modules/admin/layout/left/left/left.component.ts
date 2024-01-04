@@ -4,8 +4,11 @@ import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { PmCategoryService } from '../../../../../services/pm.category.service';
 import { SimtreeService } from '../../../../../services/simtree.service';
+import { ActivatedRoute } from '@angular/router';
 declare function checkGiven(any, boolean): void;
 declare function checkIt(boolean): void;
+declare function setParentCheck(any): void;
+declare function doCheck(any): void;
 
 @Component({
     selector: 'app-left',
@@ -14,11 +17,12 @@ declare function checkIt(boolean): void;
 })
 export class LeftComponent implements OnInit {
 
-    list: string;
+    list: any;
     cats: string = "";
     columnApi: any;
     flag_hdn: any = [];
-    constructor(private http: HttpClient, private categoryService: PmCategoryService, private simtreeService: SimtreeService) {
+
+    constructor(private http: HttpClient, private categoryService: PmCategoryService, private simtreeService: SimtreeService, private route: ActivatedRoute) {
     }
 
     @ViewChild('allSelectedCats') allSelectedCats: ElementRef;
@@ -29,30 +33,137 @@ export class LeftComponent implements OnInit {
             $('#tree').empty();
             this.http.get<any>(environment.webservicebaseUrl + "/all-categories").subscribe(data => {
                 // this.simtreeService.refresh$.subscribe(() => {
-                this.list = data.categories;
+                this.list = data.rows;
+
+                //console.log(this.list);
+
+                /*   this.list = [{
+                      "id": '1',
+                      "pid": '',
+                      "name": "JavaScript",
+                  },
+                  {
+                      "id": '11',
+                      "pid": '1', // parent ID
+                      "name": "Angular"
+                  },
+                  {
+                      "id": '12',
+                      "pid": '1',
+                      "name": "React"
+                  }, {
+                      "id": '13',
+                      "pid": '1',
+                      "name": "Vuejs"
+                  }, {
+                      "id": '14',
+                      "pid": '1',
+                      "name": "JavaScript"
+                  },
+                  {
+                      "id": '2',
+                      "pid": '',
+                      "name": "HTML5"
+                  },
+                  {
+                      "id": '3',
+                      "pid": '',
+                      "name": "CSS3",
+                      "disabled": true // is disabled?
+                  }]; */
+
+
 
                 var tree = simTree({
                     el: '#tree',
                     data: this.list,
                     check: true,
                     linkParent: true,
-                    expand: 'expand',
-                    checked: 'checked',
+
+                    response: {
+                        name: 'name',
+                        id: 'id',
+                        pid: 'pid',
+                        checked: 'checked',
+                        expand: false
+                    },
+
+
+
 
 
                     onClick: function (item) {
-                        //console.log(item);
+                        alert('hh');
+                        //this.click = 1;
+                        $.each(item, function (key, value) {
+                            console.log(value["id"]);
+                            /*  var $li = $('li[data-id=' + value["id"] + ']');
+                             var data = $li.data();
+                             var $a = $li.children('a');
+                             var $check = $a.children('.sim-tree-checkbox');
+                             if ($check.hasClass('checked')) {
+                                 $check.removeClass('checked');
+                                 //  $li.data('checked', false);
+                             } else {
+                                 $check.addClass('checked');
+                                 //$li.data('checked', true);
+                             }
+                             setParentCheck($li); */
+                        });
 
                     },
                     onChange: (item) => {
+                        alert('hh4');
+                        $.each(item, function (key, value) {
+                            console.log('jy' + value["id"]);
+                        });
+
+                        /*  if (this.is_click == 0) {
+                             this.is_click = 2;
+                             var selectedCategories = new Array();
+                             $.each(item, function (key, value) {
+                                 //console.log(value["id"]);
+                                 var $li = $('li[data-id=' + value["id"] + ']');
+                                 var data = $li.data();
+                                 var $a = $li.children('a');
+                                 var $check = $a.children('.sim-tree-checkbox');
+                                 var is_checked = $check.hasClass('checked');
+                                 if (is_checked === true) {
+                                     $check.removeClass('sim-tree-semi').addClass('checked');
+                                 } else if (is_checked === false) {
+                                     $check.removeClass('checked sim-tree-semi');
+                                 } else if (is_checked === 'semi') {
+                                     $check.removeClass('checked').addClass('sim-tree-semi');
+                                 }
+                                 $li.data('checked', is_checked);
+                                 setParentCheck($li);
+ 
+                             });
+                         } */
+
+
+
+
+                        //doCheck(e, t, i);
+                        //console.log($("li[data-id='" + item.id + "'").find('a').children().removeClass('checked'));
+
+
                         $("#chkall").prop('checked', false);
                         this.flag_hdn['flag'] = 0;
                         this.flag_hdn['hdn_selectedcats'] = $("#hdn_selectedcategories").val();
                         $("#btnloadcats").trigger('click');
                     },
                     done: () => {
-                        $('#flexCheckDefault').prop('checked', true);
-                        this.toggleAllCategories(true);
+
+                        alert('hh5');
+                        console.log('done');
+                        if (this.route.children[0].component?.name == 'SetpricesComponent') {
+                            $('#flexCheckDefault').prop('checked', true);
+                            this.toggleAllCategories(true);
+                        } else if (this.route.children[0].component?.name == 'DebterRulesComponent') {
+                            $('#flexCheckDefault').prop('checked', false);
+                        }
+
                         this.flag_hdn['flag'] = 0;
                         this.flag_hdn['hdn_selectedcats'] = $("#hdn_selectedcategories").val();
                         $("#btnloadcats").trigger('click');
@@ -91,7 +202,6 @@ export class LeftComponent implements OnInit {
                         }
                         simtreehidetexttmp++;
                     });
-
                 }, 3000);
 
             });
@@ -99,6 +209,9 @@ export class LeftComponent implements OnInit {
 
 
         });
+
+
+
     }
 
     btncats() {

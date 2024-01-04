@@ -44,11 +44,10 @@ export class DebterRulesComponent implements OnInit {
 
     this.getCopyFromDebtor();
 
-    $('#flexCheckDefault').prop('checked', false);
-
+    /*   $('#flexCheckDefault').prop('checked', false);
     $('a>i.sim-tree-checkbox').each(function (index) {
-      $(this).removeClass('checked');
-    });
+        $(this).removeClass('checked');
+      }); */
 
   }
 

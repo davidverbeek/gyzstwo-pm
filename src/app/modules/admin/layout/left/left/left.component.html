@@ -18,11 +18,15 @@
                 Check All Categories
             </label>
         </div>
-        <div id="tree"></div>
+        <ul class="list-group position-relative w-100">
+            <li id="sim-tree">
+                <div id="tree"></div>
+            </li>
+        </ul>
 
         <button (click)="btncats()" id="btnloadcats" style="display:none;"></button>
 
         <input type="hidden" id="hdn_selectedcategories" value="" #allSelectedCats />
     </section>
     <!-- /.sidebar -->
-  </aside>
+</aside>
