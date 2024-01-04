@@ -3,6 +3,8 @@ declare var simTree: any;
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { PmCategoryService } from '../../../../../services/pm.category.service';
+import { ActivatedRoute } from '@angular/router';
+
 declare function checkGiven(any, boolean): void;
 declare function checkIt(boolean): void;
 
@@ -16,7 +18,7 @@ export class LeftComponent implements OnInit {
     list: string;
     cats: string = "";
     columnApi: any;
-    constructor(private http: HttpClient, private categoryService: PmCategoryService) {
+    constructor(private http: HttpClient, private categoryService: PmCategoryService, private route: ActivatedRoute) {
     }
 
     @ViewChild('allSelectedCats') allSelectedCats: ElementRef;
@@ -91,8 +93,12 @@ export class LeftComponent implements OnInit {
 
                 },
                 done: () => {
-                    $('#flexCheckDefault').prop('checked', true);
-                    this.toggleAllCategories(true);
+                    if (this.route.children[0].component?.name == 'SetpricesComponent') {
+                        $('#flexCheckDefault').prop('checked', true);
+                        this.toggleAllCategories(true);
+                    } else if (this.route.children[0].component?.name == 'DebterRulesComponent') {
+                        $('#flexCheckDefault').prop('checked', false);
+                    }
 
                     var left_cats = this.getTreeCategories();
 
