@@ -4,6 +4,7 @@ import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { PmCategoryService } from '../../../../../services/pm.category.service';
 import { SimtreeService } from '../../../../../services/simtree.service';
+import { ActivatedRoute } from '@angular/router';
 declare function checkGiven(any, boolean): void;
 declare function checkIt(boolean): void;
 
@@ -18,7 +19,7 @@ export class LeftComponent implements OnInit {
     cats: string = "";
     columnApi: any;
     flag_hdn: any = [];
-    constructor(private http: HttpClient, private categoryService: PmCategoryService, private simtreeService: SimtreeService) {
+    constructor(private http: HttpClient, private categoryService: PmCategoryService, private simtreeService: SimtreeService, private route: ActivatedRoute) {
     }
 
     @ViewChild('allSelectedCats') allSelectedCats: ElementRef;
@@ -28,7 +29,6 @@ export class LeftComponent implements OnInit {
         this.simtreeService.refresh$.subscribe(() => {
             $('#tree').empty();
             this.http.get<any>(environment.webservicebaseUrl + "/all-categories").subscribe(data => {
-                // this.simtreeService.refresh$.subscribe(() => {
                 this.list = data.categories;
 
                 var tree = simTree({
@@ -51,8 +51,13 @@ export class LeftComponent implements OnInit {
                         $("#btnloadcats").trigger('click');
                     },
                     done: () => {
-                        $('#flexCheckDefault').prop('checked', true);
-                        this.toggleAllCategories(true);
+                        if (this.route.children[0].component?.name == 'SetpricesComponent') {
+                            $('#flexCheckDefault').prop('checked', true);
+                            this.toggleAllCategories(true);
+                        } else if (this.route.children[0].component?.name == 'DebterRulesComponent') {
+                            $('#flexCheckDefault').prop('checked', false);
+                        }
+
                         this.flag_hdn['flag'] = 0;
                         this.flag_hdn['hdn_selectedcats'] = $("#hdn_selectedcategories").val();
                         $("#btnloadcats").trigger('click');
