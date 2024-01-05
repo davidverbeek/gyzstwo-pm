@@ -29,6 +29,7 @@ export class LiveroasComponent implements OnInit {
   helpavgroasgoogle: any;
 
   roasLiveDate: any;
+  lastRunDate: any;
   selectedDate: any;
   roasBol: any;
 
@@ -81,6 +82,7 @@ export class LiveroasComponent implements OnInit {
 
     this.http.get(environment.webservicebaseUrl + "/get-roasdate").subscribe(roasDate => {
       this.roasLiveDate = roasDate["message"][0]["live_roas_feed_from_date"] + " To " + roasDate["message"][0]["live_roas_feed_to_date"];
+      this.lastRunDate = roasDate["message"][0]["last_cron_run_date"];
     }
     );
 
