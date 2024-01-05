@@ -32,6 +32,9 @@ export class LiveroasComponent implements OnInit {
   selectedDate: any;
   roasBol: any;
 
+  ermSpinner: any = false;
+  isermDisabled: any = false;
+
 
   public rowModelType: 'serverSide' = 'serverSide';
   public serverSideStoreType: ServerSideStoreType = 'partial';
@@ -135,6 +138,20 @@ export class LiveroasComponent implements OnInit {
         this.avg_roas_google = responseData["msg"]["avg_google_roas"];
         this.helpavgroasgoogle = responseData["msg"]["avg_google_roas"];
       }
+    });
+  }
+
+  exportRoasToMagento() {
+    this.ermSpinner = true;
+    this.isermDisabled = true;
+    this.http.get(environment.roasSyncUrl).subscribe(ermData => {
+      if (ermData["msg"] != "success") {
+        alert("Something went wrong please try again. Error:-" + ermData["msg"] + "");
+      } else {
+        alert("Successfully updated roas");
+      }
+      this.ermSpinner = false;
+      this.isermDisabled = false;
     });
   }
 

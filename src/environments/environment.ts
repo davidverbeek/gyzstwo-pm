@@ -14,6 +14,7 @@ export const environment = {
   nodeServerUrl: "http://localhost:3200",
   agserverUrl: "http://localsymfony.com",
   roasAvgUrl: "http://localsymfony.com/nodewsrevenue/get_averages.php",
+  roasSyncUrl: "http://localsymfony.com/nodewsrevenue/export_roas.php",
 };
 
 /*

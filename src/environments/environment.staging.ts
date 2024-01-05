@@ -10,4 +10,5 @@ export const environment = {
   nodeServerUrl: "http://127.0.0.1:3200/",
   agserverUrl: "https://gyzs.gyzsdevm2.hypernode.io",
   roasAvgUrl: "https://gyzs.gyzsdevm2.hypernode.io/pm_getdata/get_averages.php",
+  roasSyncUrl: "https://gyzs.gyzsdevm2.hypernode.io/pm_getdata/export_roas.php",
 };

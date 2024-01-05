@@ -69,9 +69,16 @@
         <!-- /.modal-dialog -->
     </div>
 
-    <div style="padding-bottom: 10px;">
+    <div style="float: left;">
         Date:- {{selectedDate}} <span style="font-weight: bold;">[{{roasBol}}]</span>
     </div>
+    <div style="float: right; margin-bottom: 10px;">
+        <button type="button" class="btn btn-primary" (click)="exportRoasToMagento()" [disabled]="isermDisabled"> <i
+                class="fa fa-fw fa-refresh"></i> Export Roas To Magento <i *ngIf="ermSpinner"
+                class="fa fa-circle-o-notch fa-spin" style="font-size:12px; margin-left:5px;"></i></button>
+    </div>
+
+    <div style="clear: both;"></div>
 
     <div class="box" style="border: none;">
         <ag-grid-angular style="width: 100%; height:800px;" class="ag-theme-alpine" [rowData]="rowData"
