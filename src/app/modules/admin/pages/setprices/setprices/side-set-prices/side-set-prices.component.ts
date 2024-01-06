@@ -59,7 +59,6 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
   selCG: string = "";
   priceType: any = [];
   xlsxPrices: any = "";
-  uploadMessage: any = "";
   uploadSpinner: any = false;
   spinner: any = false;
   isDisabled: any = false;
@@ -212,7 +211,6 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
     // Check if file type is Xlsx
     if (fileType != "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
       this.uploadValidationMessage = "File is not Xlsx";
-      this.uploadMessage = "";
       return false;
     }
 
@@ -233,14 +231,12 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
         // Check if header is proper
         if (getXlsxCols.length == 1) {
           this.uploadValidationMessage = "Something is wrong with the columns";
-          this.uploadMessage = "";
           return false;
         }
 
         for (let xlsxCol of getXlsxCols) {
           if (!allValidHeaders.includes(xlsxCol)) {
             this.uploadValidationMessage = "Column Name does not match";
-            this.uploadMessage = "";
             return false;
           }
         }
@@ -263,59 +259,49 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
 
             if (this.xlsxPrices[xlsxRow][0] == 0) {
               this.uploadValidationMessage = "Row:" + (xlsxRow + 1) + " Column:0 Value: 0";
-              this.uploadMessage = "";
               return false;
             }
 
             if (typeof validate_buying_price != "undefined" && this.xlsxPrices[xlsxRow][validate_buying_price] == 0) {
               this.uploadValidationMessage = "Row:" + (xlsxRow + 1) + " Column:" + (parseInt(validate_buying_price) + 1) + " Value: 0";
-              this.uploadMessage = "";
               return false;
             }
 
             if (typeof validate_selling_price != "undefined" && this.xlsxPrices[xlsxRow][validate_selling_price] == 0) {
               this.uploadValidationMessage = "Row:" + (xlsxRow + 1) + " Column:" + (parseInt(validate_selling_price) + 1) + " Value: 0";
-              this.uploadMessage = "";
               return false;
             }
 
             if (typeof validate_margin_bp != "undefined" && this.xlsxPrices[xlsxRow][validate_margin_bp] == 0) {
               this.uploadValidationMessage = "Row:" + (xlsxRow + 1) + " Column:" + (parseInt(validate_margin_bp) + 1) + " Value: 0";
-              this.uploadMessage = "";
               return false;
             }
 
             if (typeof validate_margin_sp != "undefined" && this.xlsxPrices[xlsxRow][validate_margin_sp] == 0) {
               this.uploadValidationMessage = "Row:" + (xlsxRow + 1) + " Column:" + (parseInt(validate_margin_sp) + 1) + " Value: 0";
-              this.uploadMessage = "";
               return false;
             }
 
 
             if (typeof this.xlsxPrices[xlsxRow][0] == "undefined") {
               this.uploadValidationMessage = "Row:" + (xlsxRow + 1) + " Column:0 Value: Empty";
-              this.uploadMessage = "";
               return false;
             }
 
             if (typeof validate_buying_price != "undefined" && typeof this.xlsxPrices[xlsxRow][validate_buying_price] == "undefined") {
               this.uploadValidationMessage = "Row:" + (xlsxRow + 1) + " Column:" + (parseInt(validate_buying_price) + 1) + " Value: Empty";
-              this.uploadMessage = "";
               return false;
             }
             if (typeof validate_selling_price != "undefined" && typeof this.xlsxPrices[xlsxRow][validate_selling_price] == "undefined") {
               this.uploadValidationMessage = "Row:" + (xlsxRow + 1) + " Column:" + (parseInt(validate_selling_price) + 1) + " Value: Empty";
-              this.uploadMessage = "";
               return false;
             }
             if (typeof validate_margin_bp != "undefined" && typeof this.xlsxPrices[xlsxRow][validate_margin_bp] == "undefined") {
               this.uploadValidationMessage = "Row:" + (xlsxRow + 1) + " Column:" + (parseInt(validate_margin_bp) + 1) + " Value: Empty";
-              this.uploadMessage = "";
               return false;
             }
             if (typeof validate_margin_sp != "undefined" && typeof this.xlsxPrices[xlsxRow][validate_margin_sp] == "undefined") {
               this.uploadValidationMessage = "Row:" + (xlsxRow + 1) + " Column:" + (parseInt(validate_margin_sp) + 1) + " Value: Empty";
-              this.uploadMessage = "";
               return false;
             }
             //}
@@ -330,7 +316,6 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
         }
 
         this.uploadSpinner = true;
-        this.uploadMessage = "";
         this.uploadValidationMessage = "";
         var queryHead = Array();
         var queryFoot = Array();
@@ -378,6 +363,8 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
         // Get All Xlsx Sku's PM Data
         this.http.get(environment.webservicebaseUrl + "/get-products-byskus").subscribe(skuPMData => {
 
+          const startTime = performance.now();
+
           var allExistingPmData = Array();
 
           for (let obj of skuPMData["msg"]) {
@@ -401,7 +388,6 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
             sku = this.xlsxPrices[xlsxRow][0]; //Artikelnummer (Artikel) will always be on 0 th column
             if (!(sku in allExistingPmData)) {
               this.uploadValidationMessage = "Row:" + (xlsxRow + 1) + " Sku does not exist";
-              this.uploadMessage = "";
               this.uploadSpinner = false;
               return false;
             }
@@ -608,16 +594,16 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
                     this.progress = data["cnt"];
                   }
                 }
-                if (this.progress == 100) {
-                  clearInterval(this.uploadProgressId);
-                }
               });
             }, 1000);
 
             this.http.post(environment.webservicebaseUrl + "/upload-products", uploadRequestData).subscribe(responseData => {
-              this.uploadMessage = responseData["msg"];
+              const endTime = performance.now();
+              const executionTime = endTime - startTime;
+              const timeinSecs = executionTime / 1000;
               this.uploadSpinner = false;
-              this.sidebarService.loadAgGrid.next(1);
+              clearInterval(this.uploadProgressId);
+              this.sidebarService.loadAgGrid.next(responseData["msg"] + "|||" + timeinSecs);
             });
           }
         });

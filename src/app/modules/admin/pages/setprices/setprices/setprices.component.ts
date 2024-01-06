@@ -52,6 +52,9 @@ export class SetpricesComponent implements OnInit {
   public cacheBlockSize = 500;
   rowStyle = { background: '' };
   newArray: any[] = [];
+  alertType = "info";
+  strongalertMessage = "Information! ";
+  alertMessage = "Edit status will be available here";
   getRowStyle = (params: RowClassParams) => this.rowStyle;
 
   // Each Column Definition results in one Column.
@@ -322,8 +325,12 @@ export class SetpricesComponent implements OnInit {
   }
   ngOnInit() {
     this.fileUploadDone = this.sidebarService.loadAgGrid.subscribe((isUploaded) => {
-      if (isUploaded == 1) {
+      if (isUploaded != "") {
+        var isUploadedDetails = isUploaded.split("|||");
         this.loadAGGrid();
+        this.alertType = "success";
+        this.strongalertMessage = "Success! ";
+        this.alertMessage = "Successfully uploaded " + isUploadedDetails[0] + " product(s) in " + isUploadedDetails[1] + " seconds";
       }
     });
 
@@ -341,14 +348,20 @@ export class SetpricesComponent implements OnInit {
       });
       var err = 0;
       if (idsToUpdate.length == 0) {
-        alert("Please select record first!!");
+        this.alertType = "danger";
+        this.strongalertMessage = "Validation! ";
+        this.alertMessage = "Please select record first!!";
       } else {
         if (typeof priceType["type"] == "undefined") {
-          alert("Please select price type");
+          this.alertType = "danger";
+          this.strongalertMessage = "Validation! ";
+          this.alertMessage = "Please select price type";
           err = 1;
         }
         if (priceType["update_type"] == "update" && priceType["val"] == "") {
-          alert("Please enter value");
+          this.alertType = "danger";
+          this.strongalertMessage = "Validation! ";
+          this.alertMessage = "Please enter value";
           err = 1;
         }
         if (err == 0) {
@@ -397,7 +410,6 @@ export class SetpricesComponent implements OnInit {
             });
           } else if (this.isChkAllChecked == 1) {
             if ((this.chkAllProducts["msg"]).length > 0) {
-              this.chkAllCount = "(Please Wait ...)";
               this.chkAllProducts["msg"].forEach(
                 (value, key) => {
                   if (priceType["customer_group_selected"] != '') {
@@ -677,7 +689,7 @@ export class SetpricesComponent implements OnInit {
     this.getRowStyle = function (params) {
       if (typeof params.data != "undefined") {
         if (params.data.is_updated == 1 || params.data.is_updated_skwirrel == 1 || params.data.is_activated == 1) {
-          return { background: '#bce0bc' };
+          return { background: '#dff0d8' };
         } else {
           return { background: '' };
         }
@@ -724,7 +736,9 @@ export class SetpricesComponent implements OnInit {
     const newValue = event.newValue;
     if (isNaN(Number(event.newValue)) || (typeof newValue === 'string' && !(newValue.trim()))) {
       const columnName_1 = event.column.getColId();
-      alert('Please enter numeric value');
+      this.alertType = "danger";
+      this.strongalertMessage = "Validation! ";
+      this.alertMessage = "Please enter numeric value";
       event.node.setDataValue(columnName_1, event.oldValue);
       return false;
     }
@@ -880,6 +894,7 @@ export class SetpricesComponent implements OnInit {
   }
 
   saveRow(updatedProducts) {
+    var totalUpdatedProducts = 0;
     updatedProducts.forEach(
       (value, key) => {
         var rowNode = this.api.getRowNode(key.toString());
@@ -909,9 +924,12 @@ export class SetpricesComponent implements OnInit {
           rowNode.setDataValue('profit_percentage_selling_price', value["profit_percentage_selling_price"]);
           rowNode.setDataValue('discount_on_gross_price', value["discount_on_gross_price"]); */
         }
+        totalUpdatedProducts++;
       }
     );
-    //this.updatedProducts = [];
+    this.alertType = "success";
+    this.strongalertMessage = "Success! ";
+    this.alertMessage = "Successfully updated " + totalUpdatedProducts + " product(s)";
   }
 
   saveUpdatedProducts(processedData) {
@@ -926,7 +944,10 @@ export class SetpricesComponent implements OnInit {
             this.saveRow(finalPdata);
             this.updatePriceCompleted = false;
           } else if (this.isChkAllChecked == 1) {
-            this.chkAllCount = "(" + (this.chkAllProducts["msg"]).length + " Products Updated Successfully)";
+            //this.chkAllCount = "(" + (this.chkAllProducts["msg"]).length + " Products Updated Successfully)";
+            this.alertType = "success";
+            this.strongalertMessage = "Success! ";
+            this.alertMessage = "Successfully updated " + (this.chkAllProducts["msg"]).length + " product(s)";
             this.updatedProducts = [];
             this.loadAGGrid();
             this.updatePriceCompleted = false;

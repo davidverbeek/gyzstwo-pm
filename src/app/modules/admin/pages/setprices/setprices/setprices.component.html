@@ -9,7 +9,13 @@
   </ol>
 </section>
 
-<div style="padding: 15px;">
+
+
+<div style="padding: 10px;">
+  <div class="alert alert-{{ alertType }}" style="margin: 0px; padding: 7px;">
+    <strong>{{ strongalertMessage }}</strong>{{ alertMessage }}
+  </div>
+
   <div class="checkbox" style="float: left;">
     <label><input type="checkbox" value="chkall" (change)="getAllProducts($event)">Check All {{ chkAllCount }}</label>
     <div style="display: none;padding-left: 20px;">

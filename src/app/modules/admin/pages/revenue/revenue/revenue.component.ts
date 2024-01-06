@@ -44,6 +44,10 @@ export class RevenueComponent implements OnInit {
   syncSpinner: any = false;
   isSyncDisabled: any = false;
 
+  alertType = "info";
+  strongalertMessage = "Information! ";
+  alertMessage = "Edit status will be available here";
+
 
   constructor(private http: HttpClient) { }
 
@@ -204,10 +208,16 @@ export class RevenueComponent implements OnInit {
     this.http.post(environment.revenueUrl, date_range).subscribe(responseData => {
 
       if (responseData["err"] == "error") {
-        alert("Something Went wrong. Please try again with different date range")
+        this.alertType = "danger";
+        this.strongalertMessage = "Error! ";
+        this.alertMessage = "Something Went wrong. Please try again with different date range";
+
       } else {
         this.selectedDate = responseData["date_selected"];
         this.loadAGGrid();
+        this.alertType = "success";
+        this.strongalertMessage = "Success! ";
+        this.alertMessage = "Successfully generated report from " + this.selectedDate + "";
         /*var sumRows = Array();
         sumRows.push({ "sku_vericale_som": responseData["total_revenue"] });
         sumRows.push({ "sku_vericale_som_bp": responseData["total_bp"] });
@@ -268,9 +278,13 @@ export class RevenueComponent implements OnInit {
     this.isSyncDisabled = true;
     this.http.get(environment.revenueSyncUrl).subscribe(syncData => {
       if (syncData["msg"] != "success") {
-        alert("Something went wrong please try again. Error:-" + syncData["msg"] + "");
+        this.alertType = "danger";
+        this.strongalertMessage = "Error! ";
+        this.alertMessage = "Something went wrong please try again. Error:-" + syncData["msg"] + "";
       } else {
-        alert("Successfully updated the sort order");
+        this.alertType = "success";
+        this.strongalertMessage = "Success! ";
+        this.alertMessage = "Successfully updated sort order in magento";
       }
       this.syncSpinner = false;
       this.isSyncDisabled = false;

@@ -61,6 +61,10 @@ export class CurrentroasComponent implements OnInit {
   exportroasSpinner: any = false;
   isExportRoasDisabled: any = false;
 
+  alertType = "info";
+  strongalertMessage = "Information! ";
+  alertMessage = "Edit status will be available here";
+
   constructor(private http: HttpClient, private categoryService: PmCategoryService) { }
 
   ngOnInit(): void {
@@ -233,7 +237,9 @@ export class CurrentroasComponent implements OnInit {
     date_range[0] = this.roasStartDate;
     date_range[1] = this.roasEndDate;
     if (typeof date_range[0] == "undefined" || typeof date_range[1] == "undefined") {
-      alert("Please select from and to date");
+      this.alertType = "danger";
+      this.strongalertMessage = "Validation! ";
+      this.alertMessage = "Please select From and To date";
       return false;
     }
 
@@ -241,7 +247,9 @@ export class CurrentroasComponent implements OnInit {
     this.isRoasDisabled = true;
     this.http.post(environment.roasUrl, date_range).subscribe(responseData => {
       if (responseData["err"] == "error") {
-        alert("Something Went wrong. Please try again with different date range")
+        this.alertType = "danger";
+        this.strongalertMessage = "Error! ";
+        this.alertMessage = "Something Went wrong. Please try again with different date range";
       } else {
         this.loadAGGrid();
         this.getRowStyle = function (params) {
@@ -256,6 +264,10 @@ export class CurrentroasComponent implements OnInit {
           }
           return { background: '' };
         };
+        this.alertType = "success";
+        this.strongalertMessage = "Success! ";
+        this.alertMessage = "Successfully generated roas From: " + date_range[0] + " To: " + date_range[1] + " ";
+
       }
       this.roasSpinner = false;
       this.isRoasDisabled = false;
@@ -363,19 +375,26 @@ export class CurrentroasComponent implements OnInit {
     date_range[0] = this.roasStartDate;
     date_range[1] = this.roasEndDate;
     if (typeof date_range[0] == "undefined" || typeof date_range[1] == "undefined") {
-      alert("Please select from and to date");
+      this.alertType = "danger";
+      this.strongalertMessage = "Validation! ";
+      this.alertMessage = "Please select From and To date";
+
       this.setroasSpinner = false;
       this.isSetRoasDisabled = false;
       return false;
     }
 
-    if (confirm("Ready to GO LIVE with this Roas Date?\n\nBy clicking on below 'OK' button Roas will be calculated from " + date_range[0] + " To " + date_range[1] + "  and will GO LIVE in the NEXT CYCLE.")) {
+    if (confirm("Ready to GO LIVE with this Roas Date?\n\nBy clicking on below 'OK' button Roas will be calculated from " + date_range[0] + " To " + date_range[1] + "  and will be available in Roas page.")) {
       this.http.post(environment.webservicebaseUrl + "/set-roasdate", date_range).subscribe(responseData => {
-        console.log(responseData);
         if (responseData["message"] != "success") {
-          alert("Something went wrong please try again");
+          this.alertType = "danger";
+          this.strongalertMessage = "Error! ";
+          this.alertMessage = "Something went wrong please try again";
         } else {
           this.roasSetDate = date_range[0] + " To " + date_range[1];
+          this.alertType = "success";
+          this.strongalertMessage = "Success! ";
+          this.alertMessage = "Successfully set roas date From: " + date_range[0] + " To: " + date_range[1] + "";
         }
         this.setroasSpinner = false;
         this.isSetRoasDisabled = false;

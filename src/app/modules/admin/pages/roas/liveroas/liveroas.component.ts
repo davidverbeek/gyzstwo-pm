@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { GridReadyEvent, IServerSideDatasource, ServerSideStoreType, RowClassParams } from 'ag-grid-community';
 import { environment } from 'src/environments/environment';
 import { PmCategoryService } from '../../../../../services/pm.category.service';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-liveroas',
@@ -35,6 +36,10 @@ export class LiveroasComponent implements OnInit {
 
   ermSpinner: any = false;
   isermDisabled: any = false;
+
+  alertType = "info";
+  strongalertMessage = "Information! ";
+  alertMessage = "Edit status will be available here";
 
 
   public rowModelType: 'serverSide' = 'serverSide';
@@ -76,7 +81,7 @@ export class LiveroasComponent implements OnInit {
     resizable: true
   };
 
-  constructor(private http: HttpClient, private categoryService: PmCategoryService) { }
+  constructor(private http: HttpClient, private categoryService: PmCategoryService, private HttpErrorResponse: HttpErrorResponse) { }
 
   ngOnInit(): void {
 
@@ -148,13 +153,18 @@ export class LiveroasComponent implements OnInit {
     this.isermDisabled = true;
     this.http.get(environment.roasSyncUrl).subscribe(ermData => {
       if (ermData["msg"] != "success") {
-        alert("Something went wrong please try again. Error:-" + ermData["msg"] + "");
+        this.alertType = "danger";
+        this.strongalertMessage = "Error! ";
+        this.alertMessage = "Something went wrong please try again. Error:-" + ermData["msg"] + "";
       } else {
-        alert("Successfully updated roas");
+        this.alertType = "success";
+        this.strongalertMessage = "Success! ";
+        this.alertMessage = "Successfully updated roas in magento";
       }
       this.ermSpinner = false;
       this.isermDisabled = false;
-    });
+    }
+    );
   }
 
 }

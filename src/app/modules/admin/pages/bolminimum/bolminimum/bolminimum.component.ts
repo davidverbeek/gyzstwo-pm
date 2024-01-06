@@ -32,6 +32,9 @@ export class BolminimumComponent implements OnInit {
   chkAllProducts: any;
   isChkAllChecked: number = 0;
   updatedBolProducts: any = [];
+  alertType = "info";
+  strongalertMessage = "Information! ";
+  alertMessage = "Edit status will be available here";
 
   // Data that gets displayed in the grid
   public rowData: any;
@@ -106,7 +109,9 @@ export class BolminimumComponent implements OnInit {
     });
 
     if (idsToUpdate.length == 0) {
-      alert("Please select record first!!");
+      this.alertType = "danger";
+      this.strongalertMessage = "Validation! ";
+      this.alertMessage = "Please select record first!!";
     } else {
       if (this.isChkAllChecked == 0) {
         this.api.forEachNode((rowNode) => {
@@ -136,15 +141,18 @@ export class BolminimumComponent implements OnInit {
     var filterBolProcessData = this.updatedBolProducts.filter(function () { return true; });
     if (filterBolProcessData.length > 0) {
       this.http.post(environment.webservicebaseUrl + "/" + makeRequestTo + "", filterBolProcessData).subscribe(responseData => {
-        if (responseData["msg"] == "done") {
+        if (responseData["msg"] > 0) {
           if (this.isChkAllChecked == 0) {
             this.updatedBolProducts = [];
             this.loadAGGrid();
           } else if (this.isChkAllChecked == 1) {
-            this.chkAllCount = "(" + (this.chkAllProducts["msg"]).length + " Delivery Time Updated Successfully)";
+            //this.chkAllCount = "(" + (this.chkAllProducts["msg"]).length + " Delivery Time Updated Successfully)";
             this.updatedBolProducts = [];
             this.loadAGGrid();
           }
+          this.alertType = "success";
+          this.strongalertMessage = "Success! ";
+          this.alertMessage = "Successfully updated " + responseData["msg"] + " product(s) [" + makeRequestTo + "]";
 
         }
       });
