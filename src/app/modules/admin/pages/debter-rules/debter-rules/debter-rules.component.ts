@@ -80,6 +80,7 @@ export class DebterRulesComponent implements OnInit {
     } else {
       check_old_is_removed = catId_new_arr;
     }
+    const cats_new = updated_cats.filter(function () { return true; });
 
     if (old_cats != "" && check_old_is_removed.length > 0) {
       var filterProcessData_1 = check_old_is_removed.filter(function () { return true; });
@@ -117,21 +118,20 @@ export class DebterRulesComponent implements OnInit {
                 break;
               }
             }
-            //console.log(debter_group);
+
             if (reset_product_ids != "") {
               if (confirm("Unchecked categories will be unassinged and prices of their products will be set to ZERO. Are you sure you want to continue?")) {
                 this.debterRulesService.resetDebterPrices(debter_group, reset_product_ids);
-                this.callServiceSaveDebterRules(cats, updated_cats, selected_group, debtor_key_in_localStorage);
+                this.callServiceSaveDebterRules(cats_new, updated_cats, selected_group, debtor_key_in_localStorage);
               }
             } else {
-              this.callServiceSaveDebterRules(cats, updated_cats, selected_group, debtor_key_in_localStorage);
+              this.callServiceSaveDebterRules(cats_new, updated_cats, selected_group, debtor_key_in_localStorage);
 
             }
 
           });
     } else {
-      const cats = updated_cats.filter(function () { return true; });
-      this.callServiceSaveDebterRules(cats, updated_cats, selected_group, debtor_key_in_localStorage);
+      this.callServiceSaveDebterRules(cats_new, updated_cats, selected_group, debtor_key_in_localStorage);
     }
     return true;
   }//end onSaveChanges()
