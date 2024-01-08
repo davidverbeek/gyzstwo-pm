@@ -231,7 +231,15 @@ export class RevenueComponent implements OnInit {
       }
       this.dataSpinner = false;
       this.isDataDisabled = false;
-    });
+    },
+      error => {
+        this.alertType = "danger";
+        this.strongalertMessage = "" + error.name + "! ";
+        this.alertMessage = error.message;
+        this.dataSpinner = false;
+        this.isDataDisabled = false;
+      }
+    );
   }
   exportRevenue() {
     this.spinner = true;
