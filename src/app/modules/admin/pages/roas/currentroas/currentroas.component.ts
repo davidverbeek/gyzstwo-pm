@@ -271,7 +271,15 @@ export class CurrentroasComponent implements OnInit {
       }
       this.roasSpinner = false;
       this.isRoasDisabled = false;
-    });
+    },
+      error => {
+        this.alertType = "danger";
+        this.strongalertMessage = "" + error.name + "! ";
+        this.alertMessage = error.message;
+        this.roasSpinner = false;
+        this.isRoasDisabled = false;
+      }
+    );
   }
 
   getAverages() {
