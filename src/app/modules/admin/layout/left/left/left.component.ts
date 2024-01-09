@@ -116,26 +116,22 @@ export class LeftComponent implements OnInit {
         var current_status = $('#flexCheckDefault').prop('checked');
         let cat_all_str: any;
         cat_all_str = $("#hdn_selectedcategories").val();
-
-        if ($('.show_deb_cols').find("input[type='checkbox']").is(':checked') && cat_all_str != '' && cat_all_str != '-1') {//means this is a group list
-            let cat_all_arr = cat_all_str.split(',');
-            if (current_status) {
-                $.each(cat_all_arr, function (key, value) {
-                    var $li = $('li[data-id=' + value + ']');
-                    checkGiven($li, true);
-                });
-            } else { //uncheck all hiddencategories
-                $.each(cat_all_arr, function (key, value) {
-                    var $li = $('li[data-id=' + value + ']');
-                    checkGiven($li, false);
-                });
+        if (this.route.children[0].component?.name == 'SetpricesComponent') {
+            if ($('.show_deb_cols').find("input[type='checkbox']").is(':checked') && cat_all_str != '' && cat_all_str != '-1') {//means this is a group list
+                this.togglePagewise(cat_all_str, current_status);
+            } else if (cat_all_str == '-1') {
+                this.toggleAllCategories(current_status);
+            } else {
+                this.toggleAllCategories(current_status);
             }
-        } else if (cat_all_str == '-1') {
-            this.toggleAllCategories(current_status);
-        } else {
-            this.toggleAllCategories(current_status);
+            $('#btnloadcats').trigger('click');
+        } else if (this.route.children[0].component?.name == 'DebterRulesComponent') {
+            if (cat_all_str != '') {
+                this.togglePagewise(cat_all_str, current_status);
+            } else {
+                this.toggleAllCategories(current_status);
+            }
         }
-        $('#btnloadcats').trigger('click');
     }
 
 
@@ -181,5 +177,20 @@ export class LeftComponent implements OnInit {
         return selected_categories;
     }//end getTreeCategories()
 
+    togglePagewise(debter_assigned_cats_str, status_to_set) {
+        let cat_all_arr = debter_assigned_cats_str.split(',');
+        let current_status = status_to_set;
+        if (current_status) {
+            $.each(cat_all_arr, function (key, value) {
+                var $li = $('li[data-id=' + value + ']');
+                checkGiven($li, true);
+            });
+        } else { //uncheck all hiddencategories
+            $.each(cat_all_arr, function (key, value) {
+                var $li = $('li[data-id=' + value + ']');
+                checkGiven($li, false);
+            });
+        }
 
+    }//end togglePagewise()
 }
