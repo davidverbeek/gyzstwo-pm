@@ -278,16 +278,20 @@ export class DebterRulesComponent implements OnInit {
     var debterData = new Array();
     this.http.post(environment.webservicebaseUrl + "/catpro-products", cats)
       .pipe(map(responseData => {
-        const product_ids: number[] = [];
+        if (responseData.hasOwnProperty("products_of_cats")) {
+          const product_ids: number[] = [];
 
-        responseData["products_of_cats"].forEach(function1);
+          responseData["products_of_cats"].forEach(function1);
 
-        function function1(currentValue, index) {
-          // console.log("Index in array is: " + index + " ::  Value is: " + currentValue.product_id);
-          product_ids.push(currentValue.product_id)
+          function function1(currentValue, index) {
+            // console.log("Index in array is: " + index + " ::  Value is: " + currentValue.product_id);
+            product_ids.push(currentValue.product_id)
+          }
+          let comma_sperated_ids = product_ids.toString();
+          return comma_sperated_ids;
+        } else {
+          return "";
         }
-        let comma_sperated_ids = product_ids.toString();
-        return comma_sperated_ids;
       }))
       .subscribe(
         responseData => {
