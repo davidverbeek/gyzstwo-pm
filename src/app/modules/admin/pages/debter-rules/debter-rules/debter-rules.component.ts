@@ -165,7 +165,7 @@ export class DebterRulesComponent implements OnInit {
 
     checkIt(false);
 
-    $("#hdn_existingcategories").val('');
+    $("#hdn_selectedcategories").val('');
     this.toggleCheckbox('');
 
     $("#showloader").addClass("loader");
@@ -195,7 +195,6 @@ export class DebterRulesComponent implements OnInit {
 
         if (category_ids != "") {
 
-
           let cat_id_arr = category_ids?.split(',');
 
           $.each(cat_id_arr, function (key, value) {
@@ -203,16 +202,12 @@ export class DebterRulesComponent implements OnInit {
             var $li = $("li[data-id='" + value + "']");
             checkGiven($li, true);
           });
-          $("#hdn_existingcategories").val(this.category_ids);
-
+          $("#hdn_selectedcategories").val(this.category_ids);
+          $("#flexCheckDefault").prop('checked', true);
         } else {
           //checkIt(false);//zzp
         }
-
         this.toggleCheckbox('none');//add disabled
-        $("#flexCheckDefault").prop('checked', false);
-
-
       });
   };
 
