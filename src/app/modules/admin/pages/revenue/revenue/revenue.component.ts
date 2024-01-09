@@ -7,6 +7,7 @@ import { RevenuefooterComponent } from '../revenuefooter/revenuefooter.component
 import * as XLSX from 'xlsx'
 import { writeFile } from 'xlsx';
 import { RevenuecalculationComponent } from '../revenuecalculation/revenuecalculation.component';
+import { PmCategoryService } from '../../../../../services/pm.category.service';
 
 
 
@@ -44,14 +45,27 @@ export class RevenueComponent implements OnInit {
   syncSpinner: any = false;
   isSyncDisabled: any = false;
 
+  subcat: any;
+  cats: String = "";
+  product_brands: any = [];
+  flag_of_cat_change: Number = 0;
+
   alertType = "info";
   strongalertMessage = "Information! ";
   alertMessage = "Edit status will be available here";
 
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private categoryService: PmCategoryService) { }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.subcat = this.categoryService.categorySelected.subscribe((allselectedcats) => {
+      //this.cats = allselectedcats;
+      this.cats = allselectedcats['hdn_selectedcats'];
+      this.flag_of_cat_change = allselectedcats['flag'];
+      this.loadAGGrid();
+    });
+
+  }
   // Each Column Definition results in one Column.
   public columnDefs = [
     {
@@ -62,7 +76,17 @@ export class RevenueComponent implements OnInit {
       field: 'sku', headerName: 'Sku', sortable: true, filter: 'text', cellRenderer: RevenuecalculationComponent
     },
     { field: 'name', headerName: 'Name', sortable: true, filter: 'text' },
-    { field: 'merk', headerName: 'Merken', sortable: true, filter: 'text' },
+    {
+      field: 'merk', headerName: 'Merken', sortable: true, filter: 'agSetColumnFilter', filterParams: {
+        values: params => {
+          this.product_brands = this.categoryService.product_brand_arr;
+
+          // simulating async delay
+          setTimeout(() => params.success(this.product_brands), 500);
+        },
+        refreshValuesOnOpen: true
+      }
+    },
     { field: 'sku_total_quantity_sold', headerName: 'Afzet', sortable: true, filter: 'number' },
     { field: 'sku_total_price_excl_tax', headerName: 'Omzet', sortable: true, filter: 'number' },
     {
@@ -178,8 +202,25 @@ export class RevenueComponent implements OnInit {
   }
 
   loadAGGrid() {
-    var datasource = createServerSideDatasource(this.gridParams);
+    let selected_categories: String = '-1';
+    if (this.flag_of_cat_change == 0) {
+      if ($('a>i.sim-tree-checkbox').hasClass('checked')) {
+        let updated_cats = new Array();
+        //let collect_category_ids = new Array();
+        $.each($('.sim-tree-checkbox'), function (index, value) {
+          if ($(this).hasClass('checked')) {
+            updated_cats.push($(this).parent('a').parent('li').attr('data-id'));
+          }
+        });
+        selected_categories = updated_cats.toString();
+      }
+    } else {
+      selected_categories = this.cats;
+    }
+
+    var datasource = createServerSideDatasource(this.gridParams, selected_categories);
     this.api.setServerSideDatasource(datasource);
+    this.product_brands = this.categoryService.setCategoryBrands(selected_categories);
     this.createBottomRow();
   }
 
@@ -325,10 +366,11 @@ export class RevenueComponent implements OnInit {
 
 
 
-function createServerSideDatasource(server: any): IServerSideDatasource {
+function createServerSideDatasource(server: any, cats: any): IServerSideDatasource {
   return {
     getRows(params) {
 
+      params.request["cats"] = cats;
       fetch(environment.webservicebaseUrl + "/pm-revenue", {
         method: 'post',
         body: JSON.stringify(params.request),

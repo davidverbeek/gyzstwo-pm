@@ -61,6 +61,8 @@ export class CurrentroasComponent implements OnInit {
   exportroasSpinner: any = false;
   isExportRoasDisabled: any = false;
 
+  flag_of_cat_change: Number = 0;
+
   alertType = "info";
   strongalertMessage = "Information! ";
   alertMessage = "Edit status will be available here";
@@ -74,7 +76,9 @@ export class CurrentroasComponent implements OnInit {
     }
     );
     this.subcat = this.categoryService.categorySelected.subscribe((allselectedcats) => {
-      this.cats = allselectedcats;
+      //this.cats = allselectedcats;
+      this.cats = allselectedcats['hdn_selectedcats'];
+      this.flag_of_cat_change = allselectedcats['flag'];
       this.loadAGGrid();
     });
   }
@@ -211,10 +215,25 @@ export class CurrentroasComponent implements OnInit {
   }
 
   loadAGGrid() {
+    let selected_categories: String = '-1';
+    if (this.flag_of_cat_change == 0) {
+      if ($('a>i.sim-tree-checkbox').hasClass('checked')) {
+        let updated_cats = new Array();
+        //let collect_category_ids = new Array();
+        $.each($('.sim-tree-checkbox'), function (index, value) {
+          if ($(this).hasClass('checked')) {
+            updated_cats.push($(this).parent('a').parent('li').attr('data-id'));
+          }
+        });
+        selected_categories = updated_cats.toString();
+      }
+    } else {
+      selected_categories = this.cats;
+    }
 
-    var datasource = createServerSideDatasource(this.gridParams, this.cats);
+    var datasource = createServerSideDatasource(this.gridParams, selected_categories);
     this.api.setServerSideDatasource(datasource);
-    this.product_brands = this.categoryService.setCategoryBrands(this.cats);
+    this.product_brands = this.categoryService.setCategoryBrands(selected_categories);
     this.getAverages();
   }
 

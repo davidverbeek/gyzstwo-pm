@@ -51,7 +51,7 @@ export class LeftComponent implements OnInit {
                         $("#btnloadcats").trigger('click');
                     },
                     done: () => {
-                        if (this.route.children[0].component?.name == 'SetpricesComponent') {
+                        if (this.route.children[0].component?.name == 'SetpricesComponent' || this.route.children[0].component?.name == 'CurrentroasComponent' || this.route.children[0].component?.name == 'LiveroasComponent' || this.route.children[0].component?.name == 'RevenueComponent') {
                             $('#flexCheckDefault').prop('checked', true);
                             this.toggleAllCategories(true);
                         } else if (this.route.children[0].component?.name == 'DebterRulesComponent') {

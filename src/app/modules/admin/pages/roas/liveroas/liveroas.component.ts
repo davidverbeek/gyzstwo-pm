@@ -2,8 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { GridReadyEvent, IServerSideDatasource, ServerSideStoreType, RowClassParams } from 'ag-grid-community';
 import { environment } from 'src/environments/environment';
 import { PmCategoryService } from '../../../../../services/pm.category.service';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { catchError } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-liveroas',
@@ -17,6 +16,7 @@ export class LiveroasComponent implements OnInit {
   columnApi: any;
   subcat: any;
   cats: String = "";
+  product_brands: any = [];
 
   avg_roas: any;
   avg_end_roas: any;
@@ -36,6 +36,8 @@ export class LiveroasComponent implements OnInit {
 
   ermSpinner: any = false;
   isermDisabled: any = false;
+
+  flag_of_cat_change: Number = 0;
 
   alertType = "info";
   strongalertMessage = "Information! ";
@@ -64,7 +66,17 @@ export class LiveroasComponent implements OnInit {
 
       }
     },
-    { field: 'merk', headerName: 'Merk', sortable: true, filter: 'text' },
+    {
+      field: 'merk', headerName: 'Merk', sortable: true, filter: 'agSetColumnFilter', filterParams: {
+        values: params => {
+          this.product_brands = this.categoryService.product_brand_arr;
+
+          // simulating async delay
+          setTimeout(() => params.success(this.product_brands), 500);
+        },
+        refreshValuesOnOpen: true
+      }
+    },
     { field: 'carrier_level', headerName: 'Carrier Level', sortable: true, filter: 'text' },
     { field: 'total_orders', headerName: 'Total Orders', sortable: true, filter: 'number' },
     { field: 'roas_target', headerName: 'Roas Target (%)', sortable: true, filter: 'number' },
@@ -81,7 +93,7 @@ export class LiveroasComponent implements OnInit {
     resizable: true
   };
 
-  constructor(private http: HttpClient, private categoryService: PmCategoryService, private HttpErrorResponse: HttpErrorResponse) { }
+  constructor(private http: HttpClient, private categoryService: PmCategoryService) { }
 
   ngOnInit(): void {
 
@@ -92,7 +104,9 @@ export class LiveroasComponent implements OnInit {
     );
 
     this.subcat = this.categoryService.categorySelected.subscribe((allselectedcats) => {
-      this.cats = allselectedcats;
+      //this.cats = allselectedcats;
+      this.cats = allselectedcats['hdn_selectedcats'];
+      this.flag_of_cat_change = allselectedcats['flag'];
       this.loadAGGrid();
     });
   }
@@ -105,8 +119,25 @@ export class LiveroasComponent implements OnInit {
   }
 
   loadAGGrid() {
-    var datasource = createServerSideDatasource(this.gridParams, this.cats);
+    let selected_categories: String = '-1';
+    if (this.flag_of_cat_change == 0) {
+      if ($('a>i.sim-tree-checkbox').hasClass('checked')) {
+        let updated_cats = new Array();
+        //let collect_category_ids = new Array();
+        $.each($('.sim-tree-checkbox'), function (index, value) {
+          if ($(this).hasClass('checked')) {
+            updated_cats.push($(this).parent('a').parent('li').attr('data-id'));
+          }
+        });
+        selected_categories = updated_cats.toString();
+      }
+    } else {
+      selected_categories = this.cats;
+    }
+
+    var datasource = createServerSideDatasource(this.gridParams, selected_categories);
     this.api.setServerSideDatasource(datasource);
+    this.product_brands = this.categoryService.setCategoryBrands(selected_categories);
     this.getAverages();
   }
 
