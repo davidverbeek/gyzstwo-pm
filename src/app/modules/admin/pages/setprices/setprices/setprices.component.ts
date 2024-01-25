@@ -30,6 +30,7 @@ export class SetpricesComponent implements OnInit {
   updatedProducts: any = [];
   subcat: any;
   subbtnclicked: any;
+  bs_updt_btnclicked: any;
   chkAllCount: string;
   chkAllProducts: any;
   isChkAllChecked: number = 0;
@@ -132,7 +133,6 @@ export class SetpricesComponent implements OnInit {
     { field: 'webshop_selling_price', headerName: 'WS Vkpr', sortable: true, filter: 'number', hide: true },
     { field: 'is_updated', headerName: 'Is Updated', sortable: true, filter: 'number', hide: true },
     { field: 'is_updated_skwirrel', headerName: 'Is Skwirrel Updated', sortable: true, filter: 'number', hide: true },
-    /*
     {
       field: 'lowest_price',
       headerName: 'B.S. (L.P)',
@@ -147,7 +147,7 @@ export class SetpricesComponent implements OnInit {
       sortable: true,
       hide: true
     },
-     { field: 'lp_diff_percentage', headerName: 'B.S. (L.P %)', sortable: true, filter: 'agNumberColumnFilter', hide: true },
+    { field: 'lp_diff_percentage', headerName: 'B.S. (L.P %)', sortable: true, filter: 'agNumberColumnFilter', hide: true },
     { field: 'hp_diff_percentage', headerName: 'B.S. (H.P %)', sortable: true, filter: 'agNumberColumnFilter', hide: true },
     { field: 'price_competition_score', headerName: 'PCS', sortable: true, filter: 'agNumberColumnFilter', hide: true },
     { field: 'position', headerName: 'Positie', sortable: true, filter: 'agNumberColumnFilter', hide: true },
@@ -184,7 +184,7 @@ export class SetpricesComponent implements OnInit {
       hide: true
     },
     { field: 'price_of_the_next_excl_shipping', headerName: 'Next price', sortable: true, filter: 'agNumberColumnFilter', hide: true },
-   */  { field: 'is_activated', headerName: 'Is Activated', sortable: true, filter: 'number', hide: true }
+    { field: 'is_activated', headerName: 'Is Activated', sortable: true, filter: 'number', hide: true }
   ];
 
   public customToolPanelColumnDefs: any = [];
@@ -454,12 +454,89 @@ export class SetpricesComponent implements OnInit {
       }
     });
 
+    this.subbtnclicked = this.sidebarService.bs_updt_btnClicked.subscribe((bigShopperDetail) => {
+      var idsToUpdate = this.api.getSelectedNodes().map(function (node) {
+        return node.data.product_id;
+      });
+      var err = 0;
+      if (idsToUpdate.length == 0) {
+        this.alertType = "danger";
+        this.strongalertMessage = "Validation! ";
+        this.alertMessage = "Please select record first!!";
+        err = 1;
+        return false;
+      }
+      var sellingPrices = Array();
+      this.api.getSelectedNodes().map(function (node) {
+        //console.log(node.data);
+        sellingPrices.push({
+          "product_id": node.data.product_id,
+          "sku": node.data.sku,
+          "gyzs_selling_price": node.data.webshop_selling_price,
+          "buying_price": node.data.buying_price,
+          "supplier_gross_price": node.data.gross_unit_price,
+          "bigshopper_highest_price": node.data.highest_price,
+          "bigshopper_lowest_price": node.data.lowest_price,
+          "selling_price": node.data.selling_price,
+          "price_of_the_next_excl_shipping": node.data.price_of_the_next_excl_shipping,
+          "idealeverpakking": node.data.idealeverpakking,
+          "afwijkenidealeverpakking": node.data.afwijkenidealeverpakking,
+          "webshop_buying_price": node.data.webshop_buying_price,
+          "webshop_supplier_gross_price": node.data.webshop_gross_unit_price,
+          "webshop_idealeverpakking": node.data.webshop_idealeverpakking,
+          "webshop_afwijkenidealeverpakking": node.data.webshop_afwijkenidealeverpakking,
+
+        });
+      });
+      var filtersellingPrices = sellingPrices.filter(function () { return true; });
+      $("#showloader").addClass("loader").show();
+
+      this.http.post(environment.webservicebaseUrl + "/bulk_bs_update_selling_price", { 'selected_rows': filtersellingPrices, 'bs_price_option_checked': bigShopperDetail['bs_price_option'], 'isAllChecked': bigShopperDetail['isAllChecked'], 'expression': bigShopperDetail['expression'] }).subscribe(response_data => {
+        //console.log(responseData);
+        $("#showloader").hide();
+        let resp_obj: object = response_data;
+        //console.log(resp_obj);
+        let alert_mssage;
+        if (resp_obj["msg"]) {
+          if (typeof (resp_obj["msg"][0].msg) == 'string' && resp_obj["msg"][0].msg.indexOf("Notify") !== -1) {
+            let arr = resp_obj["msg"][0].msg.split('_');
+            this.alertType = "danger";
+            this.strongalertMessage = "Validation! ";
+            alert_mssage = "Not Updated : New Selling Price is less than Buying Price. (" + arr[1] + ")"
+          } else {
+            if (typeof (resp_obj["msg"][0].msg) == 'string' && resp_obj["msg"][0].msg.indexOf("_") !== -1) {
+              let arr = resp_obj["msg"][0].msg.split('_');
+              this.alertType = "success";
+              this.strongalertMessage = "Success! ";
+              alert_mssage = 'Updated ' + arr[0] + 'records & Skipped ' + arr[1] + ' : New Selling Price is less than Buying Price'
+            } else if (resp_obj["msg"].length == 2) {
+              this.alertType = "info";
+              this.strongalertMessage = "Information! ";
+              alert_mssage = resp_obj["msg"][0].msg;
+            } else {
+              this.alertType = "success";
+              this.strongalertMessage = "Success! ";
+              alert_mssage = resp_obj["msg"][0].msg;
+            }
+            this.loadAGGrid();
+          }
+        } else {
+          alert_mssage = "No records availiable to update";//alert(alert_mssage)
+        }
+        this.alertMessage = alert_mssage;
+      });
+
+    });
+
+
+
   }
 
   ngOnDestroy() {
     this.subcat.unsubscribe();
     this.subbtnclicked.unsubscribe();
     this.fileUploadDone.unsubscribe();
+    this.bs_updt_btnclicked.unsubscribe();
   }
 
   showUpdated(event) {
@@ -595,8 +672,6 @@ export class SetpricesComponent implements OnInit {
         }
 
       }
-
-
       prepareProductData["field"] = debField;
       prepareProductData["debtor"] = selCgData[0];
       prepareProductData["debtor_id"] = selCgData[1];

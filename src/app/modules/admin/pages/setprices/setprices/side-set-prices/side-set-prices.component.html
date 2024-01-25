@@ -45,40 +45,75 @@
                 </div>
             </div>
 
-            <!-- <div class="panel panel-default">
-                <div class="panel-heading">
+            <div class="panel panel-default" style="padding: 5px;">
+                <div class="panel-heading">Bulk Update Selling Price to B.S. Price</div>
+                <div class="panel-body">
 
                     <div class="radio">
-                        <label><input type="radio" name="opsetprice" checked value="highest_price"
-                                (click)="selectedOption('SP')">B.S (H.P)</label>
+                        <label><input type="radio" name="fav_BS" value="highest_price">B.S (H.P)</label>
                     </div>
                     <div class="radio">
-                        <label><input type="radio" name="opsetprice" value="lowest_price"
-                                (click)="selectedOption('SP')">B.S (L.P)</label>
+                        <label><input type="radio" name="fav_BS" value="lowest_price">B.S
+                            (L.P)</label>
                     </div>
                     <div class="radio disabled">
-                        <label><input type="radio" name="opsetprice" disabled value="between_bs"
-                                (click)="selectedOption('SP')">Between LP and
+                        <label><input type="radio" name="fav_BS" value="between_bs">Between LP and
                             HP</label>
                     </div>
-                    <div class="radio disabled">
-                        <label><input type="radio" name="opsetprice" disabled percentage_bs value="percentage_bs"
-                                (click)="selectedOption('SP')">Option
-                            3</label>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="fav_BS" value="percentage_bs">
+                            <div class="bs_expression">
+                                <input type="number" id="bs_percent_text" name="bs_percent_text" style="width:50%;"
+                                    value="0.01" step="0.01">
+                                %
+                                <div id="div_bs_percent" style="margin-top: 10px;">
+                                    <label for="bs_percent_price_type">
+                                        <select id="bs_percent_type" name="bs_percent_type">
+                                            <option value="more">More</option>
+                                            <option value="less">Less</option>
+                                        </select>
+                                        than
+                                        <select id="bs_percent_price_type" name="bs_percent_price_type"
+                                            style="margin-top: 5px;">
+                                            <option value="bs_percent_lp">LP</option>
+                                            <option value="bs_percent_hp">HP</option>
+                                        </select>
+                                    </label>
+                                </div>
+                            </div>
+                        </label>
                     </div>
-                    <div class="radio disabled">
-                        <label><input type="radio" name="opsetprice" disabled value="equal_to_next_price"
-                                (click)="selectedOption('SP')">Next
+                    <div class="radio ">
+                        <label><input type="radio" name="fav_BS" value="equal_to_next_price">Next
                             Price</label>
                     </div>
-                    <div class="radio disabled">
-                        <label><input type="radio" name="opsetprice" disabled value="percent_next_price"
-                                (click)="selectedOption('SP')">Option
-                            3</label>
+                    <div class="radio ">
+                        <label><input type="radio" name="fav_BS" value="percent_next_price">
+                            <div class="bs_expression">
+                                <input type="number" id="bs_np_percent_text" name="bs_np_percent_text"
+                                    style="width:50%;" step="0.01" value="0.01">
+                                %
+                                <div id="div_bs_percent" style="margin-top: 10px;">
+                                    <label for="bs_np_percent_price_type">
+                                        <select id="bs_np_percent_type" name="bs_np_percent_type">
+                                            <option value="more">More</option>
+                                            <option value="less">Less</option>
+                                        </select>
+                                    </label>
+                                    than Next Price
+                                </div>
+                            </div>
+                        </label>
                     </div>
                 </div>
-                <div class="panel-body">Panel Content</div>
-            </div> -->
+                <div class="panel-footer">
+                    <button type="button" class="btn btn-primary btn-sm add-bottom-pad" id="btn_vice_versa"
+                        style="color:#fff" style="width: 100%;">Update (Selection Excl. )</button>
+                    <button type="button" class="btn btn-primary btn-sm add-bottom-pad" id="bsmodalOk"
+                        style="width: 100%;" (click)="onBSUpdate()">Update</button>
+                </div>
+            </div>
 
         </div>
     </div>
