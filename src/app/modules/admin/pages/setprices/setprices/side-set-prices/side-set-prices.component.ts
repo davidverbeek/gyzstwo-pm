@@ -623,16 +623,13 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
     var bs_price_option = $("input[name=fav_BS]:checked").val();
 
     // create these rows
-    var isAllChecked = 0;
-    if ($("#chkall").is(':checked')) {
-      isAllChecked = 1;
-    }
+
 
 
 
 
     this.big_shopper_details["bs_price_option"] = bs_price_option;
-    this.big_shopper_details["isAllChecked"] = isAllChecked;
+    //this.big_shopper_details["isAllChecked"] = isAllChecked;
     this.big_shopper_details["expression"] = expression;
     this.sidebarService.bs_updt_btnClicked.next(this.big_shopper_details);
 
