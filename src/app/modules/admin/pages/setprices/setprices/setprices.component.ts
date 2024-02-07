@@ -57,6 +57,8 @@ export class SetpricesComponent implements OnInit {
   strongalertMessage = "Information! ";
   alertMessage = "Edit status will be available here";
   getRowStyle = (params: RowClassParams) => this.rowStyle;
+  currentYear = new Date().getFullYear();
+  previousYear = new Date().getFullYear() - 1;
 
   // Each Column Definition results in one Column.
   public columnDefs: ColDef[] = [
@@ -184,7 +186,12 @@ export class SetpricesComponent implements OnInit {
       hide: true
     },
     { field: 'price_of_the_next_excl_shipping', headerName: 'Next price', sortable: true, filter: 'agNumberColumnFilter', hide: true },
-    { field: 'is_activated', headerName: 'Is Activated', sortable: true, filter: 'number', hide: true }
+    { field: 'is_activated', headerName: 'Is Activated', sortable: true, filter: 'number', hide: true },
+    { field: 'compare_revenue_60', headerName: 'Revenue(60[' + this.currentYear + '])', sortable: true, filter: false, hide: true, sortingOrder: ['asc', 'desc'] },
+    { field: 'percentage_revenue', headerName: '% Revenue(60[' + this.currentYear + '])', sortable: true, filter: 'agNumberColumnFilter', hide: true, sortingOrder: ['asc', 'desc'] },
+    { field: 'compare_revenue_year', headerName: 'Revenue(60[' + this.previousYear + '])', sortable: true, filter: false, hide: true, sortingOrder: ['asc', 'desc'] },
+    { field: 'last_year_percentage_revenue', headerName: '% Revenue(60[' + this.previousYear + '])', sortable: true, filter: 'agNumberColumnFilter', hide: true, sortingOrder: ['asc', 'desc'] }
+
   ];
 
   public customToolPanelColumnDefs: any = [];
