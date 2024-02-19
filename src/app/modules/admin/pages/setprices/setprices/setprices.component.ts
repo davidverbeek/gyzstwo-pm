@@ -15,6 +15,7 @@ import { SimtreeService } from '../../../../../services/simtree.service';
 declare function checkGiven(any, boolean): void;
 declare function checkIt(boolean): void;
 import { map } from 'rxjs/operators';
+import { DatePipe } from '@angular/common';
 @Component({
   selector: 'app-setprices',
   templateUrl: './setprices.component.html',
@@ -59,6 +60,7 @@ export class SetpricesComponent implements OnInit {
   getRowStyle = (params: RowClassParams) => this.rowStyle;
   currentYear = new Date().getFullYear();
   previousYear = new Date().getFullYear() - 1;
+  xml_imported_at: any = "0000-00-00 00:00:00";
 
   // Each Column Definition results in one Column.
   public columnDefs: ColDef[] = [
@@ -140,20 +142,37 @@ export class SetpricesComponent implements OnInit {
       headerName: 'B.S. (L.P)',
       sortable: true,
       filter: 'agNumberColumnFilter',
-      hide: true
+      hide: false,
+      toolPanelClass: 'chbs'
     },
     {
       field: 'highest_price',
       headerName: 'B.S. (H.P)',
       filter: 'agNumberColumnFilter',
       sortable: true,
-      hide: true
+      hide: false,
+      toolPanelClass: 'chbs'
     },
-    { field: 'lp_diff_percentage', headerName: 'B.S. (L.P %)', sortable: true, filter: 'agNumberColumnFilter', hide: true },
-    { field: 'hp_diff_percentage', headerName: 'B.S. (H.P %)', sortable: true, filter: 'agNumberColumnFilter', hide: true },
-    { field: 'price_competition_score', headerName: 'PCS', sortable: true, filter: 'agNumberColumnFilter', hide: true },
-    { field: 'position', headerName: 'Positie', sortable: true, filter: 'agNumberColumnFilter', hide: true },
-    { field: 'number_competitors', headerName: 'Aantal CC', sortable: true, filter: 'agNumberColumnFilter', hide: true },
+    {
+      field: 'lp_diff_percentage', headerName: 'B.S. (L.P %)', sortable: true, filter: 'agNumberColumnFilter', hide: false,
+      toolPanelClass: 'chbs'
+    },
+    {
+      field: 'hp_diff_percentage', headerName: 'B.S. (H.P %)', sortable: true, filter: 'agNumberColumnFilter', hide: false,
+      toolPanelClass: 'chbs'
+    },
+    {
+      field: 'price_competition_score', headerName: 'PCS', sortable: true, filter: 'agNumberColumnFilter', hide: false,
+      toolPanelClass: 'chbs'
+    },
+    {
+      field: 'position', headerName: 'Positie', sortable: true, filter: 'agNumberColumnFilter', hide: false,
+      toolPanelClass: 'chbs'
+    },
+    {
+      field: 'number_competitors', headerName: 'Aantal CC', sortable: true, filter: 'agNumberColumnFilter', hide: false,
+      toolPanelClass: 'chbs'
+    },
     {
       field: 'productset_incl_dispatch', headerName: 'Productset', sortable: true,
       filter: 'agSetColumnFilter',
@@ -180,12 +199,16 @@ export class SetpricesComponent implements OnInit {
                   params.success(responseData);
                 });
           }, 3000);
-        },
+        }
         // refreshValuesOnOpen: true
       },
-      hide: true
+      hide: false,
+      toolPanelClass: 'chbs'
     },
-    { field: 'price_of_the_next_excl_shipping', headerName: 'Next price', sortable: true, filter: 'agNumberColumnFilter', hide: true },
+    {
+      field: 'price_of_the_next_excl_shipping', headerName: 'Next price', sortable: true, filter: 'agNumberColumnFilter', hide: false,
+      toolPanelClass: 'chbs'
+    },
     { field: 'is_activated', headerName: 'Is Activated', sortable: true, filter: 'number', hide: true },
     { field: 'compare_revenue_60', headerName: 'Revenue(60[' + this.currentYear + '])', sortable: true, filter: false, hide: true, sortingOrder: ['asc', 'desc'] },
     { field: 'percentage_revenue', headerName: '% Revenue(60[' + this.currentYear + '])', sortable: true, filter: 'agNumberColumnFilter', hide: true, sortingOrder: ['asc', 'desc'] },
@@ -195,7 +218,10 @@ export class SetpricesComponent implements OnInit {
   ];
 
   public customToolPanelColumnDefs: any = [];
-  constructor(private http: HttpClient, private categoryService: PmCategoryService, private sidebarService: PmSidebarService, private loaddebtorsService: LoadDebtorsService, private simtree_service: SimtreeService) {
+  constructor(private http: HttpClient, private categoryService: PmCategoryService, private sidebarService: PmSidebarService, private loaddebtorsService: LoadDebtorsService, private simtree_service: SimtreeService, private datePipe: DatePipe) {
+
+
+
     this.newArray = this.columnDefs.map((item) => ({
       headerName: item.headerName,
       field: item.field,
@@ -326,6 +352,19 @@ export class SetpricesComponent implements OnInit {
         });
       }
     });
+
+    this.http.get(environment.webservicebaseUrl + "/bs_import_date").subscribe(responseData => {
+      if (responseData["msg"]) {
+
+
+        const parsedDate = new Date(responseData["msg"]);
+
+        // Format the parsed date using DatePipe
+        this.xml_imported_at = this.datePipe.transform(parsedDate, 'yyyy-MM-dd');
+      }
+
+    });
+
     this.context = {
       componentParent: this
     }
@@ -936,7 +975,7 @@ export class SetpricesComponent implements OnInit {
   }
   onColumnVisible(e) {
     e.columns.forEach(column => {
-      if (column.colDef.toolPanelClass != undefined) {
+      if (column.colDef.toolPanelClass.indexOf('show_deb_cols') != '-1') {
         if (column.visible) {
           if ($("label[for='btnDebCategories']").parent('div').css('display') != 'inline') {
             $("label[for='btnDebCategories']").parent('div').css('display', 'inline');
@@ -1166,6 +1205,76 @@ export class SetpricesComponent implements OnInit {
     });
   }
 
+  onChangeChkBigshopper() {
+
+    var ischecked = $("#chkbigshopper").is(':checked');
+    if (ischecked) {
+
+
+      //var store_html = $("#showloader").find('span').html();
+      $("#showloader").addClass("loader").html('Please wait....Calculating Bigshopper Percentages.').show();
+
+      this.http.get<any>(environment.webservicebaseUrl + "/get_bigshopper_percentage", {}).subscribe(responseData => {
+        if (responseData["msg"]) {
+
+          $("#showloader").removeClass("loader").hide();
+
+          if (responseData["msg"] != 'No records available to update') {
+            this.loadAGGrid();
+          }
+
+
+          // get all columns array that has chbs class
+          let all_chbs_cols = this.columnDefs.filter(col => col.toolPanelClass === 'chbs').map(col => col.headerName);
+
+          for (const i in all_chbs_cols) {
+            const jy = all_chbs_cols[i];
+            const columnIndex = this.columnDefs.findIndex(col => col.headerName === jy);
+            if (columnIndex !== -1) {
+              // Update the hide attribute of the column definition to false
+              this.columnDefs[columnIndex].hide = false;
+
+              // Apply the updated column definitions to the ag-Grid
+              this.api.setColumnDefs(this.columnDefs);
+            }
+          }
+
+          this.alertType = "success";
+          this.strongalertMessage = "Success! ";
+          this.alertMessage = responseData["msg"];
+
+          window.setTimeout(function () {
+            $(".alert").fadeTo(500, 0).slideUp(500, function () {
+              $(this).remove();
+            });
+          }, 4000);
+
+          /*
+            getProductset();
+            table.column(column_index["price_of_the_next_excl_shipping"]).visible(true);
+            table.column(column_index["pmvkpr_per_piece"]).visible(true);
+            table.column(column_index["diff_pmvkpr_pp_bslp"]).visible(true); */
+
+          $("table tr th").css({
+            "width": "100px"
+          });
+          $("#example").width("100%");
+        }
+
+      });
+
+      //$("#showloader").find('span').html(store_html)
+
+
+    } else {
+
+      /* 
+      table.column(column_index["price_of_the_next_excl_shipping"]).visible(false);
+      table.column(column_index["pmvkpr_per_piece"]).visible(false);
+      table.column(column_index["diff_pmvkpr_pp_bslp"]).visible(false); */
+    }
+  };
+
   /* checkIfDebterProduct(product_id, current_group_name) {
     var group_name_product = false;
     var column_name: string = current_group_name;
@@ -1310,4 +1419,3 @@ function processUpdatedProduct(productData) {
 
   return productData;
 }
-
