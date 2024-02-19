@@ -1,0 +1,110 @@
+<!-- Content Header (Page header) -->
+<section class="content-header">
+  <h1>
+    Current ROAS <span style="font-size:12px; color: #3c763d;">[Live Feed Date :
+      {{roasLiveDate}}] </span> <span style="font-size:12px; color: #c10000;">[New Live Feed
+      Date Set : {{roasSetDate}}]</span>
+  </h1>
+  <ol class="breadcrumb">
+    <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+    <li class="active">Current ROAS</li>
+  </ol>
+</section>
+
+<div style="padding: 10px;">
+  <div class="alert alert-{{ alertType }}" style="margin-bottom: 10px; padding: 7px;">
+    <strong>{{ strongalertMessage }}</strong>{{ alertMessage }}
+  </div>
+
+  <div class="box box-primary">
+    <div class="box-header with-border">
+      <h3 class="box-title">Averages</h3><i style="cursor:pointer; font-size: 18px; padding-left:5px;"
+        class="fa fa-question-circle text-primary" data-toggle="modal" data-target="#modal-avg-help"></i>
+    </div>
+    <!-- /.box-header -->
+    <div class="box-body">
+      <div class="row" style="padding-left: 15px;">
+        <span>{{avg_roas}} </span> | <span>{{avg_end_roas}} </span> | <span>{{avg_roas_with_google_kosten}}</span> |
+        <span>{{avg_end_roas_with_google_kosten}}</span> | <span>{{avg_roas_google}}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modal-avg-help" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span></button>
+          <h4 class="modal-title">Average Roas</h4>
+        </div>
+        <div class="modal-body">
+          <div>
+            <p style="font-size: 13px;"><b>1) <span>{{helpavgroasall}}</span></b></p>
+            <p>SUM OF <b>Roas Per Category Per Brand</b> / <b>Total Number of Sku's</b></p>
+          </div>
+
+          <div>
+            <p style="font-size: 13px;"><b>2) <span>{{helpavgendroasall}}</span></b></p>
+            <p>SUM OF <b>End Roas</b> / <b>Total Number of Sku's</b></p>
+          </div>
+
+          <div>
+            <p style="font-size: 13px;"><b>3) <span>{{helpavgroasadwords}}</span></b></p>
+            <p>SUM OF <b>Roas Per Category Per Brand</b> of those Sku's for which <b>Google Kosten</b> is > 0 / <b>Total
+                Number of Sku's</b> for which <b>Google Kosten</b> is > 0 </p>
+          </div>
+
+          <div>
+            <p style="font-size: 13px;"><b>4) <span>{{helpavgendroasadwords}}</span></b></p>
+            <p>SUM OF <b>End Roas</b> of those Sku's for which <b>Google Kosten</b> is > 0 / <b>Total Number of
+                Sku's</b> for which <b>Google Kosten</b> is > 0 </p>
+          </div>
+
+
+          <div>
+            <p style="font-size: 13px;"><b>5) <span>{{helpavgroasgoogle}}</span></b></p>
+            <p>SUM OF <b>Conv.waarde</b> / SUM OF <b>Kosten</b> columns from activated google roas file</p>
+          </div>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+
+  <div style="float: left; padding-top: 22px;">
+    Date:- {{selectedDate}} <span style="font-weight: bold;">[{{roasBol}}]</span>
+  </div>
+
+  <div style="float: right;">
+    <mat-form-field style="margin-right: 10px;">
+      <input matInput [matDatepicker]="datepicker1" placeholder="From" (dateChange)="getStartDate($event)">
+      <mat-datepicker-toggle matSuffix [for]="datepicker1"></mat-datepicker-toggle>
+      <mat-datepicker #datepicker1></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field style="margin-right: 10px;">
+      <input matInput [matDatepicker]="datepicker2" placeholder="To" (dateChange)="getEndDate($event)">
+      <mat-datepicker-toggle matSuffix [for]="datepicker2"></mat-datepicker-toggle>
+      <mat-datepicker #datepicker2></mat-datepicker>
+    </mat-form-field>
+    <button type="button" class="btn btn-primary" (click)="getRoas()" style="margin-right: 10px;"
+      [disabled]="isRoasDisabled"><span class="glyphicon glyphicon-stats"></span> Get
+      Roas <i *ngIf="roasSpinner" class="fa fa-circle-o-notch fa-spin"></i></button>
+    <button type="button" class="btn btn-primary" style="margin-right: 10px;" (click)="exportRoas()"
+      [disabled]="isExportRoasDisabled"><i class="fa fa-fw fa-cloud-download"></i> Export Roas <i
+        *ngIf="exportroasSpinner" class="fa fa-circle-o-notch fa-spin"
+        style="font-size:12px; margin-left:5px;"></i></button>
+    <button type="button" class="btn btn-primary" (click)="setRoasDate()" [disabled]="isSetRoasDisabled"> <i
+        class="fa fa-fw fa-check-circle"></i> Set Roas Date
+      <i *ngIf="setroasSpinner" class="fa fa-circle-o-notch fa-spin"
+        style="font-size:12px; margin-left:5px;"></i></button>
+  </div>
+  <div style="clear: both;"></div>
+  <ag-grid-angular style="width: 100%; height:800px;" class="ag-theme-alpine" [rowData]="rowData"
+    [columnDefs]="columnDefs" [rowModelType]="rowModelType" [rowStyle]="rowStyle" [getRowStyle]="getRowStyle"
+    (gridReady)="onGridReady($event)" [pagination]="true" [paginationPageSize]="paginationPageSize"
+    [serverSideStoreType]="serverSideStoreType" [cacheBlockSize]="cacheBlockSize" [animateRows]="true"
+    [suppressMenuHide]="true"></ag-grid-angular>
+</div>

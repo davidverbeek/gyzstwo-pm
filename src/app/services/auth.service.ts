@@ -9,6 +9,7 @@ export class AuthService {
 
   loggedInDetails: any;
 
+
   constructor(private http: HttpClient) { }
 
   login(logindata = {}) {
@@ -21,7 +22,14 @@ export class AuthService {
   verifyToken(token) {
     return this.http.post(
       environment.webservicebaseUrl + "/verifytoken",
-      {token:token}
+      { token: token }
+    );
+  }
+
+  setSettings() {
+    this.http.get(environment.webservicebaseUrl + "/get-settings").subscribe(allSettings => {
+      localStorage.setItem("settings", allSettings["settings"][0]["roas"]);
+    }
     );
   }
 

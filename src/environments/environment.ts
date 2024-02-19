@@ -5,7 +5,16 @@
 export const environment = {
   production: false,
   webservicebaseUrl: "http://localhost:3200",
-  agbaseUrl: "http://localhost:4200/AG/"
+  agbaseUrl: "http://localhost:4200/AG/",
+  revenueUrl: "http://localsymfony.com/nodewsrevenue/get_revenue.php",
+  revenueSyncUrl: "http://localsymfony.com/nodewsrevenue/set_sortorder.php",
+  roasUrl: "http://localsymfony.com/nodewsrevenue/get_roas.php",
+  roasCalUrl: "http://localsymfony.com/nodewsrevenue/debug_roas.php",
+  nodebasePath: "http://agws.com",
+  nodeServerUrl: "http://localhost:3200",
+  agserverUrl: "http://localsymfony.com",
+  roasAvgUrl: "http://localsymfony.com/nodewsrevenue/get_averages.php",
+  roasSyncUrl: "http://localsymfony.com/nodewsrevenue/export_roas.php",
 };
 
 /*

@@ -1,187 +1,195 @@
 <header class="main-header">
-    <!-- Logo -->
-    <a class="logo" [routerLink]="['/admin/dashboard']">
-      <!-- mini logo for sidebar mini 50x50 pixels -->
-      <span class="logo-mini"><b>GYZS</b></span>
-      <!-- logo for regular state and mobile devices -->
-      <span class="logo-lg"><img alt="GYZS > Voor Technische Professionals" src="https://cdn.gyzs.nl/skin/frontend/gyzs/default/images/logo.svg" width="285px" height="46px"></span>
+  <!-- Logo -->
+  <a class="logo" [routerLink]="['/admin/dashboard']">
+    <!-- mini logo for sidebar mini 50x50 pixels -->
+    <span class="logo-mini"><b>GYZS</b></span>
+    <!-- logo for regular state and mobile devices -->
+    <span class="logo-lg"><img alt="GYZS > Voor Technische Professionals"
+        src="https://cdn.gyzs.nl/skin/frontend/gyzs/default/images/logo.svg" width="285px" height="46px"></span>
+  </a>
+  <!-- Header Navbar: style can be found in header.less -->
+  <nav class="navbar navbar-static-top">
+    <!-- Sidebar toggle button-->
+    <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
     </a>
-    <!-- Header Navbar: style can be found in header.less -->
-    <nav class="navbar navbar-static-top">
-      <!-- Sidebar toggle button-->
-      <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </a>
 
-      <div class="navbar-custom-menu" style="float: left;">
-        <ul class="nav navbar-nav">
-          
-          <li class="dropdown messages-menu">
-            <a class="dropdown-toggle" [routerLink]="['/admin/setprices']">
-              <i class="fa fa-eur"></i><span style="margin-left: 8px;">Manage Prices</span>
-            </a>
-          </li>
+    <div class="navbar-custom-menu" style="float: left;">
+      <ul class="nav navbar-nav">
 
-          <li class="dropdown messages-menu">
-            <a href="#" class="dropdown-toggle">
-              <i class="fa fa-gavel"></i><span style="margin-left: 8px;">Debter Rules</span>
-            </a>
-          </li>
+        <li class="dropdown messages-menu" routerLinkActive="active">
+          <a class="dropdown-toggle" [routerLink]="['/admin/setprices']" (click)="onNavigate()">
+            <i class="fa fa-eur"></i><span style="margin-left: 8px;">Manage Prices</span>
+          </a>
+        </li>
+
+        <li class="dropdown messages-menu" routerLinkActive="active" (click)="onNavigate()">
+          <a class="dropdown-toggle" [routerLink]="['/admin/debter-rules']">
+            <i class="fa fa-gavel"></i><span style="margin-left: 8px;">Debter Rules</span>
+          </a>
+        </li>
+
+        <!-- <li class="dropdown messages-menu" routerLinkActive="active">
+          <a class="dropdown-toggle" [routerLink]="['/admin','verifyprices']">
+            <i class="fa fa-calculator"></i><span style="margin-left: 8px;">Verify Prices</span>
+          </a>
+        </li> -->
 
 
-          <!-- Messages: style can be found in dropdown.less-->
-          <li class="dropdown messages-menu">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <i class="fa fa-dashboard"></i><span style="margin-left: 8px;">Bol</span>
-            </a>
-            <ul class="dropdown-menu">
-              <li>
-                <!-- inner menu: contains the actual data -->
-                <ul class="menu">
-                  <li><!-- start message -->
-                    <a href="#">
-                      <h4>
-                        <i class="fa fa-file"></i><span style="margin-left: 8px;">Bol Commission</span>  
-                      </h4>
-                    </a>
-                  </li>
+        <!-- Messages: style can be found in dropdown.less-->
+        <li class="dropdown messages-menu" routerLinkActive="active">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-dashboard"></i><span style="margin-left: 8px;">Bol</span>
+          </a>
+          <ul class="dropdown-menu">
+            <li>
+              <!-- inner menu: contains the actual data -->
+              <ul class="menu">
+                <li><!-- start message -->
+                  <a [routerLink]="['/admin/bolcommission']">
+                    <h4>
+                      <i class="fa fa-file"></i><span style="margin-left: 8px;">Bol Commission</span>
+                    </h4>
+                  </a>
+                </li>
 
-                  <li><!-- start message -->
-                    <a href="#">
-                      <h4>
-                        <i class="fa fa-file"></i><span style="margin-left: 8px;">Bol Minimum</span>  
-                      </h4>
-                    </a>
-                  </li>
-                  <!-- end message -->
-                </ul>
-              </li>
-            </ul>
-          </li>
+                <li><!-- start message -->
+                  <a [routerLink]="['/admin/bolminimum']">
+                    <h4>
+                      <i class="fa fa-file"></i><span style="margin-left: 8px;">Bol Minimum</span>
+                    </h4>
+                  </a>
+                </li>
+                <!-- end message -->
+              </ul>
+            </li>
+          </ul>
+        </li>
 
-          <li class="dropdown messages-menu">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <i class="fa fa-history"></i><span style="margin-left: 8px;">Logs</span>
-            </a>
-            <ul class="dropdown-menu">
-              <li>
-                <!-- inner menu: contains the actual data -->
-                <ul class="menu">
-                  <li><!-- start message -->
-                    <a href="#">
-                      <h4>
-                        <i class="fa fa-file"></i><span style="margin-left: 8px;">Imported Logs</span>  
-                      </h4>
-                    </a>
-                  </li>
+        <li class="dropdown messages-menu" routerLinkActive="active">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-history"></i><span style="margin-left: 8px;">Logs</span>
+          </a>
+          <ul class="dropdown-menu">
+            <li>
+              <!-- inner menu: contains the actual data -->
+              <ul class="menu">
+                <li><!-- start message -->
+                  <a href="#">
+                    <h4>
+                      <i class="fa fa-file"></i><span style="margin-left: 8px;">Imported Logs</span>
+                    </h4>
+                  </a>
+                </li>
 
-                  <li><!-- start message -->
-                    <a href="#">
-                      <h4>
-                        <i class="fa fa-file"></i><span style="margin-left: 8px;">Exported Logs</span>  
-                      </h4>
-                    </a>
-                  </li>
-                  <!-- end message -->
-                   <li><!-- start message -->
-                    <a href="#">
-                      <h4>
-                        <i class="fa fa-file"></i><span style="margin-left: 8px;">DB Backups</span>  
-                      </h4>
-                    </a>
-                  </li>
+                <li><!-- start message -->
+                  <a href="#">
+                    <h4>
+                      <i class="fa fa-file"></i><span style="margin-left: 8px;">Exported Logs</span>
+                    </h4>
+                  </a>
+                </li>
+                <!-- end message -->
+                <li><!-- start message -->
+                  <a href="#">
+                    <h4>
+                      <i class="fa fa-file"></i><span style="margin-left: 8px;">DB Backups</span>
+                    </h4>
+                  </a>
+                </li>
 
-                </ul>
-              </li>
-            </ul>
-          </li>
+              </ul>
+            </li>
+          </ul>
+        </li>
 
-           <li class="dropdown messages-menu">
-            <a href="#" class="dropdown-toggle">
-              <i class="fa fa-eur"></i><span style="margin-left: 8px;">Revenue Report</span>
-            </a>
-          </li>
+        <li class="dropdown messages-menu" routerLinkActive="active">
+          <a [routerLink]="['/admin/revenue']" class="dropdown-toggle">
+            <i class="fa fa-eur"></i><span style="margin-left: 8px;">Revenue Report</span>
+          </a>
+        </li>
 
-          <li class="dropdown messages-menu">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <i class="fa fa-rss"></i><span style="margin-left: 8px;">Feeds</span>
-            </a>
-            <ul class="dropdown-menu">
-              <li>
-                <!-- inner menu: contains the actual data -->
-                <ul class="menu">
-                  <li><!-- start message -->
-                    <a href="#">
-                      <h4>
-                        <i class="fa fa-file"></i><span style="margin-left: 8px;">Roas</span>  
-                      </h4>
-                    </a>
-                  </li>
+        <li class="dropdown messages-menu" routerLinkActive="active">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-rss"></i><span style="margin-left: 8px;">Feeds</span>
+          </a>
+          <ul class="dropdown-menu">
+            <li>
+              <!-- inner menu: contains the actual data -->
+              <ul class="menu">
+                <li (click)="onNavigate()"><!-- start message -->
+                  <a [routerLink]="['/admin/liveroas']">
+                    <h4>
+                      <i class="fa fa-file"></i><span style="margin-left: 8px;">Roas</span>
+                    </h4>
+                  </a>
+                </li>
 
-                  <li><!-- start message -->
-                    <a href="#">
-                      <h4>
-                        <i class="fa fa-file"></i><span style="margin-left: 8px;">Current</span>  
-                      </h4>
-                    </a>
-                  </li>
-                  <!-- end message -->
-                </ul>
-              </li>
-            </ul>
-          </li>
+                <li (click)="onNavigate()"><!-- start message -->
+                  <a [routerLink]="['/admin/currentroas']">
+                    <h4>
+                      <i class="fa fa-file"></i><span style="margin-left: 8px;">Current</span>
+                    </h4>
+                  </a>
+                </li>
+                <!-- end message -->
+              </ul>
+            </li>
+          </ul>
+        </li>
 
-          <li class="dropdown messages-menu">
-            <a href="#" class="dropdown-toggle">
-              <i class="fa fa-google"></i><span style="margin-left: 8px;">Google Roas</span>
-            </a>
-          </li>
+        <li class="dropdown messages-menu" routerLinkActive="active">
+          <a [routerLink]="['/admin/googleroas']" class="dropdown-toggle">
+            <i class="fa fa-google"></i><span style="margin-left: 8px;">Google Roas</span>
+          </a>
+        </li>
 
-          <li class="dropdown messages-menu">
-            <a href="#" class="dropdown-toggle" [routerLink]="['/admin/settings']">
-              <i class="fa fa-cog"></i><span style="margin-left: 8px;">Settings</span>
-            </a>
-          </li>
-          
-        </ul>
-      </div>
+        <li class="dropdown messages-menu" routerLinkActive="active">
+          <a href="#" class="dropdown-toggle" [routerLink]="['/admin/settings']">
+            <i class="fa fa-cog"></i><span style="margin-left: 8px;">Settings</span>
+          </a>
+        </li>
 
-      <div class="navbar-custom-menu">
-        <ul class="nav navbar-nav">
-          <li class="dropdown user user-menu">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <img src="dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
-              <span class="hidden-xs">Alexander Pierce</span>
-            </a>
-            <ul class="dropdown-menu">
-              <!-- User image -->
-              <li class="user-header">
-                <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+      </ul>
+    </div>
 
-                <p>
-                  Alexander Pierce - Web Developer
-                </p>
-              </li>
-              <!-- Menu Body -->
-              <!-- Menu Footer-->
-              <li class="user-footer">
-                <div class="pull-left">
-                  <a href="#" class="btn btn-default btn-flat">Profile</a>
-                </div>
-                <div class="pull-right">
-                  <a class="btn btn-default btn-flat" (click)="onUserSignOut()" >Sign out</a>
-                </div>
-              </li>
-            </ul>
-          </li>
-          <!-- Control Sidebar Toggle Button -->
-          <li>
-            <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-  </header>
+    <div class="navbar-custom-menu">
+      <ul class="nav navbar-nav">
+        <li class="dropdown user user-menu">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            <img src="dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
+            <span class="hidden-xs">Alexander Pierce</span>
+          </a>
+          <ul class="dropdown-menu">
+            <!-- User image -->
+            <li class="user-header">
+              <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+
+              <p>
+                Alexander Pierce - Web Developer
+              </p>
+            </li>
+            <!-- Menu Body -->
+            <!-- Menu Footer-->
+            <li class="user-footer">
+              <div class="pull-left">
+                <a href="#" class="btn btn-default btn-flat">Profile</a>
+              </div>
+              <div class="pull-right">
+                <a class="btn btn-default btn-flat" (click)="onUserSignOut()">Sign out</a>
+              </div>
+            </li>
+          </ul>
+        </li>
+        <!-- Control Sidebar Toggle Button -->
+        <li>
+          <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+</header>
+<div><span id="showloader" class="loader_txt" style="display:none;"></span></div>

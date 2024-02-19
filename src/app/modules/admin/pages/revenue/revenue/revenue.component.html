@@ -1,0 +1,49 @@
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Revenue Report
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Revenue Report</li>
+    </ol>
+</section>
+
+<div style="padding: 15px;">
+
+    <div class="alert alert-{{ alertType }}" style="margin-bottom: 10px; padding: 7px;">
+        <strong>{{ strongalertMessage }}</strong>{{ alertMessage }}
+    </div>
+    <div style="float: left; padding-top: 22px;">
+        Date:- {{selectedDate}}
+    </div>
+
+    <div style="float: right;">
+        <mat-form-field style="margin-right: 10px;">
+            <input matInput [matDatepicker]="datepicker1" placeholder="From" (dateChange)="getStartDate($event)">
+            <mat-datepicker-toggle matSuffix [for]="datepicker1"></mat-datepicker-toggle>
+            <mat-datepicker #datepicker1></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field style="margin-right: 10px;">
+            <input matInput [matDatepicker]="datepicker2" placeholder="To" (dateChange)="getEndDate($event)">
+            <mat-datepicker-toggle matSuffix [for]="datepicker2"></mat-datepicker-toggle>
+            <mat-datepicker #datepicker2></mat-datepicker>
+        </mat-form-field>
+        <button type="button" class="btn btn-primary" (click)="getRevenue()" style="margin-right: 10px;"
+            [disabled]="isDataDisabled"><span class="glyphicon glyphicon-stats"></span> Get
+            Data <i *ngIf="dataSpinner" class="fa fa-circle-o-notch fa-spin"></i></button>
+        <button type="button" class="btn btn-primary" style="margin-right: 10px;" (click)="exportRevenue()"
+            [disabled]="isDisabled"><i class="fa fa-fw fa-cloud-download"></i> Export Data <i *ngIf="spinner"
+                class="fa fa-circle-o-notch fa-spin" style="font-size:12px; margin-left:5px;"></i></button>
+        <button type="button" class="btn btn-primary" (click)="syncRevenueId()" [disabled]="isSyncDisabled"> <i
+                class="fa fa-fw fa-refresh"></i> Sync Sort Order <i *ngIf="syncSpinner"
+                class="fa fa-circle-o-notch fa-spin" style="font-size:12px; margin-left:5px;"></i></button>
+    </div>
+    <div style="clear: both;"></div>
+    <ag-grid-angular style="width: 100%; height:800px;" class="ag-theme-alpine" [rowData]="rowData"
+        [columnDefs]="columnDefs" [defaultColDef]="defaultColDef" [rowModelType]="rowModelType" [rowStyle]="rowStyle"
+        [getRowStyle]="getRowStyle" (gridReady)="onGridReady($event)" [pagination]="true"
+        [paginationPageSize]="paginationPageSize" [serverSideStoreType]="serverSideStoreType"
+        [cacheBlockSize]="cacheBlockSize" [animateRows]="true" [suppressMenuHide]="true"></ag-grid-angular>
+</div>
