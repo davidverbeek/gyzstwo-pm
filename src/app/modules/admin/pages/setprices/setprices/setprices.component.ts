@@ -142,7 +142,7 @@ export class SetpricesComponent implements OnInit {
       headerName: 'B.S. (L.P)',
       sortable: true,
       filter: 'agNumberColumnFilter',
-      hide: false,
+      hide: true,
       toolPanelClass: 'chbs'
     },
     {
@@ -150,27 +150,27 @@ export class SetpricesComponent implements OnInit {
       headerName: 'B.S. (H.P)',
       filter: 'agNumberColumnFilter',
       sortable: true,
-      hide: false,
+      hide: true,
       toolPanelClass: 'chbs'
     },
     {
-      field: 'lp_diff_percentage', headerName: 'B.S. (L.P %)', sortable: true, filter: 'agNumberColumnFilter', hide: false,
+      field: 'lp_diff_percentage', headerName: 'B.S. (L.P %)', sortable: true, filter: 'agNumberColumnFilter', hide: true,
       toolPanelClass: 'chbs'
     },
     {
-      field: 'hp_diff_percentage', headerName: 'B.S. (H.P %)', sortable: true, filter: 'agNumberColumnFilter', hide: false,
+      field: 'hp_diff_percentage', headerName: 'B.S. (H.P %)', sortable: true, filter: 'agNumberColumnFilter', hide: true,
       toolPanelClass: 'chbs'
     },
     {
-      field: 'price_competition_score', headerName: 'PCS', sortable: true, filter: 'agNumberColumnFilter', hide: false,
+      field: 'price_competition_score', headerName: 'PCS', sortable: true, filter: 'agNumberColumnFilter', hide: true,
       toolPanelClass: 'chbs'
     },
     {
-      field: 'position', headerName: 'Positie', sortable: true, filter: 'agNumberColumnFilter', hide: false,
+      field: 'position', headerName: 'Positie', sortable: true, filter: 'agNumberColumnFilter', hide: true,
       toolPanelClass: 'chbs'
     },
     {
-      field: 'number_competitors', headerName: 'Aantal CC', sortable: true, filter: 'agNumberColumnFilter', hide: false,
+      field: 'number_competitors', headerName: 'Aantal CC', sortable: true, filter: 'agNumberColumnFilter', hide: true,
       toolPanelClass: 'chbs'
     },
     {
@@ -202,18 +202,21 @@ export class SetpricesComponent implements OnInit {
         }
         // refreshValuesOnOpen: true
       },
-      hide: false,
+      hide: true,
       toolPanelClass: 'chbs'
     },
     {
-      field: 'price_of_the_next_excl_shipping', headerName: 'Next price', sortable: true, filter: 'agNumberColumnFilter', hide: false,
+      field: 'price_of_the_next_excl_shipping', headerName: 'Next price', sortable: true, filter: 'agNumberColumnFilter', hide: true,
       toolPanelClass: 'chbs'
     },
     { field: 'is_activated', headerName: 'Is Activated', sortable: true, filter: 'number', hide: true },
     { field: 'compare_revenue_60', headerName: 'Revenue(60[' + this.currentYear + '])', sortable: true, filter: false, hide: true, sortingOrder: ['asc', 'desc'] },
     { field: 'percentage_revenue', headerName: '% Revenue(60[' + this.currentYear + '])', sortable: true, filter: 'agNumberColumnFilter', hide: true, sortingOrder: ['asc', 'desc'] },
     { field: 'compare_revenue_year', headerName: 'Revenue(60[' + this.previousYear + '])', sortable: true, filter: false, hide: true, sortingOrder: ['asc', 'desc'] },
-    { field: 'last_year_percentage_revenue', headerName: '% Revenue(60[' + this.previousYear + '])', sortable: true, filter: 'agNumberColumnFilter', hide: true, sortingOrder: ['asc', 'desc'] }
+    { field: 'last_year_percentage_revenue', headerName: '% Revenue(60[' + this.previousYear + '])', sortable: true, filter: 'agNumberColumnFilter', hide: true, sortingOrder: ['asc', 'desc'] },
+    { field: 'pm_vkpr_per_piece', headerName: 'PM Vkpr (per piece)', sortable: true, filter: 'number', hide: true },
+
+    { field: 'diff_pmvkpr_pp_bslp', headerName: 'DIFF (PM Vkpr|BS LP) %', sortable: true, filter: 'number', hide: true },
 
   ];
 
