@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { GridReadyEvent, IServerSideDatasource, ServerSideStoreType, RowClassParams } from 'ag-grid-community';
+import { ColDef, GridReadyEvent, IServerSideDatasource, ServerSideStoreType, RowClassParams } from 'ag-grid-community';
 import { CommonService } from 'src/app/services/common.service';
 import { BolmincalculationComponent } from '../bolmincalculation/bolmincalculation.component';
 import { HttpClient } from '@angular/common/http';
@@ -57,7 +57,7 @@ export class BolminimumComponent implements OnInit {
   }
 
   // Each Column Definition results in one Column.
-  public columnDefs = [
+  public columnDefs: ColDef[] = [
     { field: 'product_id', headerName: 'ID', sortable: true, filter: 'number', hide: true },
     { field: 'product_sku', headerName: 'SKU', sortable: true, filter: 'text', cellRenderer: BolmincalculationComponent },
     { field: 'supplier_type', headerName: 'Supplier', sortable: true, filter: 'text' },
@@ -65,7 +65,7 @@ export class BolminimumComponent implements OnInit {
     { field: 'product_bol_selling_price', headerName: 'Bol Selling Price', sortable: true, filter: 'number' },
     { field: 'ec_deliverytime_text', headerName: 'EC Delivery Time', sortable: true, filter: 'text' },
     { field: 'ec_deliverytime_be_text', headerName: 'EC Delivery Time BE', sortable: true, filter: 'text' },
-    { field: 'updated_date_time', headerName: 'Updated Date', sortable: true }
+    { field: 'updated_date_time', headerName: 'Updated Date', sortable: true, sortingOrder: ['desc', 'asc'] }
   ];
 
   // DefaultColDef sets props common to all Columns
@@ -87,6 +87,7 @@ export class BolminimumComponent implements OnInit {
   loadAGGrid() {
     var datasource = createServerSideDatasource(this.gridParams);
     this.api.setServerSideDatasource(datasource);
+    $("div[col-id='updated_date_time']").find("div[ref='eHeaderCompWrapper']").find("div[class='ag-cell-label-container']").find("div[ref='eLabel']").find('.ag-sort-indicator-container').find('span.ag-sort-descending-icon').removeClass('ag-hidden');
   }
 
   updateEcDeliveryTime(event) {

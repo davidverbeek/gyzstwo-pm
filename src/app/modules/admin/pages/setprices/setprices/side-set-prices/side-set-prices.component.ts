@@ -58,6 +58,7 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
   txtValue: string = "";
   selCG: string = "";
   priceType: any = [];
+  big_shopper_details: any = [];
   xlsxPrices: any = "";
   uploadSpinner: any = false;
   spinner: any = false;
@@ -610,6 +611,29 @@ export class SideSetPricesComponent implements IToolPanelAngularComp {
       }
     }
   }
+
+
+  onBSUpdate() {
+    var expression: any = validateModal();
+    if (typeof (expression) !== "boolean") {
+      expression = validateModal();
+    } else {
+      return false;
+    }
+    var bs_price_option = $("input[name=fav_BS]:checked").val();
+
+    // create these rows
+
+
+
+
+
+    this.big_shopper_details["bs_price_option"] = bs_price_option;
+    //this.big_shopper_details["isAllChecked"] = isAllChecked;
+    this.big_shopper_details["expression"] = expression;
+    this.sidebarService.bs_updt_btnClicked.next(this.big_shopper_details);
+
+  }
 }
 function columnMappings(allDebts: any) {
   var columnMappings = Array();
@@ -704,4 +728,37 @@ function validXlsxHeader(allDebts: any) {
     validHeader.push(idAlias[1]);
   }
   return validHeader;
+}
+
+function validateModal() {
+
+  if (!$("input[name=fav_BS]:checked").val()) {
+    alert("Please select BS option!!");
+    return false;
+  }
+
+  var bs_price_option = $("input[name=fav_BS]:checked").val();
+  var expression = Array();
+  if (bs_price_option == "percentage_bs") {
+    if ($('#bs_percent_text').val() == '') {
+      alert("Percentage textbox is blank..");
+      $('#bs_percent_text').focus();
+      return false;
+    }
+    expression[0] = $('#bs_percent_text').val();
+    expression[1] = $('#bs_percent_type').val();
+    expression[2] = $('#bs_percent_price_type').val();
+  }
+
+  if (bs_price_option == "percent_next_price") {
+    if ($('#bs_np_percent_text').val() == '') {
+      alert("Percentage textbox is blank..");
+      $('#bs_np_percent_text').focus();
+      return false;
+    }
+    expression[0] = $('#bs_np_percent_text').val();
+    expression[1] = $('#bs_np_percent_type').val();
+    expression[2] = 'next_price';
+  }
+  return expression;
 }

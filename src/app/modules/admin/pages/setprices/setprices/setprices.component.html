@@ -16,17 +16,37 @@
     <strong>{{ strongalertMessage }}</strong>{{ alertMessage }}
   </div>
 
-  <div class="checkbox" style="float: left;">
-    <label><input type="checkbox" value="chkall" (change)="getAllProducts($event)">Check All {{ chkAllCount }}</label>
-    <div style="display: none;padding-left: 20px;">
-      <label for="btnDebCategories">
-        <button class="btn btn-primary btn-sm no-modal col-7" type="button" id="btnDebCategories"
-          (click)="onApplyDebterCategories()">
-          <i class="fa fa-filter"></i>Apply Debter Categories
-          <span class="loading-img-update" style="display: none;"></span>
-        </button>
-      </label>
+  <div style="float: left;">
+
+
+    <div class=''>
+      <div style="float: left;">
+        <input type="checkbox" name="chkall" value="chkall" (change)="getAllProducts($event)"
+          id="chkall"><span>&nbsp;&nbsp;Check
+          All {{
+          chkAllCount}}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <div style="display: none;">
+          <label for="btnDebCategories">
+            <button class="btn btn-primary btn-sm no-modal col-7" type="button" id="btnDebCategories"
+              (click)="onApplyDebterCategories()">
+              <i class="fa fa-filter"></i>Apply Debter Categories
+              <span class="loading-img-update" style="display: none;"></span>
+            </button>
+          </label>
+        </div>
+      </div>
+
+      <div style="float:right;">
+        <input type="checkbox" name="chkbigshopper" id="chkbigshopper" (change)="onChangeChkBigshopper()" />
+        <span> B.S. (%)[<span title="Bigshopper Data on.." style="color:DodgerBlue;font-weight: bold;">
+            {{xml_imported_at}}
+          </span>]
+        </span>
+      </div>
+
     </div>
+
+
   </div>
   <div style="float: right;">
 
